@@ -1,0 +1,9 @@
+extern int puts(char*);
+do (puts.str) (take 11 (fibs 0L 1L)) with fibs a b = a : fibs b (a+b) & end;
+
+// extern int puts(char*);
+// do (puts.str) (fib 10)
+//   with fib 0 = 0;
+//        fib 1 = 1;
+//        fib n = fib (n-1) + fib (n-2) & end;
+       
