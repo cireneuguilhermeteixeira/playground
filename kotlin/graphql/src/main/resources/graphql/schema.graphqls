@@ -1,0 +1,17 @@
+type Query {
+    hello: String           # Return the hello world
+    users: [User]           # Return all users
+    user(id: ID!): User     # Return a specific user
+}
+
+type Mutation {
+    createUser(name: String!, email: String!): User    # Create a user
+    updateUser(id: ID!, name: String, email: String): User   # Update a user
+    deleteUser(id: ID!): Boolean   # Delete a user
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+}
