@@ -2,6 +2,9 @@ import Fastify from 'fastify'
 import jwt from '@fastify/jwt'
 import db from './plugins/db'
 import { userRoutes } from './routes/users'
+import cookie from '@fastify/cookie'
+import session from '@fastify/session'
+
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -10,6 +13,15 @@ const app = Fastify()
 
 app.register(jwt, {
   secret: process.env.JWT_SECRET as string
+})
+
+app.register(cookie)
+app.register(session, {
+  secret: process.env.SESSION_SECRET as string,
+  cookie: {
+    secure: false,
+    maxAge: 1000 * 60 * 60 * 1, // 1 hour
+  }
 })
 
 app.addHook('onRequest', async (req, reply) => {
