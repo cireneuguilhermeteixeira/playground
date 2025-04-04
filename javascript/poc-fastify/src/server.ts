@@ -1,4 +1,5 @@
 import Fastify from 'fastify'
+import jwt from '@fastify/jwt'
 import db from './plugins/db'
 import { userRoutes } from './routes/users'
 
