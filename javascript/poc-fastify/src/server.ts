@@ -2,8 +2,15 @@ import Fastify from 'fastify'
 import jwt from '@fastify/jwt'
 import db from './plugins/db'
 import { userRoutes } from './routes/users'
+import dotenv from 'dotenv'
+dotenv.config()
+
 
 const app = Fastify()
+
+app.register(jwt, {
+  secret: process.env.JWT_SECRET as string
+})
 
 app.addHook('onRequest', async (req, reply) => {
   req.log.info(`➡️ [${req.method}] ${req.url}`)
