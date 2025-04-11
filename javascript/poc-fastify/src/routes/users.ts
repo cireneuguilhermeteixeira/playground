@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { authMiddleware } from '../middlewares/auth'
 import { requestLogger } from '../middlewares/logger'
+import { USER_SCHEMA } from '../schemas/user'
 
 
 export async function userRoutes(app: FastifyInstance) {
@@ -8,7 +9,7 @@ export async function userRoutes(app: FastifyInstance) {
   app.addHook('onRequest', requestLogger)
   app.addHook('preHandler', authMiddleware)
   
-  app.get('/users', async (req, res) => {
+  app.get('/users', USER_SCHEMA, async (req, res) => {
     return app.prisma.user.findMany()
   })
 
