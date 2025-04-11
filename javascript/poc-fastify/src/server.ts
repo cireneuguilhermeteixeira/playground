@@ -1,9 +1,9 @@
 import Fastify from 'fastify'
+import swagger from '@fastify/swagger'
+import swaggerUI from '@fastify/swagger-ui'
 import jwt from '@fastify/jwt'
 import db from './plugins/db'
 import { userRoutes } from './routes/users'
-import cookie from '@fastify/cookie'
-import session from '@fastify/session'
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -15,14 +15,30 @@ app.register(jwt, {
   secret: process.env.JWT_SECRET as string
 })
 
-app.register(cookie)
-app.register(session, {
-  secret: process.env.SESSION_SECRET as string,
-  cookie: {
-    secure: false,
-    maxAge: 1000 * 60 * 60 * 1, // 1 hour
+
+
+app.register(swagger, {
+  swagger: {
+    info: {
+      title: 'Fastify POC API',
+      description: 'Documentation for API with Swagger',
+      version: '1.0.0',
+    },
+    host: 'localhost:3000',
+    schemes: ['http'],
+    consumes: ['application/json'],
+    produces: ['application/json'],
   }
 })
+
+app.register(swaggerUI, {
+  routePrefix: '/docs', 
+  uiConfig: {
+    docExpansion: 'full',
+    deepLinking: false
+  },
+})
+
 
 app.addHook('onRequest', async (req, reply) => {
   req.log.info(`➡️ [${req.method}] ${req.url}`)
@@ -35,8 +51,6 @@ app.addHook('onResponse', async (req, reply) => {
 })
 
 
-
-app.decorateRequest('userId', null)
 
 
 app.register(db)
