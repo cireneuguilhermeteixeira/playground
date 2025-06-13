@@ -8,7 +8,7 @@ fn max(a: i32, b: i32) i32 {
     return if (a > b) a else b;
 }
 
-// Allow multidimensional array
+//TODO: Allow multidimensional array
 pub fn calculateMinimumHP(dungeon: [3][3]i32) !i32 {
     const m = dungeon.len;
     const n = dungeon[0].len;
