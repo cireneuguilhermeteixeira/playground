@@ -14,3 +14,10 @@ CREATE TABLE photos (
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Many-to-many relationship for users tagged in photos
+CREATE TABLE tagged_users (
+  photo_id INTEGER REFERENCES photos(id),
+  user_id INTEGER REFERENCES users(id),
+  PRIMARY KEY (photo_id, user_id)
+);
