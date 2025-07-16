@@ -12,20 +12,20 @@ pub fn main() !void {
         [_]i32{0},
     };
 
-    const result1 = try calculateMinimumHP(&dungeon1);
+    const result1 = try calculateMinimumHP_v3(&dungeon1);
     print("Minimum initial health: {}\n", .{result1});
 
-    const result2 = try calculateMinimumHP(&dungeon2);
+    const result2 = try calculateMinimumHP_v3(&dungeon2);
     print("Minimum initial health: {}\n", .{result2});
 }
 
-fn calculateMinimumHP(dungeon: anytype) !i32 {
+pub fn calculateMinimumHP_v3(dungeon: anytype) !i32 {
     const allocator = std.heap.page_allocator;
     const m: i32 = dungeon.len;
     const n: i32 = dungeon[0].len;
 
-    print("Dungeon: \n", .{});
-    printDungeon(dungeon);
+    // print("Dungeon: \n", .{});
+    // printDungeon(dungeon);
 
     var dp = try allocator.alloc([]i32, m);
     defer {
@@ -42,28 +42,28 @@ fn calculateMinimumHP(dungeon: anytype) !i32 {
         }
     }
 
-    print("Start new board: \n", .{});
-    printDungeon(dp);
+    // print("Start new board: \n", .{});
+    // printDungeon(dp);
 
     dp[m - 1][n - 1] = max(1, 1 - dungeon[m - 1][n - 1]);
-    print("Fill last cell: \n", .{});
-    printDungeon(dp);
+    // print("Fill last cell: \n", .{});
+    // printDungeon(dp);
 
     var i: i32 = m - 2;
     while (i >= 0) : (i -= 1) {
         dp[@intCast(i)][n - 1] = max(1, dp[@intCast(i + 1)][n - 1] - dungeon[@intCast(i)][n - 1]);
     }
 
-    print("Fill last column: \n", .{});
-    printDungeon(dp);
+    // print("Fill last column: \n", .{});
+    // printDungeon(dp);
 
     i = n - 2;
     while (i >= 0) : (i -= 1) {
         dp[m - 1][@intCast(i)] = max(1, dp[m - 1][@intCast(i + 1)] - dungeon[m - 1][@intCast(i)]);
     }
 
-    print("Fill last row: \n", .{});
-    printDungeon(dp);
+    // print("Fill last row: \n", .{});
+    // printDungeon(dp);
 
     i = m - 2;
     while (i >= 0) : (i -= 1) {
@@ -74,8 +74,8 @@ fn calculateMinimumHP(dungeon: anytype) !i32 {
         }
     }
 
-    print("Remaining board: \n", .{});
-    printDungeon(dp);
+    // print("Remaining board: \n", .{});
+    // printDungeon(dp);
 
     return dp[0][0];
 }
@@ -145,7 +145,7 @@ test "should return 7 as hp" {
         [_]i32{ 10, 30, -5 },
     };
 
-    const min_hp = try calculateMinimumHP(dungeon1);
+    const min_hp = try calculateMinimumHP_v3(dungeon1);
 
     try std.testing.expectEqual(7, min_hp);
 }
@@ -155,7 +155,7 @@ test "should return 1 as hp" {
         [_]i32{0},
     };
 
-    const min_hp = try calculateMinimumHP(dungeon2);
+    const min_hp = try calculateMinimumHP_v3(dungeon2);
 
     try std.testing.expectEqual(1, min_hp);
 }
