@@ -34,3 +34,5 @@ zig build-exe main.zig
 zig build-exe benchmark.zig -O ReleaseFast
 ./benchmark
 ```
+<img width="684" height="152" alt="image" src="https://github.com/user-attachments/assets/98e5ec19-5a1c-4fcd-80d4-3ac48f832ba4" />
+
