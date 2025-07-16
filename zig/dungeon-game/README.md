@@ -28,3 +28,9 @@ zig build-exe main.zig
 ./main
 ```
 
+
+- To run the benchamark 
+```
+zig build-exe benchmark.zig -O ReleaseFast
+./benchmark
+```
