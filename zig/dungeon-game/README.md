@@ -18,7 +18,7 @@ echo 'export PATH="$HOME/zig-linux-x86_64-0.13.0:$PATH"' >> ~/.bashrc
 - Reload your bash file settings
 
 ```
-source ~/.bashr
+source ~/.bashrc
 ```
 
 To run it just need to run this command 
