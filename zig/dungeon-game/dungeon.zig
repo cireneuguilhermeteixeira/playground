@@ -17,52 +17,42 @@ pub fn calculateMinimumHP_v1(dungeon: anytype) !i32 {
     const m = dungeon.len;
     const n = dungeon[0].len;
 
-    var grid = try std.heap.page_allocator.alloc([]Cell, m);
+    var grid = try std.heap.page_allocator.alloc([]Cell, m + 1);
     defer {
         for (grid) |row| std.heap.page_allocator.free(row);
         std.heap.page_allocator.free(grid);
     }
 
     for (grid) |*row| {
-        row.* = try std.heap.page_allocator.alloc(Cell, n);
+        row.* = try std.heap.page_allocator.alloc(Cell, n + 1);
+        for (row.*) |*cell| {
+            cell.cost = std.math.maxInt(i32);
+            cell.direction = '.';
+        }
     }
 
+    grid[m][n - 1].cost = 1;
+    grid[m - 1][n].cost = 1;
     var i: usize = m;
     while (i > 0) : (i -= 1) {
         var j: usize = n;
         while (j > 0) : (j -= 1) {
+            
             const row = i - 1;
             const col = j - 1;
             const curr = dungeon[row][col];
+            const min_next = @min(grid[row + 1][col].cost, grid[row][col + 1].cost);
+            const needed = @max(1, min_next - curr);
 
-            const cell = &grid[row][col];
 
-            if (row == m - 1 and col == n - 1) {
-                cell.cost = @max(1, 1 - curr);
-                cell.direction = 'X';
-            } else if (row == m - 1) {
-                cell.cost = @max(1, grid[row][col + 1].cost - curr);
-                cell.direction = '>';
-            } else if (col == n - 1) {
-                cell.cost = @max(1, grid[row + 1][col].cost - curr);
-                cell.direction = 'v';
-            } else {
-                const down = grid[row + 1][col].cost;
-                const right = grid[row][col + 1].cost;
+            grid[row][col].cost = needed;
 
-                if (down < right) {
-                    cell.cost = @max(1, down - curr);
-                    cell.direction = 'v';
-                } else {
-                    cell.cost = @max(1, right - curr);
-                    cell.direction = '>';
-                }
-            }
+            if (grid[row + 1][col].cost < grid[row][col + 1].cost)
+                grid[row][col].direction = 'v'
+            else
+                grid[row][col].direction = '>';
         }
     }
-
-    std.debug.print("Vida mínima necessária: {}\n", .{grid[0][0].cost});
-    std.debug.print("Caminho:\n", .{});
 
     var r: usize = 0;
     var c: usize = 0;
@@ -74,13 +64,13 @@ pub fn calculateMinimumHP_v1(dungeon: anytype) !i32 {
             else => break,
         }
     }
-    std.debug.print("({d},{d}) [princesa]\n", .{ r, c });
+    std.debug.print("({d},{d}) [end]\n", .{ r, c });
     return grid[0][0].cost;
 }
 
 test "calculateMinimumHP_v1: example 1" {
     const dungeon = [_][3]i32{
-        [_]i32{-2, -3, 3},
+        [_]i32{-2, -3,  3},
         [_]i32{-5, -10, 1},
         [_]i32{10, 30, -5},
     };
@@ -115,3 +105,9 @@ test "calculateMinimumHP_v1: example 4" {
     const result = try calculateMinimumHP_v1(dungeon);
     try std.testing.expectEqual(@as(i32, 10), result);
 }
+
+// 2 x 3
+// [   ?,       ?,      ?,     INT_MAX ]
+// [   ?,       ?,      ?,       1     ]  ← dp[1][3] = 1
+// [INT_MAX, INT_MAX,   1,     INT_MAX ]  ← dp[2][2] = 1
+
