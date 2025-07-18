@@ -1,4 +1,5 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
 
 fn min(a: i32, b: i32) i32 {
     return if (a < b) a else b;
@@ -14,7 +15,7 @@ const Cell = struct {
 };
 
 
-pub fn calculateMinimumHP_v1(dungeon: anytype) !i32 {
+pub fn calculateMinimumHP_v1(dungeon: []const []const i32) !i32 {
     const allocator = std.heap.page_allocator;
     const m = dungeon.len;
     const n = dungeon[0].len;
@@ -70,40 +71,41 @@ pub fn calculateMinimumHP_v1(dungeon: anytype) !i32 {
 }
 
 test "calculateMinimumHP_v1: example 1" {
-    const dungeon = [_][3]i32{
-        [_]i32{-2, -3,  3},
-        [_]i32{-5, -10, 1},
-        [_]i32{10, 30, -5},
+
+    const dungeon = [_][]const i32{
+        &[_]i32{-2, -3,  3},
+        &[_]i32{-5, -10, 1},
+        &[_]i32{10, 30, -5},
     };
-    const result = try calculateMinimumHP_v1(dungeon);
+    const result = try calculateMinimumHP_v1(&dungeon);
     try std.testing.expectEqual(@as(i32, 7), result);
 }
 
 test "calculateMinimumHP_v1: example 2" {
 
-    const dungeon = [_][1]i32{
-        [_]i32{0},
+    const dungeon = [_][]const i32{
+        &[_]i32{0},
     };
-    const result = try calculateMinimumHP_v1(dungeon);
+    const result = try calculateMinimumHP_v1(&dungeon);
     try std.testing.expectEqual(@as(i32, 1), result);
 }
 
 test "calculateMinimumHP_v1: example 3" {
-    const dungeon = [_][3]i32{
-        [_]i32{ -2, -3, 3 },
-        [_]i32{ -5, -10, 1 },
+    const dungeon = [_][]const i32{
+        &[_]i32{ -2, -3, 3 },
+        &[_]i32{ -5, -10, 1 },
     };
-    const result = try calculateMinimumHP_v1(dungeon);
+    const result = try calculateMinimumHP_v1(&dungeon);
     try std.testing.expectEqual(@as(i32, 6), result);
 }
 
 
 test "calculateMinimumHP_v1: example 4" {
-    const dungeon = [_][4]i32{
-        [_]i32{-1, -2, 3, -4},
-        [_]i32{10, -5, -6, -7},
+    const dungeon = [_][]const i32{
+        &[_]i32{-1, -2, 3, -4},
+        &[_]i32{10, -5, -6, -7},
     };
-    const result = try calculateMinimumHP_v1(dungeon);
+    const result = try calculateMinimumHP_v1(&dungeon);
     try std.testing.expectEqual(@as(i32, 10), result);
 }
 
