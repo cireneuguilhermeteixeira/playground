@@ -1,7 +1,4 @@
 const std = @import("std");
-const animation = @import("animation.zig");
-const Coord = animation.Coord;
-
 
 fn min(a: i32, b: i32) i32 {
     return if (a < b) a else b;
@@ -56,25 +53,18 @@ pub fn calculateMinimumHP_v1(dungeon: anytype) !i32 {
         }
     }
 
-    // Allocating the path
-    var path = std.ArrayList(Coord).init(allocator);
-    defer path.deinit();
 
     var r: usize = 0;
     var c: usize = 0;
-    try path.append(.{ .r = r, .c = c });
-
     while (grid[r][c].direction != 'X') {
+        std.debug.print("({d},{d}) -> ", .{ r, c });
         switch (grid[r][c].direction) {
             '>' => c += 1,
             'v' => r += 1,
             else => break,
         }
-        try path.append(.{ .r = r, .c = c });
     }
-
-    // Call animation
-    try animation.animatePath(dungeon, path.items);
+    std.debug.print("({d},{d}) [end]\n", .{ r, c });
 
     return grid[0][0].cost;
 }
