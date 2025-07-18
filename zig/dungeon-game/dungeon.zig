@@ -8,19 +8,23 @@ fn max(a: i32, b: i32) i32 {
     return if (a > b) a else b;
 }
 
-//TODO: Allow multidimensional array
+const Cell = struct {
+    cost: i32,
+    direction: u8, // '→', '↓', 'X'
+};
+
 pub fn calculateMinimumHP_v1(dungeon: anytype) !i32 {
     const m = dungeon.len;
     const n = dungeon[0].len;
 
-    var dp = try std.heap.page_allocator.alloc([]i32, m);
+    var grid = try std.heap.page_allocator.alloc([]Cell, m);
     defer {
-        for (dp) |row| std.heap.page_allocator.free(row);
-        std.heap.page_allocator.free(dp);
+        for (grid) |row| std.heap.page_allocator.free(row);
+        std.heap.page_allocator.free(grid);
     }
 
-    for (dp) |*row| {
-        row.* = try std.heap.page_allocator.alloc(i32, n);
+    for (grid) |*row| {
+        row.* = try std.heap.page_allocator.alloc(Cell, n);
     }
 
     var i: usize = m;
@@ -31,18 +35,47 @@ pub fn calculateMinimumHP_v1(dungeon: anytype) !i32 {
             const col = j - 1;
             const curr = dungeon[row][col];
 
-            const min_health = blk: {
-                if (row == m - 1 and col == n - 1) break :blk max(1, 1 - curr)
-                else if (row == m - 1) break :blk max(1, dp[row][col + 1] - curr)
-                else if (col == n - 1) break :blk max(1, dp[row + 1][col] - curr)
-                else break :blk max(1, min(dp[row + 1][col], dp[row][col + 1]) - curr);
-            };
+            const cell = &grid[row][col];
 
-            dp[row][col] = min_health;
+            if (row == m - 1 and col == n - 1) {
+                cell.cost = @max(1, 1 - curr);
+                cell.direction = 'X';
+            } else if (row == m - 1) {
+                cell.cost = @max(1, grid[row][col + 1].cost - curr);
+                cell.direction = '>';
+            } else if (col == n - 1) {
+                cell.cost = @max(1, grid[row + 1][col].cost - curr);
+                cell.direction = 'v';
+            } else {
+                const down = grid[row + 1][col].cost;
+                const right = grid[row][col + 1].cost;
+
+                if (down < right) {
+                    cell.cost = @max(1, down - curr);
+                    cell.direction = 'v';
+                } else {
+                    cell.cost = @max(1, right - curr);
+                    cell.direction = '>';
+                }
+            }
         }
     }
 
-    return dp[0][0];
+    std.debug.print("Vida mínima necessária: {}\n", .{grid[0][0].cost});
+    std.debug.print("Caminho:\n", .{});
+
+    var r: usize = 0;
+    var c: usize = 0;
+    while (grid[r][c].direction != 'X') {
+        std.debug.print("({d},{d}) -> ", .{ r, c });
+        switch (grid[r][c].direction) {
+            '>' => c += 1,
+            'v' => r += 1,
+            else => break,
+        }
+    }
+    std.debug.print("({d},{d}) [princesa]\n", .{ r, c });
+    return grid[0][0].cost;
 }
 
 test "calculateMinimumHP_v1: example 1" {

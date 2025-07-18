@@ -64,18 +64,19 @@ fn benchOne(comptime name_algo: []const u8,
 
 
 pub fn main() !void {
+    // Dynamic Programming
     // ---------- v1 ----------
-    try benchOne("v1", "3×3",  algo_v1, dungeon3);
-    try benchOne("v1", "5×5",  algo_v1, dungeon5);
-    try benchOne("v1", "10×10", algo_v1, dungeon10);
+    try benchOne("v1", "3 x 3",  algo_v1, dungeon3);
+    try benchOne("v1", "5 x 5",  algo_v1, dungeon5);
+    try benchOne("v1", "10 x 10", algo_v1, dungeon10);
 
     // ---------- v2 ----------
-    try benchOne("v2", "3×3",  algo_v2, dungeon3);
-    try benchOne("v2", "5×5",  algo_v2, dungeon5);
-    try benchOne("v2", "10×10", algo_v2, dungeon10);
+    try benchOne("v2", "3 x 3",  algo_v2, dungeon3);
+    try benchOne("v2", "5 x 5",  algo_v2, dungeon5);
+    try benchOne("v2", "10 x 10", algo_v2, dungeon10);
 
     // ---------- v3 ----------
-    try benchOne("v3", "3×3",  algo_v3, dungeon3);
-    try benchOne("v3", "5×5",  algo_v3, dungeon5);
-    try benchOne("v3", "10×10", algo_v3, dungeon10);
+    try benchOne("v3", "3 x 3",  algo_v3, dungeon3);
+    try benchOne("v3", "5 x 5",  algo_v3, dungeon5);
+    try benchOne("v3", "10 x 10", algo_v3, dungeon10);
 }
