@@ -46,8 +46,14 @@ pub fn animatePath(dungeon: anytype, path: []const Coord) !void {
 
         clearScreen();
         for (frame.items) |line| {
-            try writer.print("{s}\n", .{line});
+            for (line) |cell| {
+                try writer.print("{s} ", .{cell});
+            }
+            try writer.print("\n", .{});
         }
+        // for (frame.items) |line| {
+        //     try writer.print("{s}\n", .{line});
+        // }
 
         std.time.sleep(150 * std.time.ns_per_ms); // animation
     }
