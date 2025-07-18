@@ -24,8 +24,8 @@ pub fn calculateMinimumHP_v3(dungeon: anytype) !i32 {
     const m: i32 = dungeon.len;
     const n: i32 = dungeon[0].len;
 
-    // print("Dungeon: \n", .{});
-    // printDungeon(dungeon);
+    print("Dungeon: \n", .{});
+    printDungeon(dungeon);
 
     var dp = try allocator.alloc([]i32, m);
     defer {
@@ -42,28 +42,28 @@ pub fn calculateMinimumHP_v3(dungeon: anytype) !i32 {
         }
     }
 
-    // print("Start new board: \n", .{});
-    // printDungeon(dp);
+    print("Start new board: \n", .{});
+    printDungeon(dp);
 
     dp[m - 1][n - 1] = max(1, 1 - dungeon[m - 1][n - 1]);
-    // print("Fill last cell: \n", .{});
-    // printDungeon(dp);
+    print("Fill last cell: \n", .{});
+    printDungeon(dp);
 
     var i: i32 = m - 2;
     while (i >= 0) : (i -= 1) {
         dp[@intCast(i)][n - 1] = max(1, dp[@intCast(i + 1)][n - 1] - dungeon[@intCast(i)][n - 1]);
     }
 
-    // print("Fill last column: \n", .{});
-    // printDungeon(dp);
+    print("Fill last column: \n", .{});
+    printDungeon(dp);
 
     i = n - 2;
     while (i >= 0) : (i -= 1) {
         dp[m - 1][@intCast(i)] = max(1, dp[m - 1][@intCast(i + 1)] - dungeon[m - 1][@intCast(i)]);
     }
 
-    // print("Fill last row: \n", .{});
-    // printDungeon(dp);
+    print("Fill last row: \n", .{});
+    printDungeon(dp);
 
     i = m - 2;
     while (i >= 0) : (i -= 1) {
@@ -74,8 +74,8 @@ pub fn calculateMinimumHP_v3(dungeon: anytype) !i32 {
         }
     }
 
-    // print("Remaining board: \n", .{});
-    // printDungeon(dp);
+    print("Remaining board: \n", .{});
+    printDungeon(dp);
 
     return dp[0][0];
 }
