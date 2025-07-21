@@ -11,9 +11,8 @@ fn max(a: i32, b: i32) i32 {
 
 const Cell = struct {
     cost: i32,
-    direction: u8,  // '>', 'v', 'X'
+    direction: u8, // '>', 'v', 'X'
 };
-
 
 pub fn calculateMinimumHP_v1(dungeon: []const []const i32) !i32 {
     const allocator = std.heap.page_allocator;
@@ -54,35 +53,32 @@ pub fn calculateMinimumHP_v1(dungeon: []const []const i32) !i32 {
         }
     }
 
-
-    var r: usize = 0;
-    var c: usize = 0;
-    while (grid[r][c].direction != 'X') {
-        std.debug.print("({d},{d}) -> ", .{ r, c });
-        switch (grid[r][c].direction) {
-            '>' => c += 1,
-            'v' => r += 1,
-            else => break,
-        }
-    }
-    std.debug.print("({d},{d}) [end]\n", .{ r, c });
+    // var r: usize = 0;
+    // var c: usize = 0;
+    // while (grid[r][c].direction != 'X') {
+    //     std.debug.print("({d},{d}) -> ", .{ r, c });
+    //     switch (grid[r][c].direction) {
+    //         '>' => c += 1,
+    //         'v' => r += 1,
+    //         else => break,
+    //     }
+    // }
+    // std.debug.print("({d},{d}) [end]\n", .{ r, c });
 
     return grid[0][0].cost;
 }
 
 test "calculateMinimumHP_v1: example 1" {
-
     const dungeon = [_][]const i32{
-        &[_]i32{-2, -3,  3},
-        &[_]i32{-5, -10, 1},
-        &[_]i32{10, 30, -5},
+        &[_]i32{ -2, -3, 3 },
+        &[_]i32{ -5, -10, 1 },
+        &[_]i32{ 10, 30, -5 },
     };
     const result = try calculateMinimumHP_v1(&dungeon);
     try std.testing.expectEqual(@as(i32, 7), result);
 }
 
 test "calculateMinimumHP_v1: example 2" {
-
     const dungeon = [_][]const i32{
         &[_]i32{0},
     };
@@ -99,11 +95,10 @@ test "calculateMinimumHP_v1: example 3" {
     try std.testing.expectEqual(@as(i32, 6), result);
 }
 
-
 test "calculateMinimumHP_v1: example 4" {
     const dungeon = [_][]const i32{
-        &[_]i32{-1, -2, 3, -4},
-        &[_]i32{10, -5, -6, -7},
+        &[_]i32{ -1, -2, 3, -4 },
+        &[_]i32{ 10, -5, -6, -7 },
     };
     const result = try calculateMinimumHP_v1(&dungeon);
     try std.testing.expectEqual(@as(i32, 10), result);
@@ -113,4 +108,3 @@ test "calculateMinimumHP_v1: example 4" {
 // [   ?,       ?,      ?,     INT_MAX ]
 // [   ?,       ?,      ?,       1     ]  ← dp[1][3] = 1
 // [INT_MAX, INT_MAX,   1,     INT_MAX ]  ← dp[2][2] = 1
-
