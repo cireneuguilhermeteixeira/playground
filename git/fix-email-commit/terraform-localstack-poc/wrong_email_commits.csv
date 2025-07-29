@@ -1,0 +1,11 @@
+branch,commit_hash,author,email,date,message
+"main","8267429703da34dec08fa4402687c1c81af599ed","Cireneu Araujo","cireneuguilhermeteixeira","Tue Jul 29 11:50:48 2025 -0300","updating file config"
+"main","0e8b5e67196c3fb1e7837a6fb6b921f478c105b2","Cireneu Araujo","cireneuguilhermeteixeira","Fri May 2 11:06:20 2025 -0300","Adding terraform and unit tests with localstack"
+"main","8512fb89e4694881345991d050554aa1244d7bb4","Cireneu Araujo","cireneuguilhermeteixeira","Fri Apr 25 12:23:49 2025 -0300","Merge branch 'main' of https://github.com/cireneuguilhermeteixeira/terraform-localstack-poc"
+"main","6024c945a85011df1edfde7c379156d511c2bedf","Cireneu Araujo","cireneuguilhermeteixeira","Fri Apr 25 12:23:41 2025 -0300","creting simple app that will use localstack and terraform"
+"main","f123cc86a1772b7eb19f2385507c48175adf83bd","Cireneu Araujo","cireneuguilhermeteixeira","Fri Apr 25 12:23:23 2025 -0300","moving dependencies to a file"
+"main","ccf25913c12e729e81fe8190082518790f107a3f","Cireneu Araujo","cireneuguilhermeteixeira","Fri Apr 25 12:23:02 2025 -0300","updating terraform with policies and roles"
+"main","c126adf719c871b96b6f99a80bef0ee8cc98b7f9","Cireneu Araujo","cireneuguilhermeteixeira","Fri Apr 25 12:22:40 2025 -0300","Adding unit tests to connect with dynamo"
+"main","634b490e8c805a96126c72cfb0dcd4f87f89daef","Cireneu Araujo","cireneuguilhermeteixeira","Fri Apr 25 12:10:59 2025 -0300","Creating initial code structure to poc with database connect with IAM Roles, terraform and localstack"
+"main","5de64a440084af5eb5b2037017cfa0d0444b198b","Cireneu Araujo","cireneuguilhermeteixeira","Thu Apr 24 09:40:13 2025 -0300","Terraform init and apply"
+"main","3abe587d654d771d3d758f43931df2d2d908536d","Cireneu Araujo","cireneuguilhermeteixeira","Thu Apr 24 09:33:13 2025 -0300","Creating inicial terraform poc"

@@ -1,0 +1,2 @@
+branch,commit_hash,author,email,date,message
+"main","a85c40ab8b066fc64823a9f81915e71416b0c700","Cireneu Araujo","cireneuguilhermeteixeira","Tue Feb 13 10:23:34 2024 -0300","Updating logic to get recomendation without need to save in chromadb everytime"

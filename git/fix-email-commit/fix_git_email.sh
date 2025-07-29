@@ -5,8 +5,7 @@ OLD_EMAIL="cireneuguilhermeteixeira"
 CORRECT_NAME="Cireneu Araujo"
 CORRECT_EMAIL="cireneuguilhermeteixeira@gmail.com"
 
-# Create a backup branch (optional)
-git branch backup_before_email_fix
+
 
 # Loop through all local branches
 for BRANCH in $(git for-each-ref --format='%(refname:short)' refs/heads/); do
