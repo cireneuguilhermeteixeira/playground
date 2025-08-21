@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:16
+    container_name: dungeon_pg
+    environment:
+      POSTGRES_DB: dungeon
+      POSTGRES_USER: dungeon
+      POSTGRES_PASSWORD: dungeon
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dungeon -d dungeon"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dungeon_app
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      # Spring DataSource (override application.yml)
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/dungeon
+      SPRING_DATASOURCE_USERNAME: dungeon
+      SPRING_DATASOURCE_PASSWORD: dungeon
+
+      # JPA & Flyway
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_FLYWAY_ENABLED: "true"
+
+      # If you’re on Flyway 10+, remember you added flyway-database-postgresql in pom.xml.
+      # Optional JVM tuning:
+      JAVA_OPTS: "-XX:+UseZGC -Xms256m -Xmx512m"
+
+volumes:
+  pgdata:
