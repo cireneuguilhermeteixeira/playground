@@ -4,10 +4,10 @@ import com.dungeon_game.demo.models.DungeonResponse;
 import com.dungeon_game.demo.models.DungeonRun;
 import com.dungeon_game.demo.service.DungeonService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/dungeon")
@@ -35,5 +35,17 @@ public class DungeonController {
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/runs")
+    public List<DungeonResponse> getAll() {
+        return service.findAllRuns();
+    }
+
+    @GetMapping("/runs/{id}")
+    public ResponseEntity<DungeonResponse> getById(@PathVariable UUID id) {
+        return service.findRunById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
