@@ -17,7 +17,8 @@ public class DungeonController {
         try {
             body.validate();
             int result = DungeonSolver.calculateMinimumHP(body.getDungeon());
-            return ResponseEntity.ok(new DungeonResponse(result));
+            DungeonResponse response = new DungeonResponse(result);
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().build();
         }
