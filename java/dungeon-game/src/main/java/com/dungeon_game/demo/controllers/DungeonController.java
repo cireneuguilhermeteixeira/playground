@@ -1,7 +1,8 @@
 package com.dungeon_game.demo.controllers;
 import com.dungeon_game.demo.models.DungeonRequest;
 import com.dungeon_game.demo.models.DungeonResponse;
-import com.dungeon_game.demo.utils.DungeonSolver;
+import com.dungeon_game.demo.models.DungeonRun;
+import com.dungeon_game.demo.service.DungeonService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,12 +13,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/dungeon")
 public class DungeonController {
 
+    private final DungeonService service;
+
+    public DungeonController(DungeonService service) {
+        this.service = service;
+    }
+
     @PostMapping("/min-hp")
     public ResponseEntity<DungeonResponse> minHp(@RequestBody DungeonRequest body) {
         try {
             body.validate();
-            int result = DungeonSolver.calculateMinimumHP(body.getDungeon());
-            DungeonResponse response = new DungeonResponse(result);
+            DungeonRun saved = service.solveAndPersist(body.getDungeon());
+            DungeonResponse response = new DungeonResponse(
+                saved.getId(),
+                saved.getGame(),
+                saved.getAnswer(),
+                saved.getDurationMs(),
+                saved.getCreatedAt()
+            );
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().build();
