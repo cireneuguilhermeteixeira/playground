@@ -1,0 +1,43 @@
+services:
+  gatling_a:
+    image: maven:3.9-eclipse-temurin-23
+    container_name: gatling_a
+    working_dir: /workspace
+    depends_on:
+      app:
+        condition: service_started
+    environment:
+      BASE_URL: http://app:8080
+      MAVEN_OPTS: "-Xms512m -Xmx1024m"
+    volumes:
+      - ./:/workspace
+      - ./gatling-results/a:/workspace/target/gatling
+    command: >
+      bash -lc "mvn -DskipTests -Dgatling.simulationClass=load.DungeonSimulation
+      -DBASE_URL=${BASE_URL}
+      gatling:test"
+
+  gatling_b:
+    image: maven:3.9-eclipse-temurin-23
+    container_name: gatling_b
+    working_dir: /workspace
+    depends_on:
+      app:
+        condition: service_started
+    environment:
+      BASE_URL: http://app:8080
+      MAVEN_OPTS: "-Xms512m -Xmx1024m"
+      ROWS: "5"
+      COLS: "5"
+    volumes:
+      - ./:/workspace
+      - ./gatling-results/b:/workspace/target/gatling
+    command: >
+      bash -lc "mvn -DskipTests -Dgatling.simulationClass=load.DungeonSimulation
+      -DBASE_URL=${BASE_URL} -DROWS=${ROWS} -DCOLS=${COLS}
+      gatling:test"
+
+networks:
+  default:
+    external: true
+    name: ${COMPOSE_PROJECT_NAME:-dungeon}_default
