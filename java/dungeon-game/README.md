@@ -53,13 +53,8 @@ README.md
 
 ## ⚙️ Setup and Run
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/your-username/dungeon-game.git
-cd dungeon-game
-```
 
-### 2. Start PostgreSQL with Docker
+### 1. Start PostgreSQL with Docker
 ```bash
 docker-compose up -d
 ```
@@ -71,7 +66,7 @@ This will start:
 
 ---
 
-### 3. Run the Spring Boot application
+### 2. Run the Spring Boot application
 ```bash
 ./mvnw spring-boot:run
 ```
