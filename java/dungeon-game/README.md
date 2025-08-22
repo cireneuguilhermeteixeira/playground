@@ -166,6 +166,12 @@ ALTER ROLE dungeon_user CREATEDB;
 ```
 <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/0a81b34e-93af-479d-ba61-5b26aa03c048" />
 
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/dd811339-9d62-4020-a013-54d205759a93" />
 
-<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/f35f73c2-74eb-4375-88fb-8bda0f141b89" />
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/154e7f15-9cb2-4b27-a185-7e48dd04659b" />
+
+
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/ed6a972d-2ee8-4972-9fed-b3bc8cf980a0" />
+
+
 
