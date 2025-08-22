@@ -156,3 +156,21 @@ JAVA_OPTS="-Xms512m -Xmx1024m -XX:+UseZGC"
 - `-XX:+UseZGC` → Use low-latency Z Garbage Collector.
 
 ---
+
+```bash
+sudo -u postgres psql
+CREATE DATABASE dungeon;
+CREATE USER dungeon_user WITH PASSWORD 'pass123';
+GRANT ALL PRIVILEGES ON DATABASE gender_reveal TO dungeon_user;
+ALTER ROLE dungeon_user CREATEDB;
+\q
+```
+# To run stress test
+```bash
+ mvn gatling:test
+```
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/0a81b34e-93af-479d-ba61-5b26aa03c048" />
+
+
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/f35f73c2-74eb-4375-88fb-8bda0f141b89" />
+
