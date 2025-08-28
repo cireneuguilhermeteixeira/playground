@@ -6,7 +6,6 @@ import static io.gatling.javaapi.http.HttpDsl.*;
 import io.gatling.javaapi.core.*;
 import io.gatling.javaapi.http.*;
 
-import java.time.Duration;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
@@ -72,7 +71,7 @@ public class DungeonSimulation extends Simulation {
             .exec(
                 http("POST /dungeon/min-hp")
                     .post("/dungeon/min-hp")
-                    .body(StringBody(session -> randomBoardJson()))
+                    .body(StringBody(_ -> randomBoardJson()))
                     .check(status().is(200))
                     // >>> capturar tempo de resposta
                     .check(responseTimeInMillis().saveAs("rt"))
@@ -82,7 +81,7 @@ public class DungeonSimulation extends Simulation {
             .exec(session -> {
                 String id = session.getString("id");
                 if (id != null) IDS.add(id);
-                // >>> atualizar agregador (OK/KO + tempos)
+                // >>> update aggregator (OK/KO + tempos)
                 long rt = session.contains("rt") ? session.getLong("rt") : -1L;
                 if (session.isFailed()) {
                     AGG.addKo(rt);
@@ -151,7 +150,7 @@ public class DungeonSimulation extends Simulation {
         );
     }
 
-    // >>> Função que empurra métricas agregadas para o Pushgateway
+    // >>> Function to push aggregated metrics to Pushgateway
     private static void pushToPushgateway(RunAggregator m) throws Exception {
         CollectorRegistry registry = new CollectorRegistry();
 
@@ -182,12 +181,12 @@ public class DungeonSimulation extends Simulation {
         totalReq.set(m.total());
         runSuccess.set(m.ko.get() == 0 ? 1 : 0);
 
-        // Labels de agrupamento no Pushgateway
+        // Labels of grouping in Pushgateway
         var grouping = new java.util.HashMap<String, String>();
         grouping.put("simulation", SIM_TAG);
         grouping.put("base_url", BASE_URL);
 
-        // Permite taguear por commit/ambiente/host
+        // Allow to tag by commit/environment/host
         String env = System.getenv().getOrDefault("ENV", "local");
         String commit = System.getenv().getOrDefault("GIT_COMMIT", "dev");
         String instance = System.getenv().getOrDefault("HOSTNAME", "local");
@@ -204,7 +203,7 @@ public class DungeonSimulation extends Simulation {
         );
     }
 
-    // >>> Agregador simples (média incremental + máximos + duração)
+    // >>> Simple aggregator ( incremental media + max + duration)
     private static class RunAggregator {
         final AtomicLong ok = new AtomicLong();
         final AtomicLong ko = new AtomicLong();
@@ -240,7 +239,7 @@ public class DungeonSimulation extends Simulation {
             if (rtMillis >= 0) {
                 sumRt.addAndGet(rtMillis);
                 countRt.incrementAndGet();
-                // atualiza máximo
+                // update max
                 long prev;
                 do {
                     prev = maxRt.get();
@@ -252,7 +251,7 @@ public class DungeonSimulation extends Simulation {
         double meanMillis() {
             long c = countRt.get();
             return c == 0 ? 0.0 : ((double) sumRt.get()) / c;
-            // Observação: p95/p99 exigiriam um estimador (HDRHistogram/TDigest).
+            // Note: p95/p99 need a estimator (HDRHistogram/TDigest).
         }
 
         long total() { return ok.get() + ko.get(); }
@@ -272,11 +271,11 @@ public class DungeonSimulation extends Simulation {
     @Override
     public void after() {
         try {
-            // fecha a janela de medição e publica
+            // close the metric window and publish
             AGG.markEnd();
             pushToPushgateway(AGG);
         } catch (Exception e) {
-            System.err.println("[Pushgateway] Erro ao enviar métricas: " + e.getMessage());
+            System.err.println("[Pushgateway] Error trying to send  metrics: " + e.getMessage());
             e.printStackTrace();
         }
     }
