@@ -175,5 +175,111 @@ ALTER ROLE dungeon_user CREATEDB;
 
 
 
+# Run stress test in containers and integrating with Grafana by PushGateway
 
+```bash
 docker compose up -d
+```
+
+- After up and running all services, setup the prometheus in grafana and create the dashboard by importing this JSON config:
+
+
+```bash
+{
+  "title": "Gatling - Pushgateway (Resumo)",
+  "tags": ["gatling","pushgateway"],
+  "timezone": "",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "OK (total)",
+      "targets": [
+        { "expr": "sum by (simulation) (gatling_requests_ok_total)" }
+      ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto" },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 0 }
+    },
+    {
+      "type": "stat",
+      "title": "KO (total)",
+      "targets": [
+        { "expr": "sum by (simulation) (gatling_requests_ko_total)" }
+      ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto" },
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 0 }
+    },
+    {
+      "type": "stat",
+      "title": "Erro (%)",
+      "targets": [
+        { "expr": "100 * sum by (simulation)(gatling_requests_ko_total) / clamp_min(sum by (simulation)(gatling_total_requests),1)" }
+      ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 0 }
+    },
+    {
+      "type": "stat",
+      "title": "Duração (s)",
+      "targets": [
+        { "expr": "avg by (simulation) (gatling_run_duration_seconds)" }
+      ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 0 }
+    },
+    {
+      "type": "timeseries",
+      "title": "RPS médio por execução",
+      "targets": [
+        { "expr": "avg by (simulation) (gatling_requests_per_second)" }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 5 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Tempo de resposta (médio e máximo)",
+      "targets": [
+        { "expr": "avg by (simulation) (gatling_mean_response_time_ms)" },
+        { "expr": "max by (simulation) (gatling_max_response_time_ms)" }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 5 }
+    },
+    {
+      "type": "stat",
+      "title": "Run Success (1 = ok, 0 = falhou)",
+      "targets": [
+        { "expr": "avg by (simulation) (gatling_run_success)" }
+      ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 13 }
+    },
+    {
+      "type": "table",
+      "title": "Resumo por simulação/env/commit",
+      "targets": [
+        { "expr": "sum by (simulation, env, commit, instance) (gatling_total_requests)" },
+        { "expr": "sum by (simulation, env, commit, instance) (gatling_requests_ok_total)" },
+        { "expr": "sum by (simulation, env, commit, instance) (gatling_requests_ko_total)" },
+        { "expr": "avg by (simulation, env, commit, instance) (gatling_mean_response_time_ms)" },
+        { "expr": "max by (simulation, env, commit, instance) (gatling_max_response_time_ms)" },
+        { "expr": "avg by (simulation, env, commit, instance) (gatling_requests_per_second)" }
+      ],
+      "gridPos": { "h": 9, "w": 18, "x": 6, "y": 13 },
+      "options": { "showHeader": true }
+    }
+  ],
+  "time": { "from": "now-6h", "to": "now" }
+}
+```
+
+- TODO: Provide all this configuration via code instead of manually setup.
+
+
+ # After it, run this to start the stress test and send the informations to Prometheus.
+
+```bash
+mvn -q -DskipTests gatling:test   -DPUSHGATEWAY_URL=localhost:9091   -DPUSH_JOB=gatling_tests   -DSIMULATION_TAG=DungeonSimulation   -DBASE_URL=http://localhost:8080
+```
+
