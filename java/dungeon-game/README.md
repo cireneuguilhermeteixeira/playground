@@ -175,3 +175,5 @@ ALTER ROLE dungeon_user CREATEDB;
 
 
 
+
+docker compose up -d
