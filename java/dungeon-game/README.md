@@ -282,4 +282,7 @@ docker compose up -d
 ```bash
 mvn -q -DskipTests gatling:test   -DPUSHGATEWAY_URL=localhost:9091   -DPUSH_JOB=gatling_tests   -DSIMULATION_TAG=DungeonSimulation   -DBASE_URL=http://localhost:8080
 ```
+# Results in Grafana
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/bcd7730d-3d72-4180-b18e-8aedea44e9bb" />
+
 
