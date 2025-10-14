@@ -27,7 +27,7 @@ module.exports = {
     new ModuleFederationPlugin({
       name: "host",
       remotes: {
-        // aponta para o remoteEntry do remote1
+        // point to remoteEntry from remote1
         remote1: "remote1@http://localhost:3001/remoteEntry.js"
       },
       shared: {}
