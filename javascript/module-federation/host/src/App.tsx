@@ -11,10 +11,10 @@ const App: React.FC = () => {
       <div style={{ fontFamily: "system-ui, sans-serif", padding: 20 }}>
         <RemoteHeader title="Host App" />
 
-        <p>Este app (host) está consumindo componentes do <code>remote1</code>.</p>
+        <p>This app(host) is being consuming components from  <code>remote1</code>.</p>
 
         <SharedButton onClick={() => alert("Clique no botão remoto!")}>
-          Botão remoto
+          Remote Button
         </SharedButton>
 
         <RemoteWidget />
