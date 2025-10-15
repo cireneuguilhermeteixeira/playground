@@ -5,7 +5,7 @@ const deps = require("./package.json").dependencies;
 
 module.exports = {
   mode: "development",
-  entry: "./src/main.tsx",
+  entry: "./src/main.ts",
   devtool: "source-map",
   output: {
     path: path.resolve(__dirname, "dist"),
