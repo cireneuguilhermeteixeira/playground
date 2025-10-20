@@ -29,15 +29,17 @@ module.exports = {
       name: "host",
       filename: "remoteEntry.js",
       remotes: {
-        remote1: "remote1@http://localhost:3001/remoteEntry.js"
+        remote1: "remote1@http://localhost:3001/remoteEntry.js",
       },
       exposes: {
-        "./Card": "./src/components/Card.tsx"
+        "./Card": "./src/components/Card.tsx",
+        "./store": "./src/state/counterStore.ts",
       },
       shared: {
         react: { singleton: true, requiredVersion: deps.react },
-        "react-dom": { singleton: true, requiredVersion: deps["react-dom"] }
-      }
+        "react-dom": { singleton: true, requiredVersion: deps["react-dom"] },
+        zustand: { singleton: true, requiredVersion: deps["zustand"] },
+      },
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "public/index.html")
