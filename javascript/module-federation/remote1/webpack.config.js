@@ -36,12 +36,14 @@ module.exports = {
       exposes: {
         "./Header": "./src/components/Header.tsx",
         "./SharedButton": "./src/components/SharedButton.tsx",
-        "./RemoteWidget": "./src/components/RemoteWidget.tsx"
+        "./RemoteWidget": "./src/components/RemoteWidget.tsx",
+        "./SharedStateDemo": "./src/components/SharedStateDemo.tsx",
       },
       shared: {
         react: { singleton: true, requiredVersion: deps.react },
-        "react-dom": { singleton: true, requiredVersion: deps["react-dom"] }
-      }
+        "react-dom": { singleton: true, requiredVersion: deps["react-dom"] },
+        zustand: { singleton: true, requiredVersion: deps["zustand"] },
+      },
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "public/index.html")
