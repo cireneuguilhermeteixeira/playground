@@ -1,21 +1,15 @@
-import { CounterState } from "host/store";
+// remote1/src/components/SharedStateDemo.tsx
 import React from "react";
+import { useStore } from "zustand";
+import type { CounterState } from "host/store";
 
-const useCounterStorePromise = () => import("host/store").then(m => m.useCounterStore);
+type StoreApi<T> = import("zustand/vanilla").StoreApi<T>;
 
-const SharedStateDemo: React.FC = () => {
-  const [useCounterStore, setHook] = React.useState<null | (() => CounterState)>(null);
-//   const [useCounterStore, setHook] = React.useState<null | ReturnType<typeof useCounterStorePromise>>(null);
-
-  React.useEffect(() => {
-    let mounted = true;
-    useCounterStorePromise().then((hook) => mounted && setHook(hook));
-    return () => { mounted = false; };
-  }, []);
-
-  if (!useCounterStore) return <p>Loading shared store…</p>;
-
-  const { count, inc, dec, reset } = useCounterStore();
+const SharedStatePanel: React.FC<{ store: StoreApi<CounterState> }> = ({ store }) => {
+  const count = useStore(store, (s) => s.count);
+  const inc   = useStore(store, (s) => s.inc);
+  const dec   = useStore(store, (s) => s.dec);
+  const reset = useStore(store, (s) => s.reset);
 
   return (
     <div style={{ marginTop: 16 }}>
@@ -27,6 +21,38 @@ const SharedStateDemo: React.FC = () => {
       <button onClick={reset}>Reset</button>
     </div>
   );
+};
+
+const SharedStateDemo: React.FC = () => {
+  const [store, setStore] = React.useState<StoreApi<CounterState> | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let alive = true;
+    import("host/store")
+      .then((m) => {
+        if (!alive) return;
+        if (!m?.counterStore) {
+          setError("counterStore not found in host/store");
+          return;
+        }
+        setStore(m.counterStore);
+      })
+      .catch((e) => {
+        console.error("[SharedStateDemo] failed to load host/store:", e);
+        if (alive) setError(String(e));
+      });
+    return () => { alive = false; };
+  }, []);
+
+  if (error) {
+    return <pre style={{ color: "#b91c1c" }}>Failed to load shared store: {error}</pre>;
+  }
+
+  // Enquanto não há store, NENHUM hook é chamado (no pai). O filho só monta depois.
+  if (!store) return <p>Loading shared store…</p>;
+
+  return <SharedStatePanel store={store} />;
 };
 
 export default SharedStateDemo;

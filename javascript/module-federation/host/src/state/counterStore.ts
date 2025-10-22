@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { createStore } from "zustand/vanilla";
 
 export type CounterState = {
   count: number;
@@ -7,7 +7,7 @@ export type CounterState = {
   reset: () => void;
 };
 
-export const useCounterStore = create<CounterState>((set) => ({
+export const counterStore = createStore<CounterState>((set) => ({
   count: 0,
   inc: (d = 1) => set((s) => ({ count: s.count + d })),
   dec: (d = 1) => set((s) => ({ count: Math.max(0, s.count - d) })),

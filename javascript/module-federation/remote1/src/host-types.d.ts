@@ -6,7 +6,7 @@ declare module "host/Card" {
 }
 
 declare module "host/store" {
-  import { StateCreator } from "zustand";
+  import type { StoreApi } from "zustand/vanilla";
 
   export type CounterState = {
     count: number;
@@ -15,5 +15,5 @@ declare module "host/store" {
     reset: () => void;
   };
 
-  export const useCounterStore: () => CounterState;
+  export const counterStore: StoreApi<CounterState>;
 }
