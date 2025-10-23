@@ -152,3 +152,15 @@ This setup demonstrates:
 - **Async initialization** to ensure shared module stability in development.
 
 It serves as a foundation for **microfrontend architectures** using **Webpack 5 Module Federation** with **React and TypeScript**.
+
+
+## Screenshots
+<img width="1215" height="273" alt="image" src="https://github.com/user-attachments/assets/cc5f7681-16e8-4bda-a6b3-083af720a62a" />
+
+
+<img width="1018" height="527" alt="image" src="https://github.com/user-attachments/assets/0d2a9b0d-944b-433c-b5a6-407b0a47ef59" />
+
+<img width="863" height="476" alt="image" src="https://github.com/user-attachments/assets/524d2948-5a77-4b79-9d11-e0c344f1c760" />
+
+
+
