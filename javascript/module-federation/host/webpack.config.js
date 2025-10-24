@@ -33,6 +33,7 @@ module.exports = {
       },
       exposes: {
         "./Card": "./src/components/Card.tsx",
+        "./HostCounterPanel": "./src/components/HostCounterPanel.tsx",
         "./store": "./src/state/counterStore.ts",
       },
       shared: {

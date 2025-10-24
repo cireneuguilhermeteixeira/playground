@@ -4,6 +4,8 @@ import SharedButton from "./components/SharedButton";
 import RemoteWidget from "./components/RemoteWidget";
 import SharedStateDemo from "./components/SharedStateDemo";
 
+const HostCounterPanel = React.lazy(() => import("host/HostCounterPanel"));
+
 const App: React.FC = () => {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", padding: 20 }}>
@@ -16,6 +18,7 @@ const App: React.FC = () => {
         <RemoteWidget />
       </div>
       <SharedStateDemo />
+      <HostCounterPanel />
     </div>
   );
 };

@@ -1,7 +1,6 @@
 import React from "react";
 import HostCounterPanel from "./components/HostCounterPanel";
 
-// consumidores do remoto (tipos virão via d.ts)
 const RemoteHeader = React.lazy(() => import("remote1/Header"));
 const SharedButton = React.lazy(() => import("remote1/SharedButton"));
 const RemoteWidget = React.lazy(() => import("remote1/RemoteWidget"));

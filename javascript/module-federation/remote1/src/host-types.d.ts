@@ -5,6 +5,12 @@ declare module "host/Card" {
   export default Card;
 }
 
+declare module "host/HostCounterPanel" {
+  import * as React from "react";
+  const HostCounterPanel: React.FC;
+  export default HostCounterPanel;
+}
+
 declare module "host/store" {
   import type { StoreApi } from "zustand/vanilla";
 
