@@ -1,12 +1,12 @@
 import React from "react";
 import { useStore } from "zustand";
-import { counterStore } from "../state/counterStore";
+import { zustandCounterStore } from "../state/zustandCounterStore";
 
 const HostCounterPanel: React.FC = () => {
-  const count = useStore(counterStore, (s) => s.count);
-  const inc   = useStore(counterStore, (s) => s.inc);
-  const dec   = useStore(counterStore, (s) => s.dec);
-  const reset = useStore(counterStore, (s) => s.reset);
+  const count = useStore(zustandCounterStore, (s) => s.count);
+  const inc   = useStore(zustandCounterStore, (s) => s.inc);
+  const dec   = useStore(zustandCounterStore, (s) => s.dec);
+  const reset = useStore(zustandCounterStore, (s) => s.reset);
 
   return (
     <div style={{ marginTop: 16 }}>

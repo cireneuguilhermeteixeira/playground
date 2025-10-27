@@ -34,7 +34,7 @@ module.exports = {
       exposes: {
         "./Card": "./src/components/Card.tsx",
         "./HostCounterPanel": "./src/components/HostCounterPanel.tsx",
-        "./store": "./src/state/counterStore.ts",
+        "./zustandStore": "./src/state/zustandCounterStore.ts",
       },
       shared: {
         react: { singleton: true, requiredVersion: deps.react },

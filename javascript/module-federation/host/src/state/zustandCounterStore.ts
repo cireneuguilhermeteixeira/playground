@@ -7,7 +7,7 @@ export type CounterState = {
   reset: () => void;
 };
 
-export const counterStore = createStore<CounterState>((set) => ({
+export const zustandCounterStore = createStore<CounterState>((set) => ({
   count: 0,
   inc: (d = 1) => set((s) => ({ count: s.count + d })),
   dec: (d = 1) => set((s) => ({ count: Math.max(0, s.count - d) })),

@@ -11,7 +11,7 @@ declare module "host/HostCounterPanel" {
   export default HostCounterPanel;
 }
 
-declare module "host/store" {
+declare module "host/zustandStore" {
   import type { StoreApi } from "zustand/vanilla";
 
   export type CounterState = {
@@ -21,5 +21,5 @@ declare module "host/store" {
     reset: () => void;
   };
 
-  export const counterStore: StoreApi<CounterState>;
+  export const zustandCounterStore: StoreApi<CounterState>;
 }

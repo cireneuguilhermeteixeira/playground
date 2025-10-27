@@ -1,7 +1,7 @@
 // remote1/src/components/SharedStateDemo.tsx
 import React from "react";
 import { useStore } from "zustand";
-import type { CounterState } from "host/store";
+import type { CounterState } from "host/zustandStore";
 
 type StoreApi<T> = import("zustand/vanilla").StoreApi<T>;
 
@@ -29,17 +29,17 @@ const SharedStateDemo: React.FC = () => {
 
   React.useEffect(() => {
     let alive = true;
-    import("host/store")
+    import("host/zustandStore")
       .then((m) => {
         if (!alive) return;
-        if (!m?.counterStore) {
-          setError("counterStore not found in host/store");
+        if (!m?.zustandCounterStore) {
+          setError("zustandCounterStore not found in host/zustandStore");
           return;
         }
-        setStore(m.counterStore);
+        setStore(m.zustandCounterStore);
       })
       .catch((e) => {
-        console.error("[SharedStateDemo] failed to load host/store:", e);
+        console.error("[SharedStateDemo] failed to load host/zustandStore:", e);
         if (alive) setError(String(e));
       });
     return () => { alive = false; };
