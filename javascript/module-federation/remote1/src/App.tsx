@@ -3,8 +3,11 @@ import Header from "./components/Header";
 import SharedButton from "./components/SharedButton";
 import RemoteWidget from "./components/RemoteWidget";
 import SharedStateDemo from "./components/SharedStateDemo";
+import PureSharedStateDemo from "./components/PureSharedStateDemo";
 
 const HostCounterPanel = React.lazy(() => import("host/HostCounterPanel"));
+const HostPureCounterPanel = React.lazy(() => import("host/HostPureCounterPanel"));
+
 
 const App: React.FC = () => {
   return (
@@ -19,6 +22,10 @@ const App: React.FC = () => {
       </div>
       <SharedStateDemo />
       <HostCounterPanel />
+
+
+      <PureSharedStateDemo />
+      <HostPureCounterPanel />
     </div>
   );
 };

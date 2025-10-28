@@ -1,5 +1,6 @@
 import React from "react";
 import HostCounterPanel from "./components/HostCounterPanel";
+import HostPureCounterPanel from "./components/HostPureCounterPanel";
 
 const RemoteHeader = React.lazy(() => import("remote1/Header"));
 const SharedButton = React.lazy(() => import("remote1/SharedButton"));
@@ -19,7 +20,7 @@ const App: React.FC = () => {
 
         <RemoteWidget />
         <HostCounterPanel />
-
+        <HostPureCounterPanel />
       </div>
     </React.Suspense>
   );

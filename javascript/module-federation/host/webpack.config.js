@@ -32,9 +32,13 @@ module.exports = {
         remote1: "remote1@http://localhost:3001/remoteEntry.js",
       },
       exposes: {
+        // Components
         "./Card": "./src/components/Card.tsx",
         "./HostCounterPanel": "./src/components/HostCounterPanel.tsx",
+        "./HostPureCounterPanel": "./src/components/HostPureCounterPanel.tsx",
+        // State stores
         "./zustandStore": "./src/state/zustandCounterStore.ts",
+        "./pureStore": "./src/state/pureCounterStore.ts"
       },
       shared: {
         react: { singleton: true, requiredVersion: deps.react },

@@ -11,6 +11,13 @@ declare module "host/HostCounterPanel" {
   export default HostCounterPanel;
 }
 
+declare module "host/HostPureCounterPanel" {
+  import * as React from "react";
+  const HostPureCounterPanel: React.FC;
+  export default HostPureCounterPanel;
+}
+
+
 declare module "host/zustandStore" {
   import type { StoreApi } from "zustand/vanilla";
 
@@ -22,4 +29,21 @@ declare module "host/zustandStore" {
   };
 
   export const zustandCounterStore: StoreApi<CounterState>;
+}
+
+declare module "host/pureStore" {
+  export type CounterState = { count: number };
+
+  // same interface exposed from host
+  export const counterStore: {
+    get(): CounterState;
+    set(patch: Partial<CounterState> | ((s: CounterState) => Partial<CounterState>)): void;
+    subscribe(listener: () => void): () => void;
+    inc(delta?: number): void;
+    dec(delta?: number): void;
+    reset(): void;
+  };
+
+  export const subscribe: (listener: () => void) => () => void;
+  export const getSnapshot: () => number;
 }
