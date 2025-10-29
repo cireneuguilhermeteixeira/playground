@@ -32,12 +32,11 @@ declare module "host/zustandStore" {
 }
 
 declare module "host/pureStore" {
-  export type CounterState = { count: number };
+  export type PureCounterState = { count: number };
 
-  // same interface exposed from host
   export const counterStore: {
-    get(): CounterState;
-    set(patch: Partial<CounterState> | ((s: CounterState) => Partial<CounterState>)): void;
+    get(): PureCounterState;
+    set(patch: Partial<PureCounterState> | ((s: PureCounterState) => Partial<PureCounterState>)): void;
     subscribe(listener: () => void): () => void;
     inc(delta?: number): void;
     dec(delta?: number): void;

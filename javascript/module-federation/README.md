@@ -154,6 +154,181 @@ This setup demonstrates:
 It serves as a foundation for **microfrontend architectures** using **Webpack 5 Module Federation** with **React and TypeScript**.
 
 
+
+
+---
+
+## 1. Shared Modules in Module Federation
+
+The `shared` configuration controls **how dependencies are shared** across federated applications (host and remotes).
+
+```js
+shared: {
+  react: { singleton: true, requiredVersion: deps.react },
+  "react-dom": { singleton: true, requiredVersion: deps["react-dom"] },
+  zustand: { singleton: true, requiredVersion: deps["zustand"] },
+},
+```
+
+### Explanation
+
+#### **Purpose**
+- Prevents **duplicated copies** of the same dependency from being bundled into each remote or host.
+- Ensures **React, ReactDOM, Zustand, etc.** are instantiated only **once at runtime**.
+
+#### **Key Properties**
+
+| Property | Meaning |
+|-----------|----------|
+| `singleton: true` | Forces the dependency to exist only **once** in memory. Useful for stateful libs like React. |
+| `requiredVersion` | The version expected by this app. Webpack ensures all apps agree on compatible versions. |
+| `strictVersion` *(optional)* | If enabled, throws an error when versions mismatch instead of silently falling back. |
+| `eager` *(optional)* | When true, loads the dependency immediately instead of lazily. Usually avoided for React. |
+
+#### **Why it matters**
+React must be **singleton** because its internal hook system cannot work if different apps have distinct React instances — you’d get errors like *"Invalid hook call"*.  
+By sharing React and Zustand as singletons, both host and remote literally use the **same runtime React context**, allowing hooks, state, and context to work seamlessly across boundaries.
+
+---
+
+## 2. The Pure Store (`pureStore`)
+
+`pureStore` is a **custom vanilla shared state implementation** — no external libraries like Zustand are used.
+
+```ts
+export type CounterState = { count: number };
+
+type Listener = () => void;
+const state: CounterState = { count: 0 };
+const listeners = new Set<Listener>();
+
+function emit() {
+  for (const l of Array.from(listeners)) l();
+}
+
+export const counterStore = {
+  get(): CounterState {
+    return state;
+  },
+  set(patch: Partial<CounterState> | ((s: CounterState) => Partial<CounterState>)) {
+    const next = typeof patch === "function" ? patch(state) : patch;
+    Object.assign(state, next);
+    emit();
+  },
+  subscribe(listener: Listener) {
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+  },
+  inc(delta = 1) {
+    counterStore.set((s) => ({ count: s.count + delta }));
+  },
+  dec(delta = 1) {
+    counterStore.set((s) => ({ count: Math.max(0, s.count - delta) }));
+  },
+  reset() {
+    counterStore.set({ count: 0 });
+  }
+};
+```
+
+### How it works
+
+| Function | Description |
+|-----------|--------------|
+| `get()` | Returns the **current state snapshot**. |
+| `set(patch)` | Updates the state (either with an object or updater function). After updating, calls `emit()`. |
+| `subscribe(listener)` | Adds a function to the listeners set, returning an **unsubscribe** function. |
+| `emit()` | Notifies all listeners that the state changed. |
+| `inc`, `dec`, `reset` | Convenience methods that internally call `set()` and trigger updates. |
+
+This design mimics a **simplified Redux/Zustand** pattern: a global state object with a pub/sub system.
+
+---
+
+## 3. React Integration with `useSyncExternalStore`
+
+React 18 introduced the **`useSyncExternalStore`** hook — a native way to subscribe to external stores.
+
+```ts
+const count = useSyncExternalStore(subscribe, getSnapshot);
+```
+
+### Arguments
+
+| Parameter | Purpose |
+|------------|----------|
+| `subscribe` | A function `(listener) => unsubscribe`, used to register updates. |
+| `getSnapshot` | A function that returns the **current snapshot** of data. |
+
+React calls `subscribe` to listen for changes, and whenever `emit()` triggers an update, React automatically re-renders components that depend on the snapshot value.
+
+### Example
+
+```ts
+export const subscribe = counterStore.subscribe;
+export const getSnapshot = () => counterStore.get().count;
+```
+
+Used in React:
+
+```tsx
+const count = useSyncExternalStore(subscribe, getSnapshot);
+```
+
+Whenever `counterStore.set()` changes the count and calls `emit()`, React re-renders with the new value.
+
+---
+
+## 4. Understanding `Partial<T>`
+
+`Partial<T>` is a **TypeScript utility type** that makes all properties of a type optional.
+
+### Example
+
+```ts
+type CounterState = { count: number };
+type Partial<CounterState> = { count?: number };
+```
+
+This means you can pass **only part of the state** when updating, without redefining everything:
+
+```ts
+counterStore.set({ count: 42 }); // OK
+```
+
+or even dynamically:
+
+```ts
+counterStore.set((prev) => ({ count: prev.count + 1 }));
+```
+
+Internally, TypeScript sees that the update might not include all keys of `CounterState`, and `Object.assign` merges only the provided properties.
+
+---
+
+## 5. Putting It All Together
+
+1. The **host** exposes `pureStore` via Module Federation.
+2. The **remote** imports `pureStore` dynamically with `import("host/pureStore")`.
+3. Both apps interact with the **same shared instance** of the store in memory.
+4. Components use `useSyncExternalStore(subscribe, getSnapshot)` to stay reactive.
+5. Updates in one app trigger `emit()`, notifying all subscribers — even across apps.
+
+This setup achieves **global state sharing without libraries**, using only native browser modules, Webpack Federation runtime, and React’s built-in hooks.
+
+---
+
+### Key Takeaways
+
+- **`shared`** keeps dependencies consistent and prevents duplicate React runtimes.
+- **`pureStore`** is a minimal, dependency-free shared state pattern.
+- **`subscribe`** and **`getSnapshot`** provide the pub/sub bridge for React.
+- **`useSyncExternalStore`** is the native way to connect React to any external source.
+- **`Partial<T>`** allows flexible, type-safe updates to parts of an object.
+
+Together, these patterns form the foundation of **microfrontends with real-time shared state**, even without external libraries like Redux or Zustand.
+
+
 ## Screenshots
 <img width="1215" height="273" alt="image" src="https://github.com/user-attachments/assets/cc5f7681-16e8-4bda-a6b3-083af720a62a" />
 
@@ -162,5 +337,6 @@ It serves as a foundation for **microfrontend architectures** using **Webpack 5 
 
 <img width="863" height="476" alt="image" src="https://github.com/user-attachments/assets/524d2948-5a77-4b79-9d11-e0c344f1c760" />
 
+<img width="516" height="519" alt="image" src="https://github.com/user-attachments/assets/54c9dbcf-d60b-4bed-8674-c5eb3ea0edae" />
 
 

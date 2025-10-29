@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useSyncExternalStore } from "react";
-import type { CounterState } from "host/pureStore";
 
 type CounterAPI = typeof import("host/pureStore");
 
