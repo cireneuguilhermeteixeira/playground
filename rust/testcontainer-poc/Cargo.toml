@@ -1,0 +1,22 @@
+[package]
+name = "redis_api_demo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7"
+tokio = { version = "1.39", features = ["rt-multi-thread", "macros"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tower = "0.4"
+hyper = { version = "1", features = ["server"] }
+redis = { version = "0.25", features = ["aio", "tokio-comp"] }
+anyhow = "1"
+thiserror = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+
+[dev-dependencies]
+reqwest = { version = "0.12", features = ["json"] }
+testcontainers = "0.19" # if it fails to resolve, try a nearby 0.1x
+portcheck = "0.2"
