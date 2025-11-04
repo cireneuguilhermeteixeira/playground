@@ -19,4 +19,3 @@ tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
 [dev-dependencies]
 reqwest = { version = "0.12", features = ["json"] }
 testcontainers = "0.19" # if it fails to resolve, try a nearby 0.1x
-portcheck = "0.2"
