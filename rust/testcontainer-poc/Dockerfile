@@ -1,5 +1,5 @@
 # Build
-FROM rust:1.81 as builder
+FROM rust:1.91 as builder
 WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 # cache deps
