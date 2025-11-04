@@ -9,7 +9,7 @@ use serde::Deserialize;
 use std::{net::SocketAddr, sync::Arc};
 use thiserror::Error;
 use tokio::net::TcpListener;
-use tracing::{info, Level};
+use tracing::info;
 use tracing_subscriber::EnvFilter;
 
 #[derive(Clone)]
@@ -39,13 +39,13 @@ pub struct KV {
 
 async fn set_kv(State(state): State<AppState>, Query(KV { key, value }): Query<KV>) -> Result<Json<serde_json::Value>, (StatusCode, String)> {
     let value = value.ok_or_else(|| (StatusCode::BAD_REQUEST, "missing value".to_string()))?;
-    let mut con = state.redis.get_async_connection().await.map_err::<(StatusCode, String), _>(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let mut con = state.redis.get_multiplexed_async_connection().await.map_err::<(StatusCode, String), _>(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
     con.set::<_, _, ()>(key.clone(), value.clone()).await.map_err::<(StatusCode, String), _>(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
     Ok(Json(serde_json::json!({ "ok": true })))
 }
 
 async fn get_kv(State(state): State<AppState>, Query(KV { key, .. }): Query<KV>) -> Result<Json<serde_json::Value>, (StatusCode, String)> {
-    let mut con = state.redis.get_async_connection().await.map_err::<(StatusCode, String), _>(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let mut con = state.redis.get_multiplexed_async_connection().await.map_err::<(StatusCode, String), _>(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
     let val: Option<String> = con.get(key.clone()).await.map_err::<(StatusCode, String), _>(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
     match val {
         Some(v) => Ok(Json(serde_json::json!({ "value": v }))),
