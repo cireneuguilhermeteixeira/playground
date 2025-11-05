@@ -37,12 +37,12 @@ export function ReRenderTest() {
         <button onClick={() => setCount(c => c + 1)}>Increment</button>
         <label style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           <input type="checkbox" checked={optimize} onChange={e => setOptimize(e.target.checked)} />
-          Otimizar referências (useMemo/useCallback)
+          Optimize references (useMemo/useCallback)
         </label>
       </div>
       <Child data={data} onClick={onClick} />
       <p style={{ color: '#555', fontSize: 12, marginTop: 8 }}>
-        Desmarque a otimização e observe o <em>ReactScan</em> sinalizar re-renders do <code>Child</code> a cada mudança do pai.
+        Uncheck the optimization option and observe the...<em>ReactScan</em> signal re-renders of <code>Child</code> a each change in the parent.
       </p>
     </div>
   )

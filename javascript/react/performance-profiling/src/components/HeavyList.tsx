@@ -45,7 +45,7 @@ export function HeavyList() {
         <button onClick={() => setCount(c => Math.max(100, c - 500))}>-500 rows</button>
         <label style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           <input type="checkbox" checked={slowRows} onChange={e => setSlowRows(e.target.checked)} />
-          Simular linhas pesadas
+          Simulate heavy lines
         </label>
       </div>
       <div style={{
@@ -54,7 +54,7 @@ export function HeavyList() {
         {items.map(it => <Row key={it.id} item={it} slow={slowRows} />)}
       </div>
       <p style={{ color: '#555', fontSize: 12, marginTop: 8 }}>
-        Dica: experimente rolar com <code>slowRows</code> ativado para observar o FPS cair.
+        try rolling with try rolling with <code>slowRows</code> enabled to watch the FPS drop..
       </p>
     </div>
   )

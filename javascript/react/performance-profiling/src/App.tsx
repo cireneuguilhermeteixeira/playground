@@ -23,8 +23,8 @@ export default function App() {
       <div style={{ maxWidth: 980, margin: '40px auto', padding: '0 16px', fontFamily: 'Inter, system-ui, Segoe UI, Roboto, Arial' }}>
         <h1>React Performance POC</h1>
         <p style={{ color: '#555' }}>
-          Use o overlay do <strong>ReactScan</strong> (DEV) para ver contagens de render por componente.
-          Utilize o Profiler das DevTools para capturar commits e flamecharts.
+          Use the overlay of <strong>ReactScan</strong> (DEV) to view render counts per component..
+          Use the DevTools Profiler to capture commits and flamecharts.
         </p>
 
         <section style={{ display: 'grid', gap: 24 }}>
@@ -43,19 +43,11 @@ export default function App() {
             ))}
           </div>
           <p style={{ color: '#555', fontSize: 12 }}>
-            Nota: algumas métricas de memória são específicas do Chrome e podem exigir flags experimentais.
+            Note: Some memory metrics are specific to Chrome and may require experimental flags.
           </p>
         </section>
 
-        <section style={{ marginTop: 32 }}>
-          <h3>Passos sugeridos para investigar</h3>
-          <ol>
-            <li>Abrir React DevTools &rarr; Profiler e gravar interações nos componentes acima.</li>
-            <li>Observar no ReactScan componentes com alto <em>render count</em> e duração de render.</li>
-            <li>Trocar os toggles (ex.: otimização no ReRenderTest, rows pesadas) e comparar a diferença.</li>
-            <li>Usar a aba Memory do Chrome para verificar retainers após unmount no MemoryLeakDemo.</li>
-          </ol>
-        </section>
+        
       </div>
     </ReactScanProvider>
   )
