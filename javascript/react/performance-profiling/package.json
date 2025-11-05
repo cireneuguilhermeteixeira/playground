@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "react-devtools": "^7.0.1",
+    "react-scan": "^0.4.3"
+  }
+}
