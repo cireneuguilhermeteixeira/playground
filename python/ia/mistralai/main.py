@@ -4,7 +4,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments,
 from peft import LoraConfig, get_peft_model
 from datasets import Dataset
 
-# 🔥 Carregar modelo base Mistral 7B
+#  Carregar modelo base Mistral 7B
 MODEL_NAME = "mistralai/Mistral-7B-v0.1"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForCausalLM.from_pretrained(
@@ -13,7 +13,7 @@ model = AutoModelForCausalLM.from_pretrained(
     device_map="auto"
 )
 
-# ⚙️ Configuração LoRA para economizar memória
+#  Configuração LoRA para economizar memória
 lora_config = LoraConfig(
     r=16,  # Rank da adaptação
     lora_alpha=32,
@@ -22,11 +22,11 @@ lora_config = LoraConfig(
 )
 model = get_peft_model(model, lora_config)
 
-# 🎬 Carregar os CSVs
+#  Carregar os CSVs
 movies_df = pd.read_csv("./ml-latest-small/movies.csv")
 ratings_df = pd.read_csv("./ml-latest-small/ratings.csv")
 
-# 🔄 Criar dataset de treinamento (Formato Pergunta-Resposta)
+# Criar dataset de treinamento (Formato Pergunta-Resposta)
 training_data = []
 
 # Criar exemplos de perguntas e respostas para treinar o Mistral
@@ -61,7 +61,7 @@ def tokenize_function(examples):
 
 tokenized_dataset = dataset.map(tokenize_function, batched=True)
 
-# 🔥 Configuração do treinamento
+#  Configuração do treinamento
 training_args = TrainingArguments(
     output_dir="./mistral_finetuned",
     per_device_train_batch_size=2,
@@ -81,27 +81,27 @@ trainer = Trainer(
     train_dataset=tokenized_dataset
 )
 
-# 🚀 Treinar modelo
+#  Treinar modelo
 trainer.train()
 
-# 📌 Salvar modelo treinado
+#  Salvar modelo treinado
 model.save_pretrained("./mistral_trained")
 tokenizer.save_pretrained("./mistral_trained")
 
-print("✅ Modelo treinado e salvo!")
+print("Modelo treinado e salvo!")
 
-# 🔄 Função para responder perguntas complexas
+#  Função para responder perguntas complexas
 def answer_question(question):
     inputs = tokenizer(question, return_tensors="pt").to("cuda")
     output = model.generate(**inputs, max_length=100)
     return tokenizer.decode(output[0], skip_special_tokens=True)
 
-# 📌 Loop para perguntas livres
+# Loop para perguntas livres
 while True:
-    user_question = input("\n📝 Faça sua pergunta (ou digite 'sair' para encerrar): ")
+    user_question = input("\n Faça sua pergunta (ou digite 'sair' para encerrar): ")
     if user_question.lower() == "sair":
-        print("👋 Até mais!")
+        print(" Até mais!")
         break
     
     response = answer_question(user_question)
-    print(f"\n🤖 Resposta: {response}")
+    print(f"\n Resposta: {response}")
