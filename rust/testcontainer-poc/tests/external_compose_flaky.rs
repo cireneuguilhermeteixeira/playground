@@ -18,7 +18,6 @@ async fn external_compose_flaky() {
         "Expected empty DB at start, but found a value (stale data due to Compose volume)"
     );
 
-    // Set e valida
     let res = client
         .post(format!("{base}/set?key={k}&value=bar"))
         .send()
