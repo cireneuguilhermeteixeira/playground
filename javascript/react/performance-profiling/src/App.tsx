@@ -34,7 +34,7 @@ export default function App() {
         </section>
 
         <section style={{ marginTop: 32 }}>
-          <h3>Memory tracker (amostras recentes)</h3>
+          <h3>Memory tracker (recent samples)</h3>
           <div style={{ display: 'grid', gap: 6 }}>
             {snapshots.slice(-5).map((s, i) => (
               <code key={i} style={{ fontSize: 12 }}>
