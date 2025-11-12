@@ -1,9 +1,9 @@
 import React from 'react'
 import { FPSMeter } from './profiler/FPSMeter'
 import { useMemoryTracker } from './profiler/useMemoryTracker'
-import { HeavyList } from './components/HeavyList'
-import { MemoryLeakDemo } from './components/MemoryLeakDemo'
-import { ReRenderTest } from './components/ReRenderTest'
+import { HeavyListFixed } from './components/fixed/HeavyListFixed'
+import { MemoryLeakDemoFixed } from './components/fixed/MemoryLeakDemoFixed'
+import { ReRenderTestFixed } from './components/fixed/ReRenderTestFixed'
 
 // Web Vitals example
 import { onCLS, onFID, onLCP, onINP, onTTFB } from 'web-vitals'
@@ -27,9 +27,9 @@ export default function App() {
         </p>
 
         <section style={{ display: 'grid', gap: 24 }}>
-          <ReRenderTest />
-          <HeavyList />
-          <MemoryLeakDemo />
+          <ReRenderTestFixed />
+          <HeavyListFixed />
+          <MemoryLeakDemoFixed />
         </section>
 
         <section style={{ marginTop: 32 }}>
