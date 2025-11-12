@@ -1,5 +1,4 @@
 import React from 'react'
-import { ReactScanProvider } from './profiler/ReactScanProvider'
 import { FPSMeter } from './profiler/FPSMeter'
 import { useMemoryTracker } from './profiler/useMemoryTracker'
 import { HeavyList } from './components/HeavyList'
@@ -18,7 +17,7 @@ export default function App() {
   const snapshots = useMemoryTracker(2000)
 
   return (
-    <ReactScanProvider>
+    <>
       <FPSMeter />
       <div style={{ maxWidth: 980, margin: '40px auto', padding: '0 16px', fontFamily: 'Inter, system-ui, Segoe UI, Roboto, Arial' }}>
         <h1>React Performance POC</h1>
@@ -49,6 +48,6 @@ export default function App() {
 
         
       </div>
-    </ReactScanProvider>
+    </>
   )
 }
