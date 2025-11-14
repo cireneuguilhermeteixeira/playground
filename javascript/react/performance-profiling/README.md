@@ -251,5 +251,27 @@ The time between a user interaction (click, tap, keypress) and the moment the br
 - No virtualization
 - No memoization
 
+### CLS (Cumulative Layout Shift)
+
+Example:
+```
+{name: 'CLS', value: 0.757, rating: 'poor'}
+```
+
+CLS measures:
+
+How much the layout shifts unexpectedly during load.
+
+CLS should be < 0.1.
+Your value (0.75) is very high, meaning the UI shifts around significantly.
+
+Common causes:
+
+- Content inserted without fixed dimensions
+- React components mounting late
+- Large elements pushing layout
+- Fonts loading after initial paint
+
+
 This leads to severe interaction delays — perfect for demonstrating performance problems.
 
