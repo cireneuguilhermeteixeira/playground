@@ -275,3 +275,27 @@ Common causes:
 
 This leads to severe interaction delays — perfect for demonstrating performance problems.
 
+
+### React scan
+<img width="1172" height="893" alt="image" src="https://github.com/user-attachments/assets/c73b47f2-1191-4315-a628-33d988fcdf5c" />
+<img width="556" height="417" alt="image" src="https://github.com/user-attachments/assets/60c0895e-0262-47fe-be5b-229c90197bdb" />
+
+In short:
+
+It intercepts React's internal calls (reconciler) to know when each component rendered.
+It maintains a "store" with information about each render:
+
+- which component,
+- how long it took,
+- why it rendered (props/state/context that changed),
+- if it was an "unnecessary" render (DOM didn't change).
+
+
+
+Draw outlines on components when they render;
+populate the toolbar with a component tree and counters;
+
+Trigger the built-in profiler (that little bell that shows FPS drops, slow interactions, etc.).
+
+
+It's like a "Why Did You Render" + React DevTools, but visual and always on.
