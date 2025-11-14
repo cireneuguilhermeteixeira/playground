@@ -30,6 +30,8 @@ The **Components** panel allows you to:
 ### Inspect props, state, and context  
 
 You can see what changed between renders.
+<img width="1043" height="581" alt="image" src="https://github.com/user-attachments/assets/afcb1fe3-f78c-4678-9133-3f98c1b3694d" />
+
 
 ### Highlight updates (VERY useful)
 
@@ -40,6 +42,7 @@ Highlight updates when components render
 ```
 
 This makes the screen flash whenever a component re-renders.
+<img width="833" height="617" alt="image" src="https://github.com/user-attachments/assets/e704a400-8e30-4671-b76f-caac6fe18b3c" />
 
 ### Diagnose unnecessary re-renders  
 
@@ -64,7 +67,6 @@ Each commit has:
 - **Layout effects duration**  
 - **Passive effects duration**
 
-Example from your screenshot:
 
 ```
 Render: 1799.2ms
@@ -88,6 +90,7 @@ This is **exactly the type of issue** the Profiler helps detect.
 ---
 
 ## Flamegraph View
+<img width="1049" height="567" alt="image" src="https://github.com/user-attachments/assets/34370c96-5913-4ab8-88de-ca5aff2991a0" />
 
 The **Flamegraph** shows:
 
@@ -120,12 +123,12 @@ The **Ranked** view shows:
 
 Unlike Flamegraph, Ranked **does not show hierarchy**.  
 It simply reveals the heaviest components.
+<img width="1068" height="594" alt="image" src="https://github.com/user-attachments/assets/12c3eb98-d1cb-4e14-bc0f-c33ac4ff6bf6" />
 
 ---
 
 ## Understanding Commit Times
 
-Example from your screenshot:
 
 ```
 1.8s for 1799.2ms
@@ -173,6 +176,7 @@ Use:
 - Allocation Timeline  
 - Heap Snapshot  
 - Retainers analysis  
+<img width="392" height="541" alt="image" src="https://github.com/user-attachments/assets/36af2e8f-1b0e-4448-afb5-007d8a28ab48" />
 
 Expected:
 
@@ -204,13 +208,48 @@ Methods:
 - TTFB  
 
 ### Web Vitals  
+```
+import { onCLS, onFID, onLCP, onINP, onTTFB } from 'web-vitals'
+onCLS(console.log)
+onFID(console.log)
+onLCP(console.log)
+onINP(console.log)
+onTTFB(console.log)
+```
 
-- Already included in the project
+Core Web Vitals evaluate how “fast and stable” a web page feels to real users.
+The five main metrics are:
 
-### Chrome Performance Panel  
+TTFB — Time to First Byte (network/server responsiveness)
 
-- Long tasks  
-- Layout shifts  
-- Paint/composite performance  
+FID — First Input Delay (old input metric)
 
----
+INP — Interaction to Next Paint (new, primary input responsiveness metric)
+
+CLS — Cumulative Layout Shift (visual stability)
+
+LCP — Largest Contentful Paint (loading performance)
+<img width="1067" height="267" alt="image" src="https://github.com/user-attachments/assets/e5c2eb58-e9a5-4bf6-892a-d515205dc6dc" />
+
+### INP (Interaction to Next Paint)
+
+Example:
+```
+{name: 'INP', value: 2168, rating: 'poor'}
+```
+
+INP is now the most important responsiveness metric.
+It measures:
+
+The time between a user interaction (click, tap, keypress) and the moment the browser paints the next frame.
+
+2168ms = extremely poor.
+
+
+- HeavyList freezes the main thread
+- heavyCompute(75_000) blocks JS
+- No virtualization
+- No memoization
+
+This leads to severe interaction delays — perfect for demonstrating performance problems.
+
