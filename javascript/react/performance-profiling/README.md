@@ -299,3 +299,71 @@ Trigger the built-in profiler (that little bell that shows FPS drops, slow inter
 
 
 It's like a "Why Did You Render" + React DevTools, but visual and always on.
+### Application overview after refactors
+
+<img width="1903" height="949" alt="image" src="https://github.com/user-attachments/assets/0540a8e0-bb00-4be1-9cf8-d48f2856bcca" />
+
+# React Performance Refactoring – Overview of Fixes
+
+This document explains the full refactoring performed across **three performance-critical components**:
+
+- `HeavyList` → now `HeavyListFixed`
+- `MemoryLeakDemo` → now `MemoryLeakFixed`
+- `ReRenderTest` → now `ReRenderTestFixed`
+
+Each component originally contained intentional anti-patterns designed to trigger performance issues. The refactored versions demonstrate correct, production-grade patterns.
+
+##  1. HeavyList → HeavyListFixed
+
+###  Original Problems
+- Heavy synchronous CPU work in each row
+- No virtualization (all rows rendered)
+- Items recreated unnecessarily
+- Unstable callbacks
+
+###  Fixes
+- Virtualized list (windowed rendering)
+- Heavy compute runs once via `useMemo`
+- Stable handlers using `useCallback`
+- `React.memo` on rows
+- Absolute-position virtualization for smooth scrolling
+
+### Result
+Huge FPS improvement, fewer renders, stable INP, smaller flamegraph, and fast commit times.
+
+##  2. MemoryLeakDemo → MemoryLeakFixed
+
+###  Original Problems
+- Interval not cleared
+- Event listener not removed
+- Allocating 50k strings per tick
+- DOM dataset retaining memory
+- Unstable callbacks
+
+###  Fixes
+- Clean up interval and listener on unmount
+- Reuse large payload array with `useRef`
+- Clean dataset on unmount
+- Stable callbacks with `useCallback`
+
+### Result
+Stable heap size, no leaks, no retained nodes.
+
+##  3. ReRenderTest → ReRenderTestFixed
+
+###  Original Problems
+- Unstable object props
+- Unstable function props
+- `React.memo` ineffective due to identity changes
+
+### Fixes
+- Stable callbacks via `useCallback`
+- Primitive props instead of object wrappers
+- Added unrelated state to show minimal re-renders
+- Effective memoization in child
+
+### Result
+Child renders only when necessary. Profiler and React Scan confirm fewer commits and stable rendering.
+
+
+This refactoring converts three intentionally “wrong” components into production-quality performance showcases.
