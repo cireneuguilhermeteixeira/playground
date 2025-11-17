@@ -1,3 +1,5 @@
+import { Bell, X, Check, CheckCircle } from "lucide-react";
+import { Notification } from "~/components/notification/Notification";
 import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
 
@@ -39,6 +41,18 @@ export function Welcome() {
                 </li>
               ))}
             </ul>
+
+            <Notification
+              showIcon
+              icon={CheckCircle}
+              content="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              showActions
+              onCancel={() => console.log("cancel")}
+              onConfirm={() => console.log("confirm")}
+              cancelIcon={X}
+              confirmIcon={Check}
+              variant="success"
+            />
           </nav>
         </div>
       </div>
