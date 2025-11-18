@@ -1,9 +1,12 @@
 import { Bell, X, Check, CheckCircle } from "lucide-react";
-import { Notification } from "~/components/notification/Notification";
+import { Notification as Not } from "~/components/notification/Notification";
+import { Notification } from "~/components/notification-composition/index";
 import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
 
 export function Welcome() {
+
+  const title = "Welcome to React Router";
   return (
     <main className="flex items-center justify-center pt-16 pb-4">
       <div className="flex-1 flex flex-col items-center gap-16 min-h-0">
@@ -42,10 +45,10 @@ export function Welcome() {
               ))}
             </ul>
 
-            <Notification
+            <Not
               showIcon
               icon={CheckCircle}
-              content="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              content={title}
               showActions
               onCancel={() => console.log("cancel")}
               onConfirm={() => console.log("confirm")}
@@ -53,6 +56,42 @@ export function Welcome() {
               confirmIcon={Check}
               variant="success"
             />
+
+
+
+
+
+          <h1>React composition pattern</h1>
+          <div className="notification-list">
+            <Notification.Root>
+              <Notification.Icon icon={Bell} />
+              <Notification.Content>
+                {title}
+              </Notification.Content>
+                <Notification.ActionButton onClick={() => console.log("cancel")}>
+                  <Notification.Icon icon={X} />
+                </Notification.ActionButton>
+                <Notification.ActionButton onClick={() => console.log("confirm")}>
+                  <Notification.Icon icon={Check} />
+                </Notification.ActionButton>
+            </Notification.Root>
+
+            <Notification.Root>
+              <Notification.Content>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              </Notification.Content>
+            </Notification.Root>
+
+            <Notification.Root>
+              <Notification.Icon icon={Bell} />
+              <Notification.Content>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              </Notification.Content>
+            </Notification.Root>
+          </div>
+    
+
+export default App;
           </nav>
         </div>
       </div>
