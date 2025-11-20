@@ -1,6 +1,6 @@
 import { Bell, X, Check, CheckCircle } from "lucide-react";
-import { Notification as Not } from "~/components/notification/Notification";
-import { Notification } from "~/components/notification-composition/index";
+import { Notification as Not } from "~/components/composition-pattern/notification/Notification";
+import { Notification } from "~/components/composition-pattern/notification-composition/index";
 import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
 
