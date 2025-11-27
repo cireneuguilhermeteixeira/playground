@@ -242,3 +242,277 @@ This architecture prioritizes:
 The security model is layered, adaptive, intelligence-driven, and fully
 automated, ensuring reliability even under coordinated global-scale
 attacks.
+
+# Secure Realtime Voting System -- Mobile & Edge Architecture
+
+This document describes the **end-to-end mobile flow** and the
+**high-level edge-to-API architecture** for a secure, large-scale
+realtime voting system.
+
+------------------------------------------------------------------------
+
+# 1. End-to-End Mobile Flow (React Native + Expo)
+
+## 1.1 Mobile Application Stack
+
+- Mobile framework: **React Native + Expo**
+- Authentication: **Auth0**
+- Liveness & Identity Verification: **SumSub**
+- Bot & Device Intelligence: **FingerprintJS**
+- Human Verification: **Cloudflare Turnstile**
+- API Security: **JWT + OAuth2 Tokens**
+
+This stack is designed to ensure:
+
+- Real users only
+- One-person-one-account enforcement
+- Strong resistance against bots, emulators, and automation
+- Secure session handling across all API calls
+
+------------------------------------------------------------------------
+
+## 1.2 Liveness Detection & Identity Verification with SumSub
+
+SumSub is used for:
+
+- Facial biometrics
+- Liveness detection
+- Government document verification
+- Global fraud risk scoring
+
+It is chosen due to:
+
+- High antifraud robustness
+- Strong global compliance (KYC/AML)
+- Support for multiple countries
+- High-quality liveness detection against deepfake, photos, and
+    replays
+
+SumSub React Native SDK integration:
+
+Documentation: <https://docs.sumsub.com/docs/react-native-module>
+
+### Mobile Flow with SumSub
+
+1. User installs and opens the React Native app.
+2. During first access or registration:
+    - User is asked to capture:
+        - A selfie video (liveness)
+        - A government-issued document
+3. The app sends media directly to SumSub SDK.
+4. SumSub performs:
+    - Face matching
+    - Liveness challenge
+    - Document authenticity validation
+5. The backend receives:
+    - Verification status
+    - Risk score
+    - Unique document hash
+6. Only verified users are allowed to vote.
+
+No raw biometric data is stored directly in the voting backend.
+
+------------------------------------------------------------------------
+
+## 1.3 Secure Authentication with Auth0 (SSO + MFA)
+
+Auth0 is used for:
+
+- Secure login
+- Social SSO support
+- Passwordless login
+- Multi-Factor Authentication (MFA)
+- Token lifecycle management
+
+React Native Auth0 Integration:
+
+Documentation: <https://auth0.com/docs/quickstart/native/react-native>
+
+### Mobile Authentication Flow
+
+1. User taps "Login".
+2. React Native app redirects to Auth0 universal login.
+3. Auth0 performs:
+    - Credential validation
+    - Social login (if enabled)
+    - MFA (Authenticator App, SMS, Push, etc.)
+4. On success, the app receives:
+    - Access Token (short-lived)
+    - ID Token
+    - Refresh Token (secure storage only)
+
+------------------------------------------------------------------------
+
+## 1.4 Bot Detection with Auth0 Challenge + Turnstile
+
+To prevent credential stuffing, brute-force, and automated accounts:
+
+- Auth0 Challenges are applied during:
+  - Login
+  - Registration
+  - Password reset
+- Cloudflare Turnstile is used as:
+  - Invisible human challenge
+  - CAPTCHA replacement
+  - Bot traffic filter for mobile and web
+
+The Turnstile token is attached to authentication requests and validated
+by the backend before granting access.
+
+------------------------------------------------------------------------
+
+## 1.5 Secure API Requests with Tokens
+
+All API requests use:
+
+- OAuth2 access tokens (Bearer)
+- Short TTL (e.g., 15 minutes)
+- Secure refresh flow
+- Token binding to:
+  - Device fingerprint
+  - Session
+  - Risk score
+
+Example request:
+
+``` http
+POST /vote
+Authorization: Bearer <access_token>
+```
+
+All backend services:
+
+- Validate the token signature
+- Validate expiration and issuer
+- Check device consistency
+- Enforce authorization scope
+
+------------------------------------------------------------------------
+
+## 1.6 Device Fingerprinting with FingerprintJS
+
+FingerprintJS is used to:
+
+- Collect passive device signals:
+  - OS
+  - Browser/Runtime
+  - Hardware entropy
+  - Emulator detection
+- Generate a stable device ID
+- Detect:
+  - Multi-account abuse
+  - Bot emulators
+  - Device cloning
+  - Session hijacking
+
+How it is used:
+
+1. FingerprintJS runs in the app runtime.
+2. A device ID is generated.
+3. The device ID is attached to:
+    - Login requests
+    - Voting requests
+4. The backend correlates:
+    - User Account
+    - Document Hash
+    - Face Template
+    - Device ID
+
+This allows detection of:
+
+- One user trying to vote from multiple devices
+- One device trying to impersonate multiple users
+
+------------------------------------------------------------------------
+
+# 2. Architecture Overview (Edge to API)
+
+## 2.1 Global Request Flow
+
+``` text
+Mobile App (React Native)
+        |
+        | HTTPS
+        v
+CloudFront + Global Edge
+        |
+        | Internal AWS Backbone
+        v
+AWS WAF (Bot Control + Rate Limit)
+        |
+        | Clean Traffic Only
+        v
+AWS Global Accelerator Backbone
+        |
+        v
+API Gateway (Rate Limit by Key/Token)
+        |
+        v
+Microservices (Auth, Voting, Fraud, Streams)
+```
+
+------------------------------------------------------------------------
+
+## 2.2 CloudFront + AWS WAF Responsibilities
+
+### CloudFront
+
+- Global Anycast Edge
+- TLS termination
+- Static asset caching
+- Initial traffic absorption for 300M users
+
+### AWS WAF
+
+- IP-based rate limits
+- Token-based rate limits
+- Header-based rate limits
+- Protection against:
+  - SQL Injection
+  - XSS
+  - CSRF
+  - API Abuse
+- Integrated Bot Control
+
+------------------------------------------------------------------------
+
+## 2.3 Global Accelerator & Backbone Routing
+
+All traffic between edge and API uses:
+
+- AWS Global Accelerator
+- Optimized global routing
+- Low-latency backbone
+- Automatic regional failover
+
+------------------------------------------------------------------------
+
+## 2.4 API Gateway Security Model
+
+The API Gateway enforces:
+
+- Rate limits per:
+  - API Key
+  - User Token
+  - Device ID
+- Burst protection
+- Token verification
+- Request signing enforcement
+- Request schema validation
+
+------------------------------------------------------------------------
+
+## 3. Security Model Summary
+
+  Layer                Responsibility
+  -------------------- ------------------------------------
+  React Native         Biometrics, Turnstile, Fingerprint
+  Auth0                Identity, MFA, Session
+  SumSub               Identity proof & liveness
+  CloudFront           Edge distribution
+  AWS WAF              Attack filtering & bot control
+  Global Accelerator   Secure backbone
+  API Gateway          Token & rate security
+  Backend              One vote per user enforcement
+
+------------------------------------------------------------------------
