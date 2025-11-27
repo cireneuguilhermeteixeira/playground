@@ -243,14 +243,6 @@ The security model is layered, adaptive, intelligence-driven, and fully
 automated, ensuring reliability even under coordinated global-scale
 attacks.
 
-# Secure Realtime Voting System -- Mobile & Edge Architecture
-
-This document describes the **end-to-end mobile flow** and the
-**high-level edge-to-API architecture** for a secure, large-scale
-realtime voting system.
-
-------------------------------------------------------------------------
-
 # 1. End-to-End Mobile Flow (React Native + Expo)
 
 ## 1.1 Mobile Application Stack
@@ -280,7 +272,7 @@ SumSub is used for:
 - Government document verification
 - Global fraud risk scoring
 
-It is chosen due to:
+Chosen for:
 
 - High antifraud robustness
 - Strong global compliance (KYC/AML)
@@ -319,16 +311,14 @@ No raw biometric data is stored directly in the voting backend.
 Auth0 is used for:
 
 - Secure login
-- Social SSO support
+- Social SSO
 - Passwordless login
 - Multi-Factor Authentication (MFA)
 - Token lifecycle management
 
-React Native Auth0 Integration:
-
 Documentation: <https://auth0.com/docs/quickstart/native/react-native>
 
-### Mobile Authentication Flow
+### Authentication Flow
 
 1. User taps "Login".
 2. React Native app redirects to Auth0 universal login.
@@ -373,7 +363,7 @@ All API requests use:
   - Session
   - Risk score
 
-Example request:
+Example:
 
 ``` http
 POST /vote
@@ -436,19 +426,17 @@ Mobile App (React Native)
         v
 CloudFront + Global Edge
         |
-        | Internal AWS Backbone
         v
-AWS WAF (Bot Control + Rate Limit)
+AWS WAF (Bot Control + Rate Limits)
         |
-        | Clean Traffic Only
         v
 AWS Global Accelerator Backbone
         |
         v
-API Gateway (Rate Limit by Key/Token)
+API Gateway (Rate Limited)
         |
         v
-Microservices (Auth, Voting, Fraud, Streams)
+Microservices (Auth, Voting, Fraud)
 ```
 
 ------------------------------------------------------------------------
@@ -458,8 +446,8 @@ Microservices (Auth, Voting, Fraud, Streams)
 ### CloudFront
 
 - Global Anycast Edge
-- TLS termination
-- Static asset caching
+- TLS Termination
+- Static caching
 - Initial traffic absorption for 300M users
 
 ### AWS WAF
@@ -502,17 +490,91 @@ The API Gateway enforces:
 
 ------------------------------------------------------------------------
 
-## 3. Security Model Summary
+# 3. Tradeoffs Analysis of All Security Tools
 
-  Layer                Responsibility
-  -------------------- ------------------------------------
-  React Native         Biometrics, Turnstile, Fingerprint
-  Auth0                Identity, MFA, Session
-  SumSub               Identity proof & liveness
-  CloudFront           Edge distribution
-  AWS WAF              Attack filtering & bot control
-  Global Accelerator   Secure backbone
-  API Gateway          Token & rate security
-  Backend              One vote per user enforcement
+## 3.1 Auth0
+
+Pros: - Enterprise-grade authentication - Built-in MFA - Secure token
+lifecycle - SSO support - High availability
+
+Cons: - Expensive at large scale - Vendor lock-in - Limited
+flexibility for custom flows
+
+------------------------------------------------------------------------
+
+## 3.2 SumSub
+
+Pros: - Strong biometric antifraud - Global KYC compliance -
+High-quality liveness detection - Advanced risk scoring
+
+Cons: - High user friction - Sensitive biometric data handling - High
+per-verification cost - Not always legally permitted for voting
+
+------------------------------------------------------------------------
+
+## 3.3 Cloudflare Turnstile
+
+Pros: - Invisible challenge - Better UX than CAPTCHA - Strong privacy
+guarantees - Blocks simple automation
+
+Cons: - Not sufficient alone against advanced bots - External
+dependency - Needs backend verification
+
+------------------------------------------------------------------------
+
+## 3.4 FingerprintJS
+
+Pros: - Passive and invisible - Emulator and device cloning
+detection - Excellent multi-account detection signal
+
+Cons: - Fingerprints can be spoofed by advanced attackers - Privacy
+and compliance concerns - Device replacement causes identity changes
+
+------------------------------------------------------------------------
+
+## 3.5 AWS CloudFront
+
+Pros: - Global CDN - Massive traffic absorption - Native integration
+with AWS security - Edge-level DDoS protection
+
+Cons: - Pricing complexity - Cache invalidation cost - Less flexible
+than software-based proxies
+
+------------------------------------------------------------------------
+
+## 3.6 AWS WAF
+
+Pros: - Managed OWASP rules - Tight AWS integration - Native
+CloudFront support - Bot Control included
+
+ Cons: - Limited advanced behavioral fraud detection - Requires tuning
+to avoid false positives
+
+------------------------------------------------------------------------
+
+## 3.7 AWS Global Accelerator
+
+Pros: - Very low global latency - Consistent static IPs -
+Multi-region failover
+
+Cons: - Additional cost - More complex routing model
+
+------------------------------------------------------------------------
+
+## 3.8 API Gateway
+
+ Pros: - Built-in rate limiting - Strong security posture - Native JWT
+validation
+
+ Cons: - Cost at very high RPS - Harder to debug than direct ALB
+setups
+
+------------------------------------------------------------------------
+
+## 3.9 reCAPTCHA (Reference Only)
+
+Pros: - Easy to integrate - Very common
+
+Cons: - Poor UX - Privacy concerns - Easily solved by CAPTCHA farms
 
 ------------------------------------------------------------------------
