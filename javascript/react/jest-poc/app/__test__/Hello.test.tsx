@@ -1,7 +1,7 @@
 // src/components/__tests__/Hello.test.tsx
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { Hello } from '../app/components/Hello';
+import { Hello } from '../components/Hello';
 
 describe('<Hello />', () => {
   it('renders the name', () => {
