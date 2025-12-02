@@ -1,87 +1,110 @@
-# Welcome to React Router!
+# React Testing Guide (Jest + Testing Library)
 
-A modern, production-ready template for building full-stack React applications using React Router.
+This document explains **when and how to use** the main testing helpers
+commonly used in React tests:
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+- `getBy*`, `queryBy*`, `findBy*`
+- `fireEvent`
+- `waitFor`
+- `act`
+- `jest.fn`, `jest.mock`
+- `jest.spyOn`
 
-## Features
+This guide assumes:
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- Jest as the test runner
+- @testing-library/react
+- React 18+ / 19
 
-## Getting Started
+------------------------------------------------------------------------
 
-### Installation
+## 1. Query Methods
 
-Install the dependencies:
+### getBy\*
 
-```bash
-npm install
-```
+- Synchronous
+- Throws an error immediately if the element is not found
 
-### Development
+**Use when:** - The element should already exist right after rendering
 
-Start the development server with HMR:
+**Do NOT use when:** - The element appears after asynchronous logic
 
-```bash
-npm run dev
-```
+------------------------------------------------------------------------
 
-Your application will be available at `http://localhost:5173`.
+### queryBy\*
 
-## Building for Production
+- Synchronous
+- Returns `null` instead of throwing
 
-Create a production build:
+**Use when:** - Verifying that an element should NOT exist
 
-```bash
-npm run build
-```
+------------------------------------------------------------------------
 
-## Deployment
+### findBy\*
 
-### Docker Deployment
+- Asynchronous
+- Returns a Promise
+- Waits until the element appears
 
-To build and run using Docker:
+**Use when:** - Elements appear after API calls, timers, or async
+effects
 
-```bash
-docker build -t my-app .
+------------------------------------------------------------------------
 
-# Run the container
-docker run -p 3000:3000 my-app
-```
+## 2. fireEvent
 
-The containerized application can be deployed to any platform that supports Docker, including:
+Simulates basic DOM events like clicks and input changes.
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
+**Use when:** - Simulating low-level DOM events
 
-### DIY Deployment
+**Avoid when:** - You want realistic user interactions → prefer
+`userEvent`
 
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
+------------------------------------------------------------------------
 
-Make sure to deploy the output of `npm run build`
+## 3. waitFor
 
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
+Waits for a condition to become true within a timeout.
 
-## Styling
+**Use when:** - Waiting for state changes - Waiting for loading
+indicators to disappear - Waiting for mocks to be called
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+------------------------------------------------------------------------
 
----
+## 4. act
 
-Built with ❤️ using React Router.
+Forces React to flush updates and effects.
+
+**Use when:** - Driving timers manually - Triggering state updates
+outside Testing Library helpers
+
+**Not needed when:** - Using `fireEvent`, `userEvent`, or `render`
+
+------------------------------------------------------------------------
+
+## 5. jest.fn
+
+Creates a mock function.
+
+**Use when:** - You need to track how a function is called - You need to
+control return values
+
+------------------------------------------------------------------------
+
+## 6. jest.mock
+
+Replaces an entire module with mocks.
+
+**Use when:** - Mocking APIs - Avoiding real network calls - Speeding up
+tests
+
+------------------------------------------------------------------------
+
+## 7. jest.spyOn
+
+Creates a spy on an existing function.
+
+**Use when:** - Observing behavior of real functions - Tracking side
+effects
+
+------------------------------------------------------------------------

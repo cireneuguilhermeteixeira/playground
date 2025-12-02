@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { act }  from 'react';
 import { render, screen } from '@testing-library/react';
 import { TimerLabel } from '../components/TimerLabel';
-import { act } from 'react-dom/test-utils';
 
 describe('<TimerLabel />', () => {
   beforeEach(() => {

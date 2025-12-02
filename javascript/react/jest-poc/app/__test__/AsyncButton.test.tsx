@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AsyncButton } from '../components/AsyncButton';
 import * as greetingApi from '../api/greetingApi';
 
-jest.mock('../../api/greetingApi');
+jest.mock('../api/greetingApi');
 
 describe('<AsyncButton />', () => {
   it('uses findByText to wait for the greeting text after the promise resolves', async () => {
