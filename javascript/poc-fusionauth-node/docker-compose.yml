@@ -1,28 +1,31 @@
 services:
-  postgres:
+  db:
     image: postgres:15
-    container_name: kc-postgres
+    container_name: fusionauth-db
     environment:
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: keycloak
-      POSTGRES_DB: keycloak
+      POSTGRES_USER: fusionauth
+      POSTGRES_PASSWORD: fusionauth
+      POSTGRES_DB: fusionauth
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - kc_pgdata:/var/lib/postgresql/data
+      - fusionauth_db:/var/lib/postgresql/data
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.0.0
-    container_name: keycloak
-    command: ["start-dev"]
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_HOSTNAME: localhost
-    ports:
-      - "8080:8080"
+  fusionauth:
+    image: fusionauth/fusionauth-app:latest
+    container_name: fusionauth
     depends_on:
-      - postgres
+      - db
+    environment:
+      DATABASE_URL: jdbc:postgresql://db:5432/fusionauth
+      DATABASE_ROOT_USERNAME: fusionauth
+      DATABASE_ROOT_PASSWORD: fusionauth
+      DATABASE_USERNAME: fusionauth
+      DATABASE_PASSWORD: fusionauth
+      FUSIONAUTH_APP_RUNTIME_MODE: development
+      FUSIONAUTH_APP_URL: http://localhost:9011
+    ports:
+      - "9011:9011"
 
 volumes:
-  kc_pgdata:
+  fusionauth_db:
