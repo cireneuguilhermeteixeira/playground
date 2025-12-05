@@ -16,18 +16,18 @@ app.use(
   })
 );
 
-let client; // openid-client
-let codeVerifierStore = {};
+let client;
 
-// Initialize OIDC client
 async function initOidcClient() {
-  const issuerUrl = process.env.OIDC_ISSUER_URL;
+  const baseUrl = process.env.FUSIONAUTH_BASE_URL || "http://localhost:9011";
+
+  const issuerUrl = `${baseUrl}/.well-known/openid-configuration`;
+
   console.log("Discovering issuer from:", issuerUrl);
+  const fusionIssuer = await Issuer.discover(issuerUrl);
+  console.log("Discovered issuer:", fusionIssuer.issuer);
 
-  const keycloakIssuer = await Issuer.discover(issuerUrl);
-  console.log("Discovered issuer %s", keycloakIssuer.issuer);
-
-  client = new keycloakIssuer.Client({
+  client = new fusionIssuer.Client({
     client_id: process.env.OIDC_CLIENT_ID,
     client_secret: process.env.OIDC_CLIENT_SECRET,
     redirect_uris: [process.env.OIDC_REDIRECT_URI],
@@ -35,7 +35,6 @@ async function initOidcClient() {
   });
 }
 
-// Middleware to protect routes
 function requireAuth(req, res, next) {
   if (!req.session.user) {
     return res.redirect("/login");
@@ -43,31 +42,27 @@ function requireAuth(req, res, next) {
   next();
 }
 
-// Home
 app.get("/", (req, res) => {
   if (req.session.user) {
     res.send(`
-      <h1>Hello, ${req.session.user.preferred_username || "user"}!</h1>
-      <p>You are logged in via Keycloak.</p>
+      <h1>Hello, ${req.session.user.email || "user"}!</h1>
+      <p>You are logged in via FusionAuth.</p>
       <pre>${JSON.stringify(req.session.user, null, 2)}</pre>
       <a href="/protected">Go to protected page</a><br/>
       <a href="/logout">Logout</a>
     `);
   } else {
     res.send(`
-      <h1>POC Keycloak + Node</h1>
-      <a href="/login">Login with Keycloak</a>
+      <h1>FusionAuth + Node.js POC</h1>
+      <a href="/login">Login with FusionAuth</a>
     `);
   }
 });
 
-// Rota de login
 app.get("/login", async (req, res, next) => {
   try {
     const codeVerifier = generators.codeVerifier();
     const codeChallenge = generators.codeChallenge(codeVerifier);
-
-    // Store PKCE code verifier in session
     req.session.codeVerifier = codeVerifier;
 
     const authorizationUrl = client.authorizationUrl({
@@ -82,7 +77,6 @@ app.get("/login", async (req, res, next) => {
   }
 });
 
-// Callback of Keycloak
 app.get("/callback", async (req, res, next) => {
   const params = client.callbackParams(req);
   const codeVerifier = req.session.codeVerifier;
@@ -94,17 +88,16 @@ app.get("/callback", async (req, res, next) => {
       { code_verifier: codeVerifier }
     );
 
-    // Decode Id Token to get user info
     const userinfo = tokenSet.claims();
     req.session.user = userinfo;
 
     res.redirect("/");
   } catch (err) {
+    console.error(err);
     next(err);
   }
 });
 
-// Protected route
 app.get("/protected", requireAuth, (req, res) => {
   res.send(`
     <h1>Protected Resource</h1>
@@ -115,7 +108,6 @@ app.get("/protected", requireAuth, (req, res) => {
   `);
 });
 
-// Logout route
 app.get("/logout", (req, res, next) => {
   req.session.destroy(err => {
     if (err) return next(err);
@@ -123,7 +115,6 @@ app.get("/logout", (req, res, next) => {
   });
 });
 
-// Start server after initializing OIDC client
 initOidcClient()
   .then(() => {
     app.listen(port, () => {

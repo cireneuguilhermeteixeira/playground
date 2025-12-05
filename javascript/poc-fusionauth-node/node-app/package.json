@@ -1,5 +1,5 @@
 {
-  "name": "node-keycloak-poc",
+  "name": "fusionauth-node-poc",
   "version": "1.0.0",
   "main": "server.mjs",
   "type": "module",
