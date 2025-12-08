@@ -1,31 +1,54 @@
 services:
   db:
-    image: postgres:15
+    image: postgres:16.0-bookworm
     container_name: fusionauth-db
     environment:
-      POSTGRES_USER: fusionauth
-      POSTGRES_PASSWORD: fusionauth
-      POSTGRES_DB: fusionauth
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - fa_net
+    restart: unless-stopped
     ports:
       - "5433:5432"
-    volumes:
-      - fusionauth_db:/var/lib/postgresql/data
 
   fusionauth:
     image: fusionauth/fusionauth-app:latest
     container_name: fusionauth
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       DATABASE_URL: jdbc:postgresql://db:5432/fusionauth
-      DATABASE_ROOT_USERNAME: fusionauth
-      DATABASE_ROOT_PASSWORD: fusionauth
-      DATABASE_USERNAME: fusionauth
-      DATABASE_PASSWORD: fusionauth
-      FUSIONAUTH_APP_RUNTIME_MODE: development
+      DATABASE_ROOT_USERNAME: ${POSTGRES_USER}
+      DATABASE_ROOT_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+
+      FUSIONAUTH_APP_MEMORY: ${FUSIONAUTH_APP_MEMORY}
+      FUSIONAUTH_APP_RUNTIME_MODE: ${FUSIONAUTH_APP_RUNTIME_MODE}
       FUSIONAUTH_APP_URL: http://localhost:9011
+
+      SEARCH_TYPE: database
+    networks:
+      - fa_net
+    restart: unless-stopped
     ports:
       - "9011:9011"
+    volumes:
+      - fusionauth_config:/usr/local/fusionauth/config
+
+networks:
+  fa_net:
+    driver: bridge
 
 volumes:
-  fusionauth_db:
+  db_data:
+  fusionauth_config:
