@@ -230,6 +230,7 @@ http://localhost:3000
 ```
 http://localhost:3000
 ```
+<img width="468" height="252" alt="image" src="https://github.com/user-attachments/assets/c610287b-0aad-4596-8683-50c442b962c5" />
 
 2. Click **Login with Keycloak**
 3. You will be redirected to the Keycloak login page
@@ -239,7 +240,9 @@ http://localhost:3000
 Username: teste
 Password: 123456
 ```
+<img width="1629" height="448" alt="image" src="https://github.com/user-attachments/assets/489ce9e8-29ea-4cd3-8939-47140d441fe4" />
 
 5. After successful login, you will be redirected back to the Node app with user information
+<img width="480" height="579" alt="image" src="https://github.com/user-attachments/assets/c183040b-2b15-4354-9993-8495f557355d" />
 
 ---
