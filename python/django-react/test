@@ -1,0 +1,15 @@
+backend/
+    manage.py
+    myproject/
+      __init__.py
+      settings.py
+      urls.py
+    core/
+      __init__.py
+      views.py
+      urls.py
+      templates/
+        base.html
+        core/
+          home.html
+          about.html

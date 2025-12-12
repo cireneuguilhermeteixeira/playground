@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load json_script %}
+
+{% block title %}About - Django + React PoC{% endblock %}
+
+{% block content %}
+  <h1>About (template Django)</h1>
+
+  <div id="react-root"
+       data-component="About"></div>
+
+  {{ initial_props|json_script:"initial-props" }}
+
+{% endblock %}
