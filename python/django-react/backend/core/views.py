@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 
 def home(request):
@@ -5,7 +6,11 @@ def home(request):
         "username": request.user.username or "Guest",
         "pageTitle": "Home Page",
     }
-    return render(request, "core/home.html", {"initial_props": initial_props})
+
+    return render(request, "core/home.html", {
+        "initial_props": initial_props,
+        "initial_props_json": json.dumps(initial_props),
+    })
 
 
 def about(request):
@@ -13,4 +18,8 @@ def about(request):
         "pageTitle": "About Page",
         "description": "This is a simple Django + React PoC.",
     }
-    return render(request, "core/about.html", {"initial_props": initial_props})
+
+    return render(request, "core/about.html", {
+        "initial_props": initial_props,
+        "initial_props_json": json.dumps(initial_props),
+    })

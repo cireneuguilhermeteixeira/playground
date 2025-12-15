@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% load static %}
-{% load json_script %}
 
-{% block title %}Home - Django + React PoC{% endblock %}
+{% block title %}Home - Django + React{% endblock %}
 
 {% block content %}
-  <h1>Home (template Django)</h1>
+<h1>Home (template Django)</h1>
 
-  <div id="react-root"
-       data-component="Home"></div>
+<div id="react-root"
+     data-component="Home"></div>
 
-  {{ initial_props|json_script:"initial-props" }}
+<script id="initial-props" type="application/json">
+  {{ initial_props_json|safe }}
+</script>
 
 {% endblock %}
