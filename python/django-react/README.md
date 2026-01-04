@@ -84,3 +84,10 @@ npm run build
 - Provide a simple, predictable build workflow using Webpack.
 - Avoid the complexity of a full SPA while still benefiting from
     React.
+
+## Screenshots
+<img width="624" height="388" alt="image" src="https://github.com/user-attachments/assets/ba21af00-c8e8-4d37-be05-d6db45097b1e" />
+
+<img width="593" height="362" alt="image" src="https://github.com/user-attachments/assets/b19c2fae-f364-4d05-9496-255a5c9cf001" />
+
+
