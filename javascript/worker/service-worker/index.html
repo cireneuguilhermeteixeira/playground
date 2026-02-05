@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Service Worker Sample: Detailed Registration</title>
+      <link rel="icon" href="../../images/favicon.ico">
+    <script>
+      // Service workers require HTTPS (http://goo.gl/lq4gCo). If we're running on a real web server
+      // (as opposed to localhost on a custom port, which is allowed), then change the protocol to HTTPS.
+      if ((!location.port || location.port == "80") && location.protocol != 'https:') {
+        location.protocol = 'https:';
+      }
+    </script>
+    <link rel="stylesheet" href="main.css">
+  </head>
+  <body>
+    <h1>Service Worker Sample: Detailed Registration</h1>
+    <p>Available in
+      <a href="https://www.chromestatus.com/feature/6561526227927040">Chrome 40+</a></p>
+    <p>
+      This sample provides some insight into the events involved in a typical service worker registration.
+    The script
+      <code>service-worker.js</code>
+      is registered to handle the URL scope
+      <code>./</code>.
+    It is "safe" to register the same script multiple times, so it's not necessary to check for a
+    previous registration.
+    </p>
+    <p>
+      Various pieces of information about the service worker from the perspective of the registering page
+    can be found below.
+    Additionally, visit
+      <code>chrome://inspect/#service-workers</code>
+      and click on the "inspect" link below
+    the registered service worker to view logging statements for the various actions the
+      <code><a href="service-worker.js">service-worker.js</a></code>
+      script is performing.
+    </p>
+    <div class="output">
+      <h2>Service Worker Availability</h2>
+      <p>
+        Service Workers
+        <strong id="availability"></strong>
+        available in your browser.
+        <em>(Whether
+          <code>'serviceWorker' in navigator</code>.)</em>
+      </p>
+      <h2>Is This Page Controlled by a Service Worker?</h2>
+      <p>
+        This page
+        <strong id="controlled"></strong>
+        currently controlled.
+        <em>(Whether
+          <code>navigator.serviceWorker.controller</code>
+          is set.)</em>
+      </p>
+      <h2>Info about the Current Registration</h2>
+      <p>
+        The
+        <code>navigator.serviceWorker.register()</code>
+        call
+        <strong id="register"></strong>.
+      </p>
+      <p>
+        The current registration represents the
+        <strong id="kind"></strong>
+        service worker.
+      </p>
+      <p>
+        <em>Tip:</em>
+        With a newly registered service worker in the
+        <code>activated</code>
+        state,
+      refresh the page to have the service worker take control.
+      You can also refresh with the Shift key held down to load
+      the page without the service worker controlling it.
+      </p>
+      <p>State transitions of the service worker associated with the current registration:</p>
+      <ol id="states"></ol>
+    </div>
+    <script>
+      function logState(state) {
+      var liElement = document.createElement('li');
+      liElement.textContent = state;
+      document.querySelector('#states').appendChild(liElement);
+    }
+
+    if ('serviceWorker' in navigator) {
+      // The current browser supports service workers.
+      document.querySelector('#availability').textContent = 'are';
+
+      // navigator.serviceWorker.controlled iff there is currently a service worker handling
+      // requests on this page for the current navigation.
+      document.querySelector('#controlled').textContent = navigator.serviceWorker.controller ? 'is' : 'is not';
+
+      // Override the default scope of '/' with './', so that the registration applies
+      // to the current directory and everything underneath it.
+      navigator.serviceWorker.register('service-worker.js', {scope: './'}).then(function(registration) {
+        // At this point, registration has taken place.
+        // The service worker will not handle requests until this page and any
+        // other instances of this page (in other tabs, etc.) have been
+        // closed/reloaded.
+        document.querySelector('#register').textContent = 'succeeded';
+
+        var serviceWorker;
+        if (registration.installing) {
+          serviceWorker = registration.installing;
+          document.querySelector('#kind').textContent = 'installing';
+        } else if (registration.waiting) {
+          serviceWorker = registration.waiting;
+          document.querySelector('#kind').textContent = 'waiting';
+        } else if (registration.active) {
+          serviceWorker = registration.active;
+          document.querySelector('#kind').textContent = 'active';
+        }
+
+        if (serviceWorker) {
+          logState(serviceWorker.state);
+          serviceWorker.addEventListener('statechange', function(e) {
+            logState(e.target.state);
+          });
+        }
+      }).catch(function(error) {
+        document.querySelector('#register').textContent = 'failed: ' + error;
+      });
+    } else {
+      document.querySelector('#availability').textContent = 'are not';
+    }
+    </script>
+  </body>
+</html>
