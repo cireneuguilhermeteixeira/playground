@@ -79,53 +79,53 @@
       <ol id="states"></ol>
     </div>
     <script>
-      function logState(state) {
-      var liElement = document.createElement('li');
-      liElement.textContent = state;
-      document.querySelector('#states').appendChild(liElement);
-    }
-
-    if ('serviceWorker' in navigator) {
-      // The current browser supports service workers.
-      document.querySelector('#availability').textContent = 'are';
-
-      // navigator.serviceWorker.controlled iff there is currently a service worker handling
-      // requests on this page for the current navigation.
-      document.querySelector('#controlled').textContent = navigator.serviceWorker.controller ? 'is' : 'is not';
-
-      // Override the default scope of '/' with './', so that the registration applies
-      // to the current directory and everything underneath it.
-      navigator.serviceWorker.register('service-worker.js', {scope: './'}).then(function(registration) {
-        // At this point, registration has taken place.
-        // The service worker will not handle requests until this page and any
-        // other instances of this page (in other tabs, etc.) have been
-        // closed/reloaded.
-        document.querySelector('#register').textContent = 'succeeded';
-
-        var serviceWorker;
-        if (registration.installing) {
-          serviceWorker = registration.installing;
-          document.querySelector('#kind').textContent = 'installing';
-        } else if (registration.waiting) {
-          serviceWorker = registration.waiting;
-          document.querySelector('#kind').textContent = 'waiting';
-        } else if (registration.active) {
-          serviceWorker = registration.active;
-          document.querySelector('#kind').textContent = 'active';
+        function logState(state) {
+            var liElement = document.createElement('li');
+            liElement.textContent = state;
+            document.querySelector('#states').appendChild(liElement);
         }
 
-        if (serviceWorker) {
-          logState(serviceWorker.state);
-          serviceWorker.addEventListener('statechange', function(e) {
-            logState(e.target.state);
-          });
+        if ('serviceWorker' in navigator) {
+            // The current browser supports service workers.
+            document.querySelector('#availability').textContent = 'are';
+
+            // navigator.serviceWorker.controlled iff there is currently a service worker handling
+            // requests on this page for the current navigation.
+            document.querySelector('#controlled').textContent = navigator.serviceWorker.controller ? 'is' : 'is not';
+
+            // Override the default scope of '/' with './', so that the registration applies
+            // to the current directory and everything underneath it.
+            navigator.serviceWorker.register('service-worker.js', {scope: './'}).then(function(registration) {
+            // At this point, registration has taken place.
+            // The service worker will not handle requests until this page and any
+            // other instances of this page (in other tabs, etc.) have been
+            // closed/reloaded.
+            document.querySelector('#register').textContent = 'succeeded';
+
+            var serviceWorker;
+            if (registration.installing) {
+                serviceWorker = registration.installing;
+                document.querySelector('#kind').textContent = 'installing';
+            } else if (registration.waiting) {
+                serviceWorker = registration.waiting;
+                document.querySelector('#kind').textContent = 'waiting';
+            } else if (registration.active) {
+                serviceWorker = registration.active;
+                document.querySelector('#kind').textContent = 'active';
+            }
+
+            if (serviceWorker) {
+            logState(serviceWorker.state);
+                serviceWorker.addEventListener('statechange', function(e) {
+                    logState(e.target.state);
+                });
+            }
+        }).catch(function(error) {
+            document.querySelector('#register').textContent = 'failed: ' + error;
+        });
+        } else {
+            document.querySelector('#availability').textContent = 'are not';
         }
-      }).catch(function(error) {
-        document.querySelector('#register').textContent = 'failed: ' + error;
-      });
-    } else {
-      document.querySelector('#availability').textContent = 'are not';
-    }
     </script>
   </body>
 </html>
