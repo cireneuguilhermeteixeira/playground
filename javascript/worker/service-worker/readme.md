@@ -29,11 +29,11 @@ before navigation.
 
 # What This Demo Shows
 
-1.  How a Service Worker is registered\
-2.  How a Service Worker is activated\
-3.  How to programmatically pre-cache assets\
-4.  How fetch interception works\
-5.  How Cache Storage speeds up subsequent visits\
+1.  How a Service Worker is registered
+2.  How a Service Worker is activated
+3.  How to programmatically pre-cache assets
+4.  How fetch interception works
+5.  How Cache Storage speeds up subsequent visits
 6.  How offline mode works
 
 ------------------------------------------------------------------------
@@ -97,9 +97,9 @@ This approach prioritizes speed over always getting fresh data.
 
 # Advantages
 
--   Faster repeat visits\
--   Reduced network usage\
--   Offline capability\
+-   Faster repeat visits
+-   Reduced network usage
+-   Offline capability
 -   Full control over caching behavior
 
 ------------------------------------------------------------------------
