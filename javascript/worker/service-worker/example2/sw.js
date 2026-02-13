@@ -36,11 +36,11 @@ async function precacheHeavy(sourceClient) {
     } catch {}
   };
 
-  await report(25, "Abrindo cache…");
+  await report(25, "Opening cache…");
 
   for (let i = 0; i < total; i++) {
     const url = HEAVY_ASSETS[i];
-    await report(25 + Math.round((60 * (i / total))), `Baixando e cacheando: ${url}`);
+    await report(25 + Math.round((60 * (i / total))), `Downloading and caching: ${url}`);
 
     const req = new Request(url, { cache: "no-store" });
     const resp = await fetch(req);
@@ -48,11 +48,11 @@ async function precacheHeavy(sourceClient) {
       await cache.put(req, resp.clone());
       cachedCount++;
     } else {
-      console.warn("Falhou ao cachear", url, resp.status);
+      console.warn("Error trying to cache", url, resp.status);
     }
   }
 
-  await report(90, "Finalizando…");
+  await report(90, "Finishing up…");
 
   try {
     sourceClient?.postMessage({ type: "PRECACHE_DONE", cachedCount });
