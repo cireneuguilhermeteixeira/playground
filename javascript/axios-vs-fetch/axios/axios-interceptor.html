@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Axios Interceptor</title>
+</head>
+<body>
+
+<h1>Axios Interceptors</h1>
+<button id="btn">Call API</button>
+<pre id="out"></pre>
+
+<script src="https://unpkg.com/axios@1.13.2/dist/axios.min.js"></script>
+<script>
+
+const out = document.getElementById("out");
+
+let authToken = "my-token";
+
+const api = axios.create({
+  baseURL: "https://jsonplaceholder.typicode.com",
+  timeout: 5000
+});
+
+
+// ================= REQUEST INTERCEPTOR =================
+api.interceptors.request.use((config) => {
+
+  config.headers.Authorization = `Bearer ${authToken}`;
+
+  config.metadata = { start: performance.now() };
+
+  out.textContent += "\n[Request interceptor] Adding Authorization header";
+
+  return config;
+});
+
+
+// ================= RESPONSE INTERCEPTOR =================
+api.interceptors.response.use(
+
+  // success
+  (response) => {
+
+    const end = performance.now();
+    const duration = end - response.config.metadata.start;
+
+    out.textContent += `\n[Response interceptor] Request took ${duration.toFixed(0)}ms`;
+
+    return response;
+  },
+
+  // error (401, 500, etc)
+  async (error) => {
+
+    if (error.response) {
+      const status = error.response.status;
+
+      out.textContent += `\n[Response interceptor] HTTP error: ${status}`;
+
+      if (status === 401) {
+        out.textContent += "\nToken expired => redirect to login";
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+
+// ================= CALL =================
+document.getElementById("btn").onclick = async () => {
+  out.textContent = "Calling API...";
+
+  try {
+    const res = await api.get("/todos/1");
+    out.textContent += "\n\nResponse:\n" + JSON.stringify(res.data, null, 2);
+  } catch (e) {
+    out.textContent += "\n\nCall failed.";
+  }
+};
+
+</script>
+</body>
+</html>
