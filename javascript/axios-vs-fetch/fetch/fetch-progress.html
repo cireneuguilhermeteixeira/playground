@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Fetch Progress</title>
+</head>
+<body>
+
+<h2>Fetch Download Progress</h2>
+<button id="btn">Download 10MB</button>
+<progress id="progress" value="0" max="100"></progress>
+<pre id="out"></pre>
+
+<script>
+
+const btn = document.getElementById("btn");
+const progressBar = document.getElementById("progress");
+const out = document.getElementById("out");
+
+btn.onclick = async () => {
+
+  progressBar.value = 0;
+  out.textContent = "Downloading...";
+
+  try {
+
+    const response = await fetch("https://speed.cloudflare.com/__down?bytes=10000000");
+
+    const contentLength = response.headers.get("content-length");
+    const total = parseInt(contentLength, 10);
+
+    const reader = response.body.getReader();
+    let received = 0;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      received += value.length;
+
+      if (total) {
+        const percent = (received / total) * 100;
+        progressBar.value = percent;
+      }
+    }
+
+    out.textContent = "Download complete!";
+
+  } catch (err) {
+    out.textContent = err.message;
+  }
+};
+
+</script>
+</body>
+</html>

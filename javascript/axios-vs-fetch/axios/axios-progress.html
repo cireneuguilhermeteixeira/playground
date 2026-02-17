@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Axios Progress</title>
+</head>
+<body>
+
+<h2>Axios Download Progress</h2>
+<button id="btn">Download 10MB</button>
+<progress id="progress" value="0" max="100"></progress>
+<pre id="out"></pre>
+
+<script src="https://unpkg.com/axios@1.13.2/dist/axios.min.js"></script>
+<script>
+
+const btn = document.getElementById("btn");
+const progressBar = document.getElementById("progress");
+const out = document.getElementById("out");
+
+btn.onclick = async () => {
+
+  progressBar.value = 0;
+  out.textContent = "Downloading...";
+
+  try {
+    await axios.get("https://speed.cloudflare.com/__down?bytes=10000000", {
+      responseType: "blob",
+
+      onDownloadProgress: (progressEvent) => {
+        if (progressEvent.total) {
+          const percent = (progressEvent.loaded / progressEvent.total) * 100;
+          progressBar.value = percent;
+        }
+      }
+    });
+
+    out.textContent = "Download complete!";
+  } catch (err) {
+    out.textContent = err.message;
+  }
+};
+
+</script>
+</body>
+</html>
