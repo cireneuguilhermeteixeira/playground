@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Axios Timeout</title>
+</head>
+<body>
+
+<h1>Axios timeout example</h1>
+<button id="btn">Call API (2s timeout)</button>
+<pre id="out"></pre>
+
+<script src="https://unpkg.com/axios@1.13.2/dist/axios.min.js"></script>
+
+<script>
+const out = document.getElementById("out");
+
+document.getElementById("btn").onclick = async () => {
+
+  out.textContent = "Calling API...";
+
+  try {
+
+    const res = await axios.get("https://httpbin.org/delay/5", {
+      timeout: 2000
+    });
+
+    out.textContent = JSON.stringify(res.data, null, 2);
+
+  } catch (err) {
+
+    if (err.code === "ECONNABORTED") {
+      out.textContent = "Timeout: request took longer than 2000ms";
+    } else {
+      out.textContent = err.message;
+    }
+
+  }
+};
+</script>
+
+</body>
+</html>

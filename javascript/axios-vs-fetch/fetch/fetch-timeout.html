@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fetch Timeout</title>
+</head>
+<body>
+
+<h1>Fetch timeout example</h1>
+<button id="btn">Call API (2s timeout)</button>
+<pre id="out"></pre>
+
+<script>
+const out = document.getElementById("out");
+
+async function fetchWithTimeout(url, options = {}, timeout = 2000) {
+
+  const controller = new AbortController();
+  const id = setTimeout(() => {
+    controller.abort();
+  }, timeout);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+
+    clearTimeout(id);
+    return response;
+
+  } catch (err) {
+    clearTimeout(id);
+
+    if (err.name === "AbortError") {
+      throw new Error("Timeout: request took longer than " + timeout + "ms");
+    }
+
+    throw err;
+  }
+}
+
+document.getElementById("btn").onclick = async () => {
+  out.textContent = "Calling API...";
+
+  try {
+    const res = await fetchWithTimeout("https://httpbin.org/delay/5");
+    const data = await res.json();
+    out.textContent = JSON.stringify(data, null, 2);
+  } catch (e) {
+    out.textContent = e.message;
+  }
+};
+</script>
+
+</body>
+</html>
