@@ -11,7 +11,7 @@
 * [React Architecture](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/design-patterns)
 * Lifecycle Events
 * Hooks and custom hooks
-* Fetch vs Axios
+* [Fetch vs Axios](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/axios-vs-fetch)
 * Routing
 * Pagination
 * [Service Workers](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/worker/service-worker)
