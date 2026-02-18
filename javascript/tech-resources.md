@@ -8,17 +8,17 @@
 
 ## Core Learning React
 
-* React Architecture
+* [React Architecture](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/design-patterns)
 * Lifecycle Events
 * Hooks and custom hooks
 * Fetch vs Axios
 * Routing
 * Pagination
-* Service Workers
+* [Service Workers](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/worker/service-worker)
 * Web Components
-* Module Federation
-* Performance and Profiling
-* [SWR](https://swr.vercel.app/)
+* [Module Federation](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/module-federation)
+* [Performance and Profiling](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/performance-profiling)
+* SWR
 * Local Storage
 * Session Storage
 * Cookies
@@ -49,7 +49,7 @@
 ## Testing
 
 * React Testing Library
-* Jest
+* [Jest](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/jest-poc)
 * Cypress
 
 ## Better React
