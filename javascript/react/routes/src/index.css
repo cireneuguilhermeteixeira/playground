@@ -24,3 +24,32 @@ body {
   margin: 64px auto;
   padding: 0 16px;
 }
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.nav {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #0b5fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.nav a.active {
+  background: #e6f0ff;
+  color: #0b3fbf;
+}
+
+.content button {
+  margin-top: 12px;
+}
