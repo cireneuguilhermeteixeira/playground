@@ -5,8 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:classic": "VITE_ROUTER_MODE=classic vite",
+    "dev:data": "VITE_ROUTER_MODE=data vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "build:classic": "VITE_ROUTER_MODE=classic vite build",
+    "build:data": "VITE_ROUTER_MODE=data vite build",
+    "preview": "vite preview",
+    "preview:classic": "VITE_ROUTER_MODE=classic vite preview",
+    "preview:data": "VITE_ROUTER_MODE=data vite preview"
   },
   "dependencies": {
     "react": "^18.2.0",

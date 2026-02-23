@@ -1,16 +1,15 @@
 import {
-  BrowserRouter,
-  Routes,
-  Route,
+  createBrowserRouter,
   NavLink,
   Navigate,
   Outlet,
   useNavigate,
-  useParams,
   useLocation,
   useNavigationType,
   useSearchParams,
+  useLoaderData,
 } from 'react-router-dom';
+import { searchLoader, userLoader } from './loaders/dataLoaders.js';
 
 function Layout() {
   const navType = useNavigationType();
@@ -56,35 +55,25 @@ function Home() {
   );
 }
 
-function About() {
-  const location = useLocation();
-  return (
-    <section>
-      <h2>About</h2>
-      <p>Current path: {location.pathname}</p>
-      <p>State from navigation: {location.state?.from ?? 'none'}</p>
-    </section>
-  );
-}
-
 function User() {
-  const { userId } = useParams();
+  const data = useLoaderData();
   return (
     <section>
       <h2>User</h2>
-      <p>Loaded user id: {userId}</p>
+      <p>Loaded user id: {data.userId}</p>
+      <p>Loaded at: {data.loadedAt}</p>
     </section>
   );
 }
 
 function Search() {
+  const data = useLoaderData();
   const [params, setParams] = useSearchParams();
-  const query = params.get('q') ?? '';
 
   return (
     <section>
       <h2>Search</h2>
-      <p>Query param: {query || '(empty)'}</p>
+      <p>Query param (loader): {data.query || '(empty)'}</p>
       <div className="row">
         <button type="button" onClick={() => setParams({ q: 'router' })}>
           Set q=router
@@ -93,6 +82,7 @@ function Search() {
           Clear
         </button>
       </div>
+      <p>Query param (state): {params.get('q') ?? '(empty)'}</p>
     </section>
   );
 }
@@ -128,14 +118,6 @@ function DashboardHome() {
   );
 }
 
-function DashboardSettings() {
-  return (
-    <div>
-      <p>Nested settings route.</p>
-    </div>
-  );
-}
-
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -161,33 +143,45 @@ function NotFound() {
   );
 }
 
-export default function App() {
-  const isAuthenticated = false;
+const isAuthenticated = false;
 
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="about" element={<About />} />
-          <Route path="users/:userId" element={<User />} />
-          <Route path="search" element={<Search />} />
-          <Route path="login" element={<Login />} />
-          <Route
-            path="dashboard"
-            element={
-              <RequireAuth isAuthenticated={isAuthenticated}>
-                <DashboardLayout />
-              </RequireAuth>
-            }
-          >
-            <Route index element={<DashboardHome />} />
-            <Route path="settings" element={<DashboardSettings />} />
-          </Route>
-          <Route path="go" element={<Navigate to="/about" replace />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
-}
+export const router = createBrowserRouter([
+  {
+    element: <Layout />,
+    children: [
+      { index: true, element: <Home /> },
+      {
+        path: 'about',
+        lazy: () => import('./routes/About.jsx'),
+      },
+      {
+        path: 'users/:userId',
+        element: <User />,
+        loader: userLoader,
+      },
+      {
+        path: 'search',
+        element: <Search />,
+        loader: searchLoader,
+      },
+      { path: 'login', element: <Login /> },
+      {
+        path: 'dashboard',
+        element: (
+          <RequireAuth isAuthenticated={isAuthenticated}>
+            <DashboardLayout />
+          </RequireAuth>
+        ),
+        children: [
+          { index: true, element: <DashboardHome /> },
+          {
+            path: 'settings',
+            lazy: () => import('./routes/DashboardSettings.jsx'),
+          },
+        ],
+      },
+      { path: 'go', element: <Navigate to="/about" replace /> },
+      { path: '*', element: <NotFound /> },
+    ],
+  },
+]);
