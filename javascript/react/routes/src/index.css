@@ -50,6 +50,34 @@ body {
   color: #0b3fbf;
 }
 
+.meta {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: #555;
+}
+
+.subnav {
+  display: flex;
+  gap: 12px;
+  margin: 8px 0 16px;
+}
+
+.subnav a {
+  text-decoration: none;
+  color: #0b5fff;
+}
+
+.subnav a.active {
+  font-weight: 600;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .content button {
   margin-top: 12px;
 }
