@@ -19,6 +19,18 @@ async function start() {
     return;
   }
 
+  if (mode === 'tanstack') {
+    const { RouterProvider } = await import('@tanstack/react-router');
+    const { router } = await import('./app-tanstack.jsx');
+
+    root.render(
+      <React.StrictMode>
+        <RouterProvider router={router} />
+      </React.StrictMode>
+    );
+    return;
+  }
+
   const { AppClassic } = await import('./app-classic.jsx');
   root.render(
     <React.StrictMode>

@@ -7,14 +7,18 @@
     "dev": "vite",
     "dev:classic": "VITE_ROUTER_MODE=classic vite",
     "dev:data": "VITE_ROUTER_MODE=data vite",
+    "dev:tanstack": "VITE_ROUTER_MODE=tanstack vite",
     "build": "vite build",
     "build:classic": "VITE_ROUTER_MODE=classic vite build",
     "build:data": "VITE_ROUTER_MODE=data vite build",
+    "build:tanstack": "VITE_ROUTER_MODE=tanstack vite build",
     "preview": "vite preview",
     "preview:classic": "VITE_ROUTER_MODE=classic vite preview",
-    "preview:data": "VITE_ROUTER_MODE=data vite preview"
+    "preview:data": "VITE_ROUTER_MODE=data vite preview",
+    "preview:tanstack": "VITE_ROUTER_MODE=tanstack vite preview"
   },
   "dependencies": {
+    "@tanstack/react-router": "^1.131.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3"

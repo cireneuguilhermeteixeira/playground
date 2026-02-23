@@ -1,17 +1,22 @@
 # Routes POC
 
-This project contains two routing approaches side-by-side so you can compare them.
+This project contains three routing approaches side-by-side so you can compare them.
 
 ## How to run
 
-Classic (component router):
+Classic (React Router component router):
 ```
 npm run dev:classic
 ```
 
-Data router (loaders + route-level code splitting):
+Data router (React Router with loaders + lazy routes):
 ```
 npm run dev:data
+```
+
+TanStack Router (loaders + lazy routes):
+```
+npm run dev:tanstack
 ```
 
 If your shell doesn't support `VITE_ROUTER_MODE=...` (e.g. Windows cmd), run:
@@ -21,22 +26,40 @@ set VITE_ROUTER_MODE=classic&& npm run dev
 ```
 set VITE_ROUTER_MODE=data&& npm run dev
 ```
+```
+set VITE_ROUTER_MODE=tanstack&& npm run dev
+```
 
 ## Files
 
-- `src/app-classic.jsx`: BrowserRouter + Routes (classic component router)
-- `src/app-data.jsx`: createBrowserRouter + loaders + lazy routes
-- `src/loaders/dataLoaders.js`: separated data loader functions
-- `src/routes/About.jsx`, `src/routes/DashboardSettings.jsx`: lazy-loaded route components
+- `src/app-classic.jsx`: React Router component router (BrowserRouter + Routes)
+- `src/app-data.jsx`: React Router data router (createBrowserRouter + loaders + lazy routes)
+- `src/app-tanstack.jsx`: TanStack Router (route tree + loaders + lazy routes)
+- `src/loaders/dataLoaders.js`: React Router loaders
+- `src/tanstack/loaders.js`: TanStack loaders
+- `src/routes/About.jsx`, `src/routes/DashboardSettings.jsx`: lazy-loaded React Router route components
+- `src/tanstack/routes/about.lazy.jsx`, `src/tanstack/routes/dashboard-settings.lazy.jsx`: lazy-loaded TanStack route components
 
 ## Tradeoffs
 
-Classic (BrowserRouter + Routes):
-- Pros: Simple mental model, straightforward for purely client-side apps, easy to adopt incrementally.
-- Cons: No built-in data loading or error boundaries per route; you wire data fetching and loading states manually.
-- Code splitting: You can lazy-load route components via `React.lazy` + `Suspense`, but it is manual.
+React Router (component router):
+- Pros: Very simple mental model, easiest incremental adoption, huge ecosystem.
+- Cons: No built-in data loading or per-route error boundaries; you wire data fetching manually.
+- Code splitting: Manual via `React.lazy` + `Suspense`.
 
-Data router (createBrowserRouter):
-- Pros: Built-in loaders and route-level error boundaries, better control over navigation states, easy per-route data prefetching.
-- Cons: Slightly more boilerplate, different APIs, and you generally commit to the data-router mental model.
-- Code splitting: `lazy()` on routes is first-class and more ergonomic.
+React Router (data router):
+- Pros: First-class loaders/actions, route-level error boundaries, navigation state handling.
+- Cons: More boilerplate and different APIs; you adopt the data-router model for many features.
+- Code splitting: First-class via route `lazy()`.
+
+TanStack Router:
+- Pros: Strong URL/state tooling, explicit route tree, great for complex routing, powerful search param handling.
+- Cons: Smaller ecosystem and team familiarity, different mental model.
+- Code splitting: First-class via route `lazy()`.
+
+## Opinion (best vs most popular)
+
+- Most popular: React Router is by far the most widely used routing library in React (based on download stats).
+- Best (my opinion):
+  - For teams that want the broadest adoption and easiest onboarding, React Router data router is the safest default.
+  - If you need tight control over route state/search params and prefer an explicit route tree, TanStack Router is excellent.
