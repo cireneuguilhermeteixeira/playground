@@ -5,6 +5,7 @@ import {
   Outlet,
   Link,
   useNavigate,
+  useRouterState,
 } from '@tanstack/react-router';
 import { searchLoader, userLoader } from './tanstack/loaders.js';
 
@@ -109,9 +110,20 @@ function NotFound() {
   );
 }
 
+function RouteError() {
+  const { error } = useRouterState();
+  return (
+    <section>
+      <h2>Route Error</h2>
+      <p>{error?.message ?? 'Unknown error'}</p>
+    </section>
+  );
+}
+
 const rootRoute = createRootRoute({
   component: Layout,
   notFoundComponent: NotFound,
+  errorComponent: RouteError,
 });
 
 const indexRoute = createRoute({
@@ -130,6 +142,7 @@ const userRoute = createRoute({
   path: 'users/$userId',
   loader: userLoader,
   component: User,
+  errorComponent: RouteError,
 });
 
 const searchRoute = createRoute({
@@ -140,6 +153,7 @@ const searchRoute = createRoute({
   }),
   loader: searchLoader,
   component: Search,
+  errorComponent: RouteError,
 });
 
 const dashboardRoute = createRoute({

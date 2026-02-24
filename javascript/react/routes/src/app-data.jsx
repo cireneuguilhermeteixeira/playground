@@ -8,6 +8,8 @@ import {
   useNavigationType,
   useSearchParams,
   useLoaderData,
+  useRouteError,
+  isRouteErrorResponse,
 } from 'react-router-dom';
 import { searchLoader, userLoader } from './loaders/dataLoaders.js';
 
@@ -143,11 +145,26 @@ function NotFound() {
   );
 }
 
+function RouteError() {
+  const error = useRouteError();
+  const message = isRouteErrorResponse(error)
+    ? `${error.status} ${error.statusText}`
+    : error?.message ?? 'Unknown error';
+
+  return (
+    <section>
+      <h2>Route Error</h2>
+      <p>{message}</p>
+    </section>
+  );
+}
+
 const isAuthenticated = false;
 
 export const router = createBrowserRouter([
   {
     element: <Layout />,
+    errorElement: <RouteError />,
     children: [
       { index: true, element: <Home /> },
       {
@@ -158,11 +175,13 @@ export const router = createBrowserRouter([
         path: 'users/:userId',
         element: <User />,
         loader: userLoader,
+        errorElement: <RouteError />,
       },
       {
         path: 'search',
         element: <Search />,
         loader: searchLoader,
+        errorElement: <RouteError />,
       },
       { path: 'login', element: <Login /> },
       {
