@@ -12,9 +12,10 @@ import {
   useNavigationType,
   useSearchParams,
 } from 'react-router-dom';
+import type { ReactNode } from 'react';
 
-const LazyAbout = lazy(() => import('./routes/About.jsx'));
-const LazyDashboardSettings = lazy(() => import('./routes/DashboardSettings.jsx'));
+const LazyAbout = lazy(() => import('./routes/About'));
+const LazyDashboardSettings = lazy(() => import('./routes/DashboardSettings'));
 
 function Layout() {
   const navType = useNavigationType();
@@ -99,7 +100,12 @@ function Search() {
   );
 }
 
-function RequireAuth({ isAuthenticated, children }) {
+type RequireAuthProps = {
+  isAuthenticated: boolean;
+  children: ReactNode;
+};
+
+function RequireAuth({ isAuthenticated, children }: RequireAuthProps) {
   const location = useLocation();
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
@@ -141,7 +147,8 @@ function DashboardSettingsWrapper() {
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from ?? '/dashboard';
+  const state = location.state as { from?: string } | null;
+  const from = state?.from ?? '/dashboard';
 
   return (
     <section>

@@ -1,6 +1,7 @@
 # Routes POC
 
 This project contains three routing approaches side-by-side so you can compare them.
+It is now in TypeScript to highlight TanStack Router's strongest advantage: typed routes/search params.
 
 ## How to run
 
@@ -62,4 +63,4 @@ TanStack Router:
 - Most popular: React Router is by far the most widely used routing library in React (based on download stats).
 - Best (my opinion):
   - For teams that want the broadest adoption and easiest onboarding, React Router data router is the safest default.
-  - If you need tight control over route state/search params and prefer an explicit route tree, TanStack Router is excellent.
+  - If you need tight control over route state/search params and want type safety, TanStack Router is excellent.

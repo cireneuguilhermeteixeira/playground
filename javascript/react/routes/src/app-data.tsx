@@ -11,7 +11,8 @@ import {
   useRouteError,
   isRouteErrorResponse,
 } from 'react-router-dom';
-import { searchLoader, userLoader } from './loaders/dataLoaders.js';
+import type { ReactNode } from 'react';
+import { searchLoader, userLoader } from './loaders/dataLoaders';
 
 function Layout() {
   const navType = useNavigationType();
@@ -58,7 +59,7 @@ function Home() {
 }
 
 function User() {
-  const data = useLoaderData();
+  const data = useLoaderData() as { userId: string; loadedAt: string };
   return (
     <section>
       <h2>User</h2>
@@ -69,7 +70,7 @@ function User() {
 }
 
 function Search() {
-  const data = useLoaderData();
+  const data = useLoaderData() as { query: string };
   const [params, setParams] = useSearchParams();
 
   return (
@@ -89,7 +90,12 @@ function Search() {
   );
 }
 
-function RequireAuth({ isAuthenticated, children }) {
+type RequireAuthProps = {
+  isAuthenticated: boolean;
+  children: ReactNode;
+};
+
+function RequireAuth({ isAuthenticated, children }: RequireAuthProps) {
   const location = useLocation();
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
@@ -123,7 +129,8 @@ function DashboardHome() {
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from ?? '/dashboard';
+  const state = location.state as { from?: string } | null;
+  const from = state?.from ?? '/dashboard';
 
   return (
     <section>
@@ -149,7 +156,9 @@ function RouteError() {
   const error = useRouteError();
   const message = isRouteErrorResponse(error)
     ? `${error.status} ${error.statusText}`
-    : error?.message ?? 'Unknown error';
+    : error instanceof Error
+      ? error.message
+      : 'Unknown error';
 
   return (
     <section>
@@ -169,7 +178,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Home /> },
       {
         path: 'about',
-        lazy: () => import('./routes/About.jsx'),
+        lazy: () => import('./routes/About'),
       },
       {
         path: 'users/:userId',
@@ -195,7 +204,7 @@ export const router = createBrowserRouter([
           { index: true, element: <DashboardHome /> },
           {
             path: 'settings',
-            lazy: () => import('./routes/DashboardSettings.jsx'),
+            lazy: () => import('./routes/DashboardSettings'),
           },
         ],
       },

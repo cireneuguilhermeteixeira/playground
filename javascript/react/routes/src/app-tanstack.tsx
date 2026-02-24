@@ -7,7 +7,7 @@ import {
   useNavigate,
   useRouterState,
 } from '@tanstack/react-router';
-import { searchLoader, userLoader } from './tanstack/loaders.js';
+import { searchLoader, userLoader } from './tanstack/loaders';
 
 function Layout() {
   return (
@@ -112,10 +112,11 @@ function NotFound() {
 
 function RouteError() {
   const { error } = useRouterState();
+  const message = error instanceof Error ? error.message : 'Unknown error';
   return (
     <section>
       <h2>Route Error</h2>
-      <p>{error?.message ?? 'Unknown error'}</p>
+      <p>{message}</p>
     </section>
   );
 }
@@ -135,7 +136,7 @@ const indexRoute = createRoute({
 const aboutRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: 'about',
-}).lazy(() => import('./tanstack/routes/about.lazy.jsx'));
+}).lazy(() => import('./tanstack/routes/about.lazy'));
 
 const userRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -171,7 +172,7 @@ const dashboardIndexRoute = createRoute({
 const dashboardSettingsRoute = createRoute({
   getParentRoute: () => dashboardRoute,
   path: 'settings',
-}).lazy(() => import('./tanstack/routes/dashboard-settings.lazy.jsx'));
+}).lazy(() => import('./tanstack/routes/dashboard-settings.lazy'));
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
