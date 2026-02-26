@@ -9,7 +9,7 @@ async function start() {
 
   if (mode === 'data') {
     const { RouterProvider } = await import('react-router-dom');
-    const { router } = await import('./app-data.tsx');
+    const { router } = await import('./app-data');
 
     root.render(
       <React.StrictMode>
@@ -19,19 +19,9 @@ async function start() {
     return;
   }
 
-  if (mode === 'tanstack') {
-    const { RouterProvider } = await import('@tanstack/react-router');
-    const { router } = await import('./app-tanstack.tsx');
 
-    root.render(
-      <React.StrictMode>
-        <RouterProvider router={router} />
-      </React.StrictMode>
-    );
-    return;
-  }
 
-  const { AppClassic } = await import('./app-classic.tsx');
+  const { AppClassic } = await import('./app-classic');
   root.render(
     <React.StrictMode>
       <AppClassic />
