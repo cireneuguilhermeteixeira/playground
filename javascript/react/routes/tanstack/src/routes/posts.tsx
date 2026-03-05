@@ -8,7 +8,7 @@ function PostsLayout() {
   return (
     <section>
       <h2>Posts</h2>
-      <p>Layout pai da árvore de posts.</p>
+      <p>Main layout for the posts tree.</p>
       <Outlet />
     </section>
   )

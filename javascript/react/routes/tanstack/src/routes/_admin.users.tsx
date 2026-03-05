@@ -5,5 +5,5 @@ export const Route = createFileRoute('/_admin/users')({
 })
 
 function UsersFromAdminLayoutPage() {
-  return <p>URL final: <code>/users</code>, mas usando o layout pathless <code>_admin.tsx</code>.</p>
+  return <p>final URL: <code>/users</code>, but using the pathless layout <code>_admin.tsx</code>.</p>
 }

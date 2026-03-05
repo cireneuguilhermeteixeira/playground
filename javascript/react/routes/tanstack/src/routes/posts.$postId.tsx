@@ -11,7 +11,7 @@ function PostDetailsPage() {
 
   return (
     <div>
-      <p>Detalhes do post com id dinâmico: <strong>{postId}</strong>.</p>
+      <p>Details for post with dynamic ID: <strong>{postId}</strong>.</p>
       <PostSummary title={`Post ${postId}`} tag={formatTag('filebased')} />
     </div>
   )
