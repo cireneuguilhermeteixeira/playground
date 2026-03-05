@@ -8,7 +8,9 @@ function AdminPathlessLayout() {
   return (
     <section>
       <h2>Layout Pathless (_admin)</h2>
-      <p>Arquivo começa com underscore e organiza páginas sem adicionar segmento na URL.</p>
+      <p>
+        File with underscore prefix organizes pages without adding segment to the URL.
+        </p>
       <Outlet />
     </section>
   )

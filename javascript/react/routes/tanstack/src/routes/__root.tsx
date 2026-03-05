@@ -10,7 +10,7 @@ function RootLayout() {
     <main className="app">
       <section className="card">
         <h1>TanStack Router (file-based)</h1>
-        <p className="subtitle">Exemplos com arquivos de rota, params e arquivos ignorados.</p>
+        <p className="subtitle">Example with file-based routing, params, and ignored files.</p>
 
         <nav className="nav">
           <Link to="/" className="nav-link" activeProps={{ className: 'nav-link nav-link-active' }}>
