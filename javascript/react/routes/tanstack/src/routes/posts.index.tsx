@@ -17,6 +17,9 @@ function PostsIndexPage() {
           Ver post 2
         </Link>
       </li>
+      <li>
+        <Link to="/posts/query">Open react-query list example</Link>
+      </li>
     </ul>
   )
 }

@@ -23,6 +23,9 @@ function HomePage() {
           </Link>
         </li>
         <li>
+          <Link to="/posts/query">/posts/query (react-query example)</Link>
+        </li>
+        <li>
           <Link to="/orgs/$orgId/users/$userId" params={{ orgId: 'acme', userId: 'u-7' }}>
             /orgs/$orgId/users/$userId (2 ids)
           </Link>
