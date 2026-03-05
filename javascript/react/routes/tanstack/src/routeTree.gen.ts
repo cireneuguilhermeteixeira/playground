@@ -15,6 +15,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PostsIndexRouteImport } from './routes/posts.index'
+import { Route as PostsQueryRouteImport } from './routes/posts.query'
 import { Route as PostsPostIdRouteImport } from './routes/posts.$postId'
 import { Route as AdminUsersRouteImport } from './routes/_admin.users'
 import { Route as PostsPostIdEditRouteImport } from './routes/posts.$postId.edit'
@@ -50,6 +51,11 @@ const PostsIndexRoute = PostsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PostsRoute,
 } as any)
+const PostsQueryRoute = PostsQueryRouteImport.update({
+  id: '/query',
+  path: '/query',
+  getParentRoute: () => PostsRoute,
+} as any)
 const PostsPostIdRoute = PostsPostIdRouteImport.update({
   id: '/$postId',
   path: '/$postId',
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/posts': typeof PostsRouteWithChildren
   '/users': typeof AdminUsersRoute
   '/posts/$postId': typeof PostsPostIdRouteWithChildren
+  '/posts/query': typeof PostsQueryRoute
   '/posts/': typeof PostsIndexRoute
   '/settings/profile': typeof AdminSettingsProfileRoute
   '/posts/$postId/edit': typeof PostsPostIdEditRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/index': typeof Char91indexChar93Route
   '/users': typeof AdminUsersRoute
   '/posts/$postId': typeof PostsPostIdRouteWithChildren
+  '/posts/query': typeof PostsQueryRoute
   '/posts': typeof PostsIndexRoute
   '/settings/profile': typeof AdminSettingsProfileRoute
   '/posts/$postId/edit': typeof PostsPostIdEditRoute
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   '/posts': typeof PostsRouteWithChildren
   '/_admin/users': typeof AdminUsersRoute
   '/posts/$postId': typeof PostsPostIdRouteWithChildren
+  '/posts/query': typeof PostsQueryRoute
   '/posts/': typeof PostsIndexRoute
   '/_admin/settings/profile': typeof AdminSettingsProfileRoute
   '/posts/$postId/edit': typeof PostsPostIdEditRoute
@@ -122,6 +131,7 @@ export interface FileRouteTypes {
     | '/posts'
     | '/users'
     | '/posts/$postId'
+    | '/posts/query'
     | '/posts/'
     | '/settings/profile'
     | '/posts/$postId/edit'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/index'
     | '/users'
     | '/posts/$postId'
+    | '/posts/query'
     | '/posts'
     | '/settings/profile'
     | '/posts/$postId/edit'
@@ -146,6 +157,7 @@ export interface FileRouteTypes {
     | '/posts'
     | '/_admin/users'
     | '/posts/$postId'
+    | '/posts/query'
     | '/posts/'
     | '/_admin/settings/profile'
     | '/posts/$postId/edit'
@@ -203,6 +215,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/posts/'
       preLoaderRoute: typeof PostsIndexRouteImport
+      parentRoute: typeof PostsRoute
+    }
+    '/posts/query': {
+      id: '/posts/query'
+      path: '/query'
+      fullPath: '/posts/query'
+      preLoaderRoute: typeof PostsQueryRouteImport
       parentRoute: typeof PostsRoute
     }
     '/posts/$postId': {
@@ -269,11 +288,13 @@ const PostsPostIdRouteWithChildren = PostsPostIdRoute._addFileChildren(
 
 interface PostsRouteChildren {
   PostsPostIdRoute: typeof PostsPostIdRouteWithChildren
+  PostsQueryRoute: typeof PostsQueryRoute
   PostsIndexRoute: typeof PostsIndexRoute
 }
 
 const PostsRouteChildren: PostsRouteChildren = {
   PostsPostIdRoute: PostsPostIdRouteWithChildren,
+  PostsQueryRoute: PostsQueryRoute,
   PostsIndexRoute: PostsIndexRoute,
 }
 
