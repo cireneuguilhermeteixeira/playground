@@ -3,7 +3,7 @@ import { List } from 'react-window'
 import './App.css'
 
 const TOTAL_ITEMS = 10000
-const PAGE_SIZE = 250
+const PAGE_SIZE = 10000
 const ROW_HEIGHT = 96
 const LIST_HEIGHT = 420
 
@@ -14,7 +14,7 @@ const dataset = Array.from({ length: TOTAL_ITEMS }, (_, index) => {
 
   return {
     id: `ITEM-${itemNumber.toString().padStart(5, '0')}`,
-    title: `Registro ${itemNumber}`,
+    title: `Registration ${itemNumber}`,
     category,
     status,
     updatedAt: `2026-03-${String((index % 28) + 1).padStart(2, '0')}`,
@@ -32,7 +32,7 @@ function Row({ index, style, items, ariaAttributes }) {
       </div>
       <dl className="row__meta">
         <div>
-          <dt>Categoria</dt>
+          <dt>Category</dt>
           <dd>{item.category}</dd>
         </div>
         <div>
@@ -40,7 +40,7 @@ function Row({ index, style, items, ariaAttributes }) {
           <dd>{item.status}</dd>
         </div>
         <div>
-          <dt>Atualizado</dt>
+          <dt>Updated</dt>
           <dd>{item.updatedAt}</dd>
         </div>
       </dl>
@@ -64,11 +64,11 @@ function App() {
     <main className="app">
       <section className="hero">
         <p className="eyebrow">React pagination POC</p>
-        <h1>Paginacao com react-window</h1>
+        <h1>Pagination with react-window</h1>
         <p className="lead">
-          A pagina controla qual bloco do dataset sera exibido. O{' '}
-          <code>react-window</code> renderiza apenas as linhas visiveis dentro da
-          pagina atual.
+          The page controls which block of the dataset will be displayed. The{' '}
+          <code>react-window</code> renders only the visible rows within the
+          current page.
         </p>
       </section>
 
@@ -76,14 +76,14 @@ function App() {
         <div className="stats">
           <article>
             <span>Dataset total</span>
-            <strong>{TOTAL_ITEMS.toLocaleString('pt-BR')} itens</strong>
+            <strong>{TOTAL_ITEMS.toLocaleString('pt-BR')} items</strong>
           </article>
           <article>
-            <span>Tamanho da pagina</span>
-            <strong>{PAGE_SIZE} registros</strong>
+            <span>Page size</span>
+            <strong>{PAGE_SIZE} records</strong>
           </article>
           <article>
-            <span>Pagina atual</span>
+            <span>Current page</span>
             <strong>
               {page} / {totalPages}
             </strong>
@@ -92,18 +92,18 @@ function App() {
 
         <div className="controls">
           <button type="button" onClick={() => setPage(1)} disabled={page === 1}>
-            Primeira
+            First
           </button>
           <button
             type="button"
             onClick={() => setPage((currentPage) => currentPage - 1)}
             disabled={page === 1}
           >
-            Anterior
+            Previous
           </button>
 
           <label className="page-picker">
-            <span>Ir para</span>
+            <span>Go to</span>
             <select
               value={page}
               onChange={(event) => setPage(Number(event.target.value))}
@@ -111,7 +111,7 @@ function App() {
               {Array.from({ length: totalPages }, (_, index) => index + 1).map(
                 (pageNumber) => (
                   <option key={pageNumber} value={pageNumber}>
-                    Pagina {pageNumber}
+                    Page {pageNumber}
                   </option>
                 ),
               )}
@@ -123,27 +123,27 @@ function App() {
             onClick={() => setPage((currentPage) => currentPage + 1)}
             disabled={page === totalPages}
           >
-            Proxima
+            Next
           </button>
           <button
             type="button"
             onClick={() => setPage(totalPages)}
             disabled={page === totalPages}
           >
-            Ultima
+            Last
           </button>
         </div>
 
         <div className="panel__header">
           <div>
-            <p className="eyebrow">Slice atual</p>
+            <p className="eyebrow">Current slice</p>
             <h2>
-              Itens {firstItemNumber} a {lastItemNumber}
+              Items {firstItemNumber} to {lastItemNumber}
             </h2>
           </div>
           <p className="hint">
-            Apesar de a pagina ter {currentItems.length} itens, o DOM so recebe o
-            necessario para preencher a viewport.
+            Even though the page has {currentItems.length} items, the DOM only receives
+            what's necessary to fill the viewport. 
           </p>
         </div>
 
