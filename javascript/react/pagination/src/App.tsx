@@ -1,27 +1,44 @@
 import { useMemo, useState } from 'react'
-import { List } from 'react-window'
+import { List, type RowComponentProps } from 'react-window'
 import './App.css'
+
+type Item = {
+  id: string
+  title: string
+  category: 'Docs' | 'Billing' | 'Checkout' | 'Auth'
+  status: 'Ready' | 'Review' | 'Draft'
+  updatedAt: string
+}
+
+type RowProps = {
+  items: Item[]
+}
 
 const TOTAL_ITEMS = 10000
 const PAGE_SIZE = 10000
 const ROW_HEIGHT = 96
 const LIST_HEIGHT = 420
+const categories: Item['category'][] = ['Docs', 'Billing', 'Checkout', 'Auth']
+const statuses: Item['status'][] = ['Ready', 'Review', 'Draft']
 
-const dataset = Array.from({ length: TOTAL_ITEMS }, (_, index) => {
+const dataset: Item[] = Array.from({ length: TOTAL_ITEMS }, (_, index) => {
   const itemNumber = index + 1
-  const category = ['Docs', 'Billing', 'Checkout', 'Auth'][index % 4]
-  const status = ['Ready', 'Review', 'Draft'][index % 3]
 
   return {
     id: `ITEM-${itemNumber.toString().padStart(5, '0')}`,
     title: `Registration ${itemNumber}`,
-    category,
-    status,
+    category: categories[index % categories.length],
+    status: statuses[index % statuses.length],
     updatedAt: `2026-03-${String((index % 28) + 1).padStart(2, '0')}`,
   }
 })
 
-function Row({ index, style, items, ariaAttributes }) {
+function Row({
+  index,
+  style,
+  items,
+  ariaAttributes,
+}: RowComponentProps<RowProps>) {
   const item = items[index]
 
   return (
@@ -49,7 +66,7 @@ function Row({ index, style, items, ariaAttributes }) {
 }
 
 function App() {
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState<number>(1)
   const totalPages = Math.ceil(TOTAL_ITEMS / PAGE_SIZE)
 
   const currentItems = useMemo(() => {
@@ -142,8 +159,8 @@ function App() {
             </h2>
           </div>
           <p className="hint">
-            Even though the page has {currentItems.length} items, the DOM only receives
-            what's necessary to fill the viewport. 
+            Even though the page has {currentItems.length} items, the DOM only
+            receives what's necessary to fill the viewport.
           </p>
         </div>
 
