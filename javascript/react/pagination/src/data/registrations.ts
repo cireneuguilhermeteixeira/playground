@@ -44,9 +44,8 @@ export async function fetchRegistrationsPage(
 ): Promise<RegistrationsPage> {
   const start = pageIndex * pageSize
   const end = start + pageSize
-
   await new Promise((resolve) => {
-    window.setTimeout(resolve, 350)
+    window.setTimeout(resolve, 1000) // Simulate network delay
   })
 
   return {
