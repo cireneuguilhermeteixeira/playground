@@ -12,8 +12,8 @@
 * Lifecycle Events
 * Hooks and custom hooks
 * [Fetch vs Axios](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/axios-vs-fetch)
-* Routing
-* Pagination
+* [Routing](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/routes)
+* [Pagination](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/pagination)
 * [Service Workers](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/worker/service-worker)
 * Web Components
 * [Module Federation](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/module-federation)
