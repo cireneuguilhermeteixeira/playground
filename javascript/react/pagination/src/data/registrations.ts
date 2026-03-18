@@ -1,16 +1,4 @@
-export type Registration = {
-  id: string
-  title: string
-  category: 'Docs' | 'Billing' | 'Checkout' | 'Auth'
-  status: 'Ready' | 'Review' | 'Draft'
-  updatedAt: string
-}
-
-export type RegistrationsPage = {
-  rows: Registration[]
-  rowCount: number
-  pageCount: number
-}
+import type { Registration, RegistrationsPage } from '../types/registration'
 
 const TOTAL_ITEMS = 10000
 const categories: Registration['category'][] = [

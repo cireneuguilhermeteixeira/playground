@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { List, type RowComponentProps } from 'react-window'
-import { registrations, registrationsTotal, type Registration } from '../data/registrations'
+import { registrations, registrationsTotal } from '../data/registrations'
+import type { Registration } from '../types/registration'
 
 type RowProps = {
   items: Registration[]

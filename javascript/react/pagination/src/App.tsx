@@ -1,12 +1,21 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import { BackendPaginationPage } from './pages/BackendPaginationPage'
 import { ReactWindowPage } from './pages/ReactWindowPage'
 import { TanStackPage } from './pages/TanStackPage'
 
-type DemoRoute = 'react-window' | 'tanstack'
+type DemoRoute = 'react-window' | 'tanstack' | 'backend'
 
 function getRouteFromHash(): DemoRoute {
-  return window.location.hash === '#/tanstack' ? 'tanstack' : 'react-window'
+  if (window.location.hash === '#/tanstack') {
+    return 'tanstack'
+  }
+
+  if (window.location.hash === '#/backend') {
+    return 'backend'
+  }
+
+  return 'react-window'
 }
 
 function App() {
@@ -39,9 +48,21 @@ function App() {
         >
           TanStack Query + Table
         </a>
+        <a
+          href="#/backend"
+          className={route === 'backend' ? 'demo-nav__link is-active' : 'demo-nav__link'}
+        >
+          Real Backend
+        </a>
       </nav>
 
-      {route === 'react-window' ? <ReactWindowPage /> : <TanStackPage />}
+      {route === 'react-window' ? (
+        <ReactWindowPage />
+      ) : route === 'tanstack' ? (
+        <TanStackPage />
+      ) : (
+        <BackendPaginationPage />
+      )}
     </main>
   )
 }

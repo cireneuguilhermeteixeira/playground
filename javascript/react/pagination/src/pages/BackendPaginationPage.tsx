@@ -7,21 +7,21 @@ import {
   type PaginationState,
 } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { fetchRegistrationsPage } from '../data/registrations'
+import { fetchBackendRegistrationsPage } from '../services/backendRegistrations'
 import type { Registration } from '../types/registration'
 
 const defaultData: Registration[] = []
 
-export function TanStackPage() {
+export function BackendPaginationPage() {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 12,
+    pageSize: 15,
   })
 
   const registrationsQuery = useQuery({
-    queryKey: ['registrations', pagination.pageIndex, pagination.pageSize],
+    queryKey: ['backend-registrations', pagination.pageIndex, pagination.pageSize],
     queryFn: () =>
-      fetchRegistrationsPage(pagination.pageIndex, pagination.pageSize),
+      fetchBackendRegistrationsPage(pagination.pageIndex, pagination.pageSize),
     placeholderData: keepPreviousData,
   })
 
@@ -74,12 +74,12 @@ export function TanStackPage() {
   return (
     <>
       <section className="hero">
-        <p className="eyebrow">TanStack demo</p>
-        <h1>Server-style pagination with Query and Table</h1>
+        <p className="eyebrow">Backend pagination</p>
+        <h1>Real pagination fetched from Node</h1>
         <p className="lead">
-          <code>@tanstack/react-query</code> fetches one page at a time, and{' '}
-          <code>@tanstack/react-table</code> renders the current rows with manual
-          pagination state.
+          The client sends <code>page</code> and <code>pageSize</code> to a Node
+          API. The backend keeps the large dataset in memory and returns only the
+          current slice for TanStack Query and Table.
         </p>
       </section>
 
@@ -123,7 +123,7 @@ export function TanStackPage() {
               value={pagination.pageSize}
               onChange={(event) => table.setPageSize(Number(event.target.value))}
             >
-              {[12, 24, 48].map((pageSize) => (
+              {[15, 30, 60].map((pageSize) => (
                 <option key={pageSize} value={pageSize}>
                   {pageSize} per page
                 </option>
@@ -149,55 +149,63 @@ export function TanStackPage() {
 
         <div className="panel__header">
           <div>
-            <p className="eyebrow">Current response</p>
+            <p className="eyebrow">Backend response</p>
             <h2>
               Rows {firstRow} to {lastRow}
             </h2>
           </div>
           <p className="hint">
-            Query keeps previous data visible while the next page loads, and
-            Table stays in sync with the controlled pagination state.
+            The browser never receives the full array. Each query requests only one
+            page from the Node service and the previous page stays visible while the
+            next one loads.
           </p>
         </div>
 
-        <div className="table-shell">
-          <table className="data-table">
-            <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {registrationsQuery.isError ? (
+          <div className="error-box">
+            <strong>Could not reach the backend.</strong>
+            <span>Start the Node API with `npm run server` and reload this page.</span>
+          </div>
+        ) : (
+          <div className="table-shell">
+            <table className="data-table">
+              <thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map((row) => (
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         <div className="table-footer">
           <span>
-            {registrationsQuery.isFetching ? 'Loading page...' : 'Page ready'}
+            {registrationsQuery.isFetching ? 'Loading backend page...' : 'Backend page ready'}
           </span>
           <span>
-            Cached key: {pagination.pageIndex + 1} / {pagination.pageSize}
+            Request params: page={pagination.pageIndex + 1} / pageSize={pagination.pageSize}
           </span>
         </div>
       </section>
