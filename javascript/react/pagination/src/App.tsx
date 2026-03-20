@@ -1,12 +1,21 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import { CursorPage } from './pages/CursorPage'
 import { ReactWindowPage } from './pages/ReactWindowPage'
 import { TanStackPage } from './pages/TanStackPage'
 
-type DemoRoute = 'react-window' | 'tanstack'
+type DemoRoute = 'react-window' | 'offset-server' | 'cursor-server'
 
 function getRouteFromHash(): DemoRoute {
-  return window.location.hash === '#/tanstack' ? 'tanstack' : 'react-window'
+  if (window.location.hash === '#/offset-server') {
+    return 'offset-server'
+  }
+
+  if (window.location.hash === '#/cursor-server') {
+    return 'cursor-server'
+  }
+
+  return 'react-window'
 }
 
 function App() {
@@ -34,14 +43,22 @@ function App() {
           React Window
         </a>
         <a
-          href="#/tanstack"
-          className={route === 'tanstack' ? 'demo-nav__link is-active' : 'demo-nav__link'}
+          href="#/offset-server"
+          className={route === 'offset-server' ? 'demo-nav__link is-active' : 'demo-nav__link'}
         >
-          TanStack Query + Table
+          Offset Server
+        </a>
+        <a
+          href="#/cursor-server"
+          className={route === 'cursor-server' ? 'demo-nav__link is-active' : 'demo-nav__link'}
+        >
+          Cursor Server
         </a>
       </nav>
 
-      {route === 'react-window' ? <ReactWindowPage /> : <TanStackPage />}
+      {route === 'react-window' && <ReactWindowPage />}
+      {route === 'offset-server' && <TanStackPage />}
+      {route === 'cursor-server' && <CursorPage />}
     </main>
   )
 }

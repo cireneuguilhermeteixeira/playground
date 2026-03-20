@@ -7,7 +7,7 @@ import {
   type PaginationState,
 } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { fetchBackendRegistrationsPage } from '../services/backendRegistrations'
+import { fetchBackendRegistrationsOffsetPage } from '../services/backendRegistrations'
 import type { Registration } from '../types/registration'
 
 const defaultData: Registration[] = []
@@ -19,9 +19,9 @@ export function TanStackPage() {
   })
 
   const registrationsQuery = useQuery({
-    queryKey: ['backend-registrations', pagination.pageIndex, pagination.pageSize],
+    queryKey: ['backend-registrations-offset', pagination.pageIndex, pagination.pageSize],
     queryFn: () =>
-      fetchBackendRegistrationsPage(pagination.pageIndex, pagination.pageSize),
+      fetchBackendRegistrationsOffsetPage(pagination.pageIndex, pagination.pageSize),
     placeholderData: keepPreviousData,
   })
 
@@ -74,13 +74,13 @@ export function TanStackPage() {
   return (
     <>
       <section className="hero">
-        <p className="eyebrow">TanStack demo</p>
-        <h1>Real backend pagination with Query and Table</h1>
+        <p className="eyebrow">Offset pagination</p>
+        <h1>Server-side offset pagination with Query and Table</h1>
         <p className="lead">
           The client sends <code>page</code> and <code>pageSize</code> to a Node
-          API. <code>@tanstack/react-query</code> fetches one page at a time, and{' '}
-          <code>@tanstack/react-table</code> renders the current rows with manual
-          pagination state.
+          API. This is the classic server-side offset flow: each request jumps to
+          a numbered slice and <code>@tanstack/react-table</code> keeps the UI in
+          sync with that server state.
         </p>
       </section>
 
@@ -156,9 +156,9 @@ export function TanStackPage() {
             </h2>
           </div>
           <p className="hint">
-            The browser never receives the full array. Each query requests only one
-            page from the Node service and the previous page stays visible while the
-            next one loads.
+            The browser never receives the full array. Each request asks the server
+            for an explicit page number, which is simple to reason about but tied to
+            offset math.
           </p>
         </div>
 
@@ -203,7 +203,7 @@ export function TanStackPage() {
 
         <div className="table-footer">
           <span>
-            {registrationsQuery.isFetching ? 'Loading backend page...' : 'Backend page ready'}
+            {registrationsQuery.isFetching ? 'Loading offset page...' : 'Offset page ready'}
           </span>
           <span>
             Request params: page={pagination.pageIndex + 1} / pageSize={pagination.pageSize}

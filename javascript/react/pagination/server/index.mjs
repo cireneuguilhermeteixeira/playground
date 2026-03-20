@@ -39,6 +39,14 @@ function parsePositiveInteger(value, fallback) {
   return parsed
 }
 
+function findRegistrationIndexById(id) {
+  if (!id) {
+    return -1
+  }
+
+  return registrations.findIndex((registration) => registration.id === id)
+}
+
 const server = createServer(async (request, response) => {
   if (!request.url) {
     sendJson(response, 400, { message: 'Missing request URL' })
@@ -57,6 +65,11 @@ const server = createServer(async (request, response) => {
 
   const url = new URL(request.url, `http://${request.headers.host}`)
 
+  // SQL equivalent for offset pagination:
+  // SELECT id, title, category, status, updated_at
+  // FROM registrations
+  // ORDER BY id
+  // LIMIT :pageSize OFFSET (:page - 1) * :pageSize;
   if (request.method === 'GET' && url.pathname === '/api/registrations') {
     const page = parsePositiveInteger(url.searchParams.get('page'), 1)
     const pageSize = Math.min(
@@ -75,6 +88,39 @@ const server = createServer(async (request, response) => {
       rows: registrations.slice(start, end),
       rowCount: registrations.length,
       pageCount: Math.ceil(registrations.length / pageSize),
+    })
+    return
+  }
+
+  // SQL equivalent for cursor pagination:
+  // SELECT id, title, category, status, updated_at
+  // FROM registrations
+  // WHERE id > :cursorId
+  // ORDER BY id
+  // LIMIT :pageSize;
+  // For the first page, omit the WHERE clause.
+  if (request.method === 'GET' && url.pathname === '/api/registrations-cursor') {
+    const pageSize = Math.min(
+      parsePositiveInteger(url.searchParams.get('pageSize'), 15),
+      100,
+    )
+    const cursor = url.searchParams.get('cursor')
+    const cursorIndex = findRegistrationIndexById(cursor)
+    const start = cursor ? cursorIndex + 1 : 0
+    const safeStart = start < 0 ? 0 : start
+    const rows = registrations.slice(safeStart, safeStart + pageSize)
+    const lastRow = rows.at(-1) ?? null
+    const nextCursor = rows.length === pageSize && lastRow ? lastRow.id : null
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 450)
+    })
+
+    sendJson(response, 200, {
+      rows,
+      nextCursor,
+      hasMore: safeStart + rows.length < registrations.length,
+      rowCount: registrations.length,
     })
     return
   }

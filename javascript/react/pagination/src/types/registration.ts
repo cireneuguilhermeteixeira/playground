@@ -11,3 +11,10 @@ export type RegistrationsPage = {
   rowCount: number
   pageCount: number
 }
+
+export type CursorRegistrationsPage = {
+  rows: Registration[]
+  nextCursor: string | null
+  hasMore: boolean
+  rowCount: number
+}
