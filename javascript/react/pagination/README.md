@@ -84,3 +84,71 @@ Use cursor pagination when:
 - the user navigates sequentially through a feed
 - the dataset changes often and stable ordering matters
 - deep offsets would become expensive
+
+## Offset vs cursor tradeoffs
+
+### Offset pagination
+
+Pros:
+
+- simpler to explain and implement
+- works well with classic numbered pagination like page 1, 2, 3
+- easy to support direct jumps to a specific page
+
+Cons:
+
+- performance degrades on deep pages because the database still has to walk past the skipped rows internally
+- inserts or deletes between requests can cause repeated or missing items
+- large offsets can become expensive in relational SQL databases
+
+Practical SQL example:
+
+```sql
+SELECT id, title, category, status, updated_at
+FROM registrations
+ORDER BY id
+LIMIT 15 OFFSET 3000;
+```
+
+Even though the result only returns 15 rows, the database may still need to scan and discard the first 3000 rows to reach that page.
+
+### Cursor pagination
+
+Pros:
+
+- better performance for large datasets and sequential navigation
+- more stable when rows are inserted or deleted between requests
+- usually works better for infinite scroll or feed-like experiences
+
+Cons:
+
+- more complex to implement
+- requires a stable and indexed sort order
+- does not map naturally to numbered pagination or jump-to-page behavior
+
+Practical SQL example:
+
+```sql
+SELECT id, title, category, status, updated_at
+FROM registrations
+WHERE id > :cursorId
+ORDER BY id
+LIMIT 15;
+```
+
+For UUID-based databases, the cursor should usually be based on a stable ordering column such as `created_at, id`, unless the identifier itself is time-ordered, like UUIDv7.
+
+### Security and API concerns
+
+- neither approach is inherently more secure by itself
+- both should validate `limit`, `offset`, and `cursor` values
+- both should use parameterized queries
+- offset endpoints should cap maximum offset or page size to avoid very expensive queries
+- cursor endpoints often return an opaque cursor instead of exposing raw internal values directly
+
+### Usability tradeoffs
+
+- offset is usually better for admin tables, reporting screens, and UIs that need page numbers
+- cursor is usually better for feeds, timelines, and infinite scroll
+- offset is easier for users who want to jump directly to page N
+- cursor is better when consistency between one request and the next matters more than page numbers
