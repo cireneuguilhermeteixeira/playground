@@ -22,7 +22,7 @@
 * Local Storage
 * Session Storage
 * Cookies
-* IndexedDB
+* [IndexedDB](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/indexedDB)
 * Drag and Drop API
 * Intersection Observer API
 * Mutation Observer API
