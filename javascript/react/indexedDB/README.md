@@ -190,6 +190,95 @@ Important detail:
 
 So it is good for connection status indicators, but not as a full health check for a server.
 
+## Browser differences
+
+The IndexedDB API is mostly the same across modern browsers.
+
+In normal application code, the core features used in this project work in Chrome, Edge, Firefox, and Safari:
+
+- `indexedDB.open()`
+- `onupgradeneeded`
+- `createObjectStore()`
+- `createIndex()`
+- transactions
+- `get()`, `getAll()`
+- indexes
+- `IDBKeyRange`
+- cursors
+
+So the main differences are usually not about basic API support.
+
+They are more about storage policy, persistence, eviction, and a few browser-specific extras.
+
+### Chrome and Edge
+
+Chrome and Edge use Chromium.
+
+In practice:
+
+- the standard IndexedDB API works as expected
+- storage persistence decisions are usually handled automatically by browser heuristics
+- current Chromium behavior uses a more relaxed default durability mode for better performance
+
+That means IndexedDB is still transactional, but the browser does not try to force the strictest possible disk flush behavior by default.
+
+### Firefox
+
+Firefox also supports the standard IndexedDB API well.
+
+The main extra detail is that Firefox has had some non-standard IndexedDB features, such as:
+
+- `readwriteflush`
+- `IDBLocaleAwareKeyRange`
+
+These are Firefox-specific and should not be used if you want portable browser code.
+
+For normal web apps, stick to the standard transaction modes and key range APIs.
+
+### Safari
+
+Safari supports the standard IndexedDB API too, but it is the browser that usually requires the most care in offline applications.
+
+The main practical difference is storage policy.
+
+Safari is more aggressive about removing site data in some situations, especially when browser heuristics decide the stored data is not strongly persistent.
+
+So while the API itself is available, Safari can be less forgiving for long-lived offline storage.
+
+### Storage persistence and eviction
+
+If your app stores important offline data, the biggest cross-browser concern is usually not whether `get()` or `createIndex()` exists.
+
+The bigger concern is whether the browser may delete stored data later.
+
+That is why APIs like this can matter in real applications:
+
+```ts
+const granted = await navigator.storage.persist();
+```
+
+This asks the browser to treat the origin's storage as persistent instead of best-effort storage.
+
+Browsers handle this differently:
+
+- Firefox may involve user-facing permission behavior
+- Safari and Chromium-based browsers tend to rely more on heuristics
+
+This project does not use `navigator.storage.persist()` because it is a learning demo.
+
+For a real offline-first application, it may be worth checking.
+
+### Practical rule
+
+If you use only the standard IndexedDB API, your code will usually run across modern browsers.
+
+The main portability rules are:
+
+- use only standard IndexedDB APIs
+- do not depend on Firefox-only extensions
+- test offline storage behavior in Safari if persistence matters
+- treat quota and eviction behavior as browser-dependent
+
 ## How this project uses IndexedDB
 
 The main database code is in `src/db.ts`.
