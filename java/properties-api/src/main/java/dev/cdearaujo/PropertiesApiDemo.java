@@ -11,12 +11,15 @@ public class PropertiesApiDemo {
 
     public static void main(String[] args) throws IOException {
         Path outputFile = Path.of("target", "demo.properties");
+        Path systemOutputFile = Path.of("target", "system.properties");
 
         Properties createdProperties = createProperties();
         storeProperties(createdProperties, outputFile);
 
         Properties loadedProperties = readProperties(outputFile);
-        printSystemProperties();
+        Properties systemProperties = System.getProperties();
+        storeProperties(systemProperties, systemOutputFile, "JVM system properties");
+        printSystemProperties(systemProperties, systemOutputFile);
 
         System.out.println();
         System.out.println("Read from file:");
@@ -39,10 +42,14 @@ public class PropertiesApiDemo {
     }
 
     private static void storeProperties(Properties properties, Path outputFile) throws IOException {
+        storeProperties(properties, outputFile, "Simple Properties API demo");
+    }
+
+    private static void storeProperties(Properties properties, Path outputFile, String comment) throws IOException {
         Files.createDirectories(outputFile.getParent());
 
         try (OutputStream outputStream = Files.newOutputStream(outputFile)) {
-            properties.store(outputStream, "Simple Properties API demo");
+            properties.store(outputStream, comment);
         }
 
         System.out.println();
@@ -64,12 +71,13 @@ public class PropertiesApiDemo {
         return loadedProperties;
     }
 
-    private static void printSystemProperties() {
+    private static void printSystemProperties(Properties systemProperties, Path systemOutputFile) {
         System.out.println();
         System.out.println("System:");
-        System.out.println("java.version = " + System.getProperty("java.version"));
-        System.out.println("java.vendor = " + System.getProperty("java.vendor"));
-        System.out.println("user.name = " + System.getProperty("user.name"));
-        System.out.println("os.name = " + System.getProperty("os.name"));
+        System.out.println("java.version = " + systemProperties.getProperty("java.version"));
+        System.out.println("java.vendor = " + systemProperties.getProperty("java.vendor"));
+        System.out.println("user.name = " + systemProperties.getProperty("user.name"));
+        System.out.println("os.name = " + systemProperties.getProperty("os.name"));
+        System.out.println("System properties file = " + systemOutputFile.toAbsolutePath());
     }
 }
