@@ -13,29 +13,14 @@ public class ReflectionDemo {
 
         Class<Person> personClass = Person.class;
 
-        explainConcept();
         inspectClass(personClass);
         createInstanceDynamically(personClass);
         invokeMethods(personClass);
         modifyPrivateFields(personClass);
     }
 
-    private static void explainConcept() {
-        System.out.println("\n1. What is the Reflection API?");
-        System.out.println("Reflection is the ability to inspect and manipulate classes, methods, fields, and constructors at runtime.");
-        System.out.println("Instead of relying only on statically compiled code, you can discover class details dynamically.");
-
-        System.out.println("\n2. In which Java contexts is it used?");
-        System.out.println("- Frameworks such as Spring, Hibernate, and Jackson");
-        System.out.println("- Dependency injection");
-        System.out.println("- Object-relational mapping");
-        System.out.println("- Serialization and deserialization");
-        System.out.println("- Testing tools, proxies, and plugin systems");
-        System.out.println("Use it carefully: reflection weakens encapsulation, can be slower, and may hurt maintainability when overused.");
-    }
-
     private static void inspectClass(Class<Person> personClass) {
-        System.out.println("\n3. Metadata inspection");
+        System.out.println("\n1. Metadata inspection");
         System.out.println("Class name: " + personClass.getName());
 
         System.out.println("\nDeclared fields:");
@@ -50,15 +35,15 @@ public class ReflectionDemo {
     }
 
     private static void createInstanceDynamically(Class<Person> personClass) throws Exception {
-        System.out.println("\n4. Dynamic creation with Constructor");
+        System.out.println("\n2. Dynamic creation with Constructor");
         Constructor<Person> constructor = personClass.getConstructor(String.class, int.class);
-        Person person = constructor.newInstance("Anna", 28);
+        Person person = constructor.newInstance("Test", 28);
         System.out.println("Created instance: " + person.introduce());
     }
 
     private static void invokeMethods(Class<Person> personClass) throws Exception {
-        System.out.println("\n5. Using invoke");
-        Person person = new Person("Brian", 32);
+        System.out.println("\n3. Using invoke");
+        Person person = new Person("Cireneu", 31);
 
         Method publicMethod = personClass.getMethod("introduce");
         String publicReturn = (String) publicMethod.invoke(person);
@@ -73,7 +58,7 @@ public class ReflectionDemo {
     }
 
     private static void modifyPrivateFields(Class<Person> personClass) throws Exception {
-        System.out.println("\n6. Modify: changing private fields");
+        System.out.println("\n4. Modify: changing private fields");
         Person person = new Person("Carol", 19);
         System.out.println("Before change: " + person.introduce());
 
