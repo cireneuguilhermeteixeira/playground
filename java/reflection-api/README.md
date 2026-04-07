@@ -1,83 +1,93 @@
-# POC Java Reflection API
+# Java Reflection API POC
 
-Esta POC mostra, de forma simples, o que eh a Reflection API no Java e como ela funciona na pratica.
+This proof of concept shows, in a simple way, what the Java Reflection API is and how it works in practice.
 
-## O que eh Reflection API
+## What is the Reflection API?
 
-Reflection eh um recurso do Java que permite inspecionar e manipular classes em tempo de execucao. Com ela, eh possivel descobrir:
+Reflection is a Java feature that allows you to inspect and manipulate classes at runtime. With it, you can discover:
 
-- nome da classe
-- campos
-- metodos
-- construtores
-- anotacoes
-- modificadores de acesso
+- class names
+- fields
+- methods
+- constructors
+- annotations
+- access modifiers
 
-Tambem eh possivel executar metodos dinamicamente e alterar valores de campos, inclusive privados, quando o codigo usa `setAccessible(true)`.
+It also allows you to execute methods dynamically and change field values, including private ones, when the code uses `setAccessible(true)`.
 
-## Em que contexto isso eh usado
+## Where is it used in Java?
 
-Reflection aparece bastante em bibliotecas e frameworks, por exemplo:
+Reflection is widely used in libraries and frameworks, for example:
 
-- `Spring`: injecao de dependencia e descoberta de componentes
-- `Hibernate`: mapeamento entre objetos Java e tabelas
-- `Jackson`: serializacao e desserializacao de objetos
-- frameworks de teste: descoberta automatica de classes e metodos
-- sistemas de plugin/proxy: carga dinamica de comportamento
+- `Spring`: dependency injection and component discovery
+- `Hibernate`: mapping between Java objects and database tables
+- `Jackson`: object serialization and deserialization
+- testing frameworks: automatic discovery of classes and methods
+- plugin and proxy systems: dynamic behavior loading
 
-## Conceitos principais
+## Main concepts
 
-### 1. Inspecao
+### 1. Inspection
 
-Voce pode obter informacoes da classe usando `Class`, `Field`, `Method` e `Constructor`.
+You can obtain class information using `Class`, `Field`, `Method`, and `Constructor`.
 
 ### 2. Invoke
 
-`Method.invoke(...)` permite chamar um metodo dinamicamente.
+`Method.invoke(...)` allows you to call a method dynamically.
 
-Exemplos no projeto:
+Examples in this project:
 
-- chamar um metodo publico: `apresentar()`
-- chamar um metodo privado: `mensagemPrivada(String)`
+- calling a public method: `introduce()`
+- calling a private method: `privateMessage(String)`
 
 ### 3. Modify
 
-Para alterar atributos dinamicamente, use `Field`.
+To change fields dynamically, use `Field`.
 
-Exemplos no projeto:
+Examples in this project:
 
 - `field.set(...)`
 - `field.setInt(...)`
 
-Isso modifica o estado do objeto mesmo sem acessar o atributo diretamente pelo codigo normal.
+This changes the object's state even without direct field access in regular code.
 
-## Estrutura
+## Best practices
 
-- `src/main/java/br/com/exemplo/reflection/Pessoa.java`
-- `src/main/java/br/com/exemplo/reflection/ReflectionDemo.java`
+- Prefer normal Java calls over reflection when compile-time access is available.
+- Use reflection mainly in infrastructure code, frameworks, libraries, or generic utilities.
+- Limit `setAccessible(true)` usage because it breaks encapsulation.
+- Cache reflective lookups if they happen frequently, since repeated lookup can be costly.
+- Keep reflective code small, well documented, and isolated behind clear abstractions.
+- Handle exceptions carefully, especially `NoSuchMethodException`, `NoSuchFieldException`, `IllegalAccessException`, and `InvocationTargetException`.
+- Be aware that reflection may be restricted in some modularized or secured runtime environments.
 
-## Como executar
+## Project structure
 
-Se o Maven estiver instalado:
+- `src/main/java/com/example/reflection/Person.java`
+- `src/main/java/com/example/reflection/ReflectionDemo.java`
+
+## How to run
+
+If Maven is installed:
 
 ```bash
 mvn compile exec:java
 ```
 
-## O que a demo faz
+## What the demo does
 
-1. Explica o conceito de reflection
-2. Lista campos e metodos da classe `Pessoa`
-3. Cria um objeto dinamicamente via construtor
-4. Executa metodos com `invoke`
-5. Modifica campos privados com `Field.set`
+1. Explains the reflection concept
+2. Lists fields and methods from the `Person` class
+3. Creates an object dynamically through a constructor
+4. Executes methods with `invoke`
+5. Modifies private fields with `Field.set`
 
-## Observacao importante
+## Important note
 
-Reflection eh poderosa, mas deve ser usada com criterio:
+Reflection is powerful, but it should be used carefully:
 
-- reduz encapsulamento
-- pode ter custo de performance
-- pode deixar o codigo mais dificil de entender e manter
+- it weakens encapsulation
+- it can have a performance cost
+- it can make code harder to understand and maintain
 
-Em geral, o uso direto em regra de negocio comum deve ser evitado. Ela faz mais sentido em frameworks, infraestrutura e bibliotecas.
+In general, direct reflection in regular business logic should be avoided. It is more appropriate in frameworks, infrastructure, and libraries.
