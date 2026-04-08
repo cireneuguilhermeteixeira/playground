@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node segment-tree.js"
+    "start": "node segment-tree.js",
+    "visual": "node server.js"
   }
 }

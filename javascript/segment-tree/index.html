@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Segment Tree Visualizer</title>
+  <style>
+    :root {
+      --bg: #f3efe6;
+      --panel: rgba(255, 251, 245, 0.88);
+      --panel-strong: #fffaf0;
+      --ink: #1e1d1a;
+      --muted: #665f54;
+      --accent: #c5542f;
+      --accent-soft: rgba(197, 84, 47, 0.16);
+      --accent-2: #2c7a7b;
+      --accent-2-soft: rgba(44, 122, 123, 0.16);
+      --good: #2f855a;
+      --bad: #b83232;
+      --line: rgba(30, 29, 26, 0.16);
+      --shadow: 0 18px 48px rgba(55, 44, 24, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(197, 84, 47, 0.22), transparent 28%),
+        radial-gradient(circle at top right, rgba(44, 122, 123, 0.16), transparent 24%),
+        linear-gradient(180deg, #faf6ef 0%, #f0eadf 100%);
+    }
+
+    .shell {
+      width: min(1400px, calc(100vw - 32px));
+      margin: 24px auto;
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero,
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero {
+      padding: 28px;
+      display: grid;
+      gap: 10px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 0.95;
+      max-width: 12ch;
+    }
+
+    .hero p {
+      max-width: 70ch;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 390px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 20px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .controls {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    input,
+    select,
+    button {
+      font: inherit;
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid rgba(30, 29, 26, 0.12);
+      background: rgba(255, 255, 255, 0.72);
+      border-radius: 14px;
+      padding: 12px 14px;
+      color: var(--ink);
+    }
+
+    .inline {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 16px;
+      cursor: pointer;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 10px 18px rgba(197, 84, 47, 0.22);
+    }
+
+    button.secondary {
+      background: rgba(30, 29, 26, 0.08);
+      color: var(--ink);
+    }
+
+    button.accent-2 {
+      background: var(--accent-2);
+      color: white;
+      box-shadow: 0 10px 18px rgba(44, 122, 123, 0.22);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .mode-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .mode-chip.query {
+      background: var(--accent-2-soft);
+      color: var(--accent-2);
+    }
+
+    .meta {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border-radius: 18px;
+      background: var(--panel-strong);
+      border: 1px solid rgba(30, 29, 26, 0.08);
+    }
+
+    .meta strong {
+      font-size: 1.8rem;
+    }
+
+    .meta small {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--line);
+    }
+
+    .swatch.active {
+      background: var(--accent);
+    }
+
+    .swatch.done {
+      background: var(--good);
+    }
+
+    .swatch.skip {
+      background: var(--bad);
+    }
+
+    .viewer {
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.48);
+      border: 1px solid rgba(30, 29, 26, 0.08);
+      border-radius: 22px;
+      padding: 16px;
+    }
+
+    .heap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .heap-cell {
+      padding: 10px 8px;
+      border-radius: 16px;
+      border: 1px solid rgba(30, 29, 26, 0.08);
+      background: rgba(255, 255, 255, 0.72);
+      text-align: center;
+      transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+
+    .heap-cell.active {
+      background: rgba(197, 84, 47, 0.12);
+      border-color: rgba(197, 84, 47, 0.36);
+      transform: translateY(-1px);
+    }
+
+    .heap-cell.done {
+      background: rgba(47, 133, 90, 0.12);
+      border-color: rgba(47, 133, 90, 0.3);
+    }
+
+    .heap-cell.empty {
+      background: rgba(30, 29, 26, 0.04);
+      color: var(--muted);
+    }
+
+    .heap-index {
+      display: block;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .heap-value {
+      display: block;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .svg-wrap {
+      overflow: auto;
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.52)),
+        repeating-linear-gradient(
+          90deg,
+          rgba(30, 29, 26, 0.025),
+          rgba(30, 29, 26, 0.025) 1px,
+          transparent 1px,
+          transparent 52px
+        );
+      min-height: 540px;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      min-width: 880px;
+      height: 820px;
+    }
+
+    .step-list {
+      max-height: 260px;
+      overflow: auto;
+      display: grid;
+      gap: 8px;
+      padding-right: 4px;
+    }
+
+    .step-item {
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.52);
+      border: 1px solid rgba(30, 29, 26, 0.06);
+      color: var(--muted);
+      transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+
+    .step-item.active {
+      color: var(--ink);
+      background: rgba(197, 84, 47, 0.1);
+      border-color: rgba(197, 84, 47, 0.3);
+      transform: translateX(2px);
+    }
+
+    .step-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: inherit;
+    }
+
+    .footnote {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 1100px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100vw - 20px, 1400px);
+        margin: 10px auto 24px;
+      }
+
+      .hero,
+      .panel {
+        border-radius: 20px;
+        padding: 16px;
+      }
+
+      .inline {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <span class="eyebrow">Visual Playground</span>
+      <h1>Segment Tree, visible step by step.</h1>
+      <p>
+        This view renders the original array, the tree structure, and the exact recursive steps used to build
+        and query a segment tree. You can replay the construction, then run a range query and watch each overlap
+        decision happen node by node.
+      </p>
+    </section>
+
+    <section class="grid">
+      <aside class="stack">
+        <section class="panel controls">
+          <div class="field-group">
+            <label for="exampleSelect">Examples</label>
+            <select id="exampleSelect">
+              <option value="basic-5">Basic 5 elements</option>
+              <option value="gap-6">6 elements with possible gaps</option>
+              <option value="larger-8">Larger 8 elements</option>
+              <option value="zigzag-9">Zig-zag 9 elements</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="arrayInput">Array values</label>
+            <input id="arrayInput" value="2, 1, 5, 3, 4" />
+          </div>
+
+          <div class="inline">
+            <div class="field-group">
+              <label for="leftInput">Query left</label>
+              <input id="leftInput" type="number" value="1" min="0" />
+            </div>
+            <div class="field-group">
+              <label for="rightInput">Query right</label>
+              <input id="rightInput" type="number" value="3" min="0" />
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button id="rebuildButton" class="primary">Rebuild tree</button>
+            <button id="queryButton" class="accent-2">Run query</button>
+          </div>
+
+          <div class="button-row">
+            <button id="prevButton" class="secondary">Previous</button>
+            <button id="playButton" class="secondary">Play</button>
+            <button id="nextButton" class="secondary">Next</button>
+            <button id="resetButton" class="secondary">Reset step</button>
+          </div>
+
+          <div id="modeChip" class="mode-chip">Build mode</div>
+
+          <div class="meta">
+            <strong id="statusTitle">Waiting to start</strong>
+            <small id="statusText">The visualizer is ready to replay how the tree is built from the array.</small>
+          </div>
+
+          <div class="legend">
+            <span class="legend-item"><span class="swatch active"></span>Active node</span>
+            <span class="legend-item"><span class="swatch done"></span>Processed / contributes</span>
+            <span class="legend-item"><span class="swatch skip"></span>No overlap</span>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Timeline</h2>
+          <p class="footnote">Each step explains what the recursive algorithm is doing right now.</p>
+          <div id="stepList" class="step-list"></div>
+        </section>
+      </aside>
+
+      <section class="panel viewer">
+        <div class="card">
+          <h2>Structure</h2>
+          <p class="footnote">
+            The boxes at the bottom are the original array. Above them, every node stores the sum of its interval.
+          </p>
+        </div>
+        <div class="card">
+          <h2>Algorithm Array: `tree[]`</h2>
+          <p class="footnote">
+            Internally, the segment tree is stored in an array. For a node at index <code>i</code>, the left child is
+            <code>2*i + 1</code> and the right child is <code>2*i + 2</code>. During build, these positions are filled from
+            the leaves back up to the root.
+          </p>
+          <div id="heapArray" class="heap-grid"></div>
+        </div>
+        <div class="svg-wrap">
+          <svg id="scene" viewBox="0 0 1400 820" preserveAspectRatio="xMidYMid meet" aria-label="Segment tree visualization"></svg>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    class SegmentTreeVisualizer {
+      constructor(values) {
+        this.values = values.slice();
+        this.nodes = [];
+        this.steps = { build: [], query: [] };
+        this.rootId = this.buildStructure(0, values.length - 1, 0, null, 0);
+        this.buildLayout();
+        this.generateBuildSteps();
+      }
+
+      buildStructure(left, right, depth, parentId, treeIndex) {
+        const id = this.nodes.length;
+        const node = {
+          id,
+          treeIndex,
+          left,
+          right,
+          depth,
+          parentId,
+          leftChildId: null,
+          rightChildId: null,
+          value: this.sum(left, right),
+          widthLeafUnits: right - left + 1,
+          x: 0,
+          y: 0
+        };
+
+        this.nodes.push(node);
+
+        if (left !== right) {
+          const middle = Math.floor((left + right) / 2);
+          node.leftChildId = this.buildStructure(left, middle, depth + 1, id, 2 * treeIndex + 1);
+          node.rightChildId = this.buildStructure(middle + 1, right, depth + 1, id, 2 * treeIndex + 2);
+        }
+
+        return id;
+      }
+
+      sum(left, right) {
+        let total = 0;
+        for (let index = left; index <= right; index += 1) {
+          total += this.values[index];
+        }
+        return total;
+      }
+
+      buildLayout() {
+        const leafNodes = this.nodes.filter((node) => node.left === node.right);
+        const leafSpacing = 170;
+        const leftMargin = 140;
+        const topMargin = 90;
+        const rowSpacing = 130;
+
+        leafNodes.forEach((node, leafIndex) => {
+          node.x = leftMargin + leafIndex * leafSpacing;
+          node.y = topMargin + node.depth * rowSpacing;
+        });
+
+        const assignParentPosition = (nodeId) => {
+          const node = this.nodes[nodeId];
+          if (node.leftChildId === null) {
+            return;
+          }
+
+          assignParentPosition(node.leftChildId);
+          assignParentPosition(node.rightChildId);
+
+          const leftChild = this.nodes[node.leftChildId];
+          const rightChild = this.nodes[node.rightChildId];
+          node.x = (leftChild.x + rightChild.x) / 2;
+          node.y = topMargin + node.depth * rowSpacing;
+        };
+
+        assignParentPosition(this.rootId);
+      }
+
+      generateBuildSteps() {
+        const revealedNodeIds = new Set();
+        const snapshotRevealed = () => Array.from(revealedNodeIds);
+
+        this.steps.build.push({
+          title: `Start build(tree[0], 0, ${this.values.length - 1})`,
+          description: `The algorithm starts at tree[0] for the whole interval [0, ${this.values.length - 1}]. At each non-leaf step, it computes middle = Math.floor((left + right) / 2), then visits left child 2 * i + 1 and right child 2 * i + 2.`,
+          activeNodeIds: [this.rootId],
+          visibleNodeIds: [this.rootId],
+          edgeState: {},
+          arrayHighlight: [0, this.values.length - 1],
+          accumValue: null,
+          revealedNodeIds: snapshotRevealed(),
+          mode: "build"
+        });
+
+        const walk = (nodeId) => {
+          const node = this.nodes[nodeId];
+          const middle = Math.floor((node.left + node.right) / 2);
+          const leftChildId = node.leftChildId;
+          const rightChildId = node.rightChildId;
+          const leftChild = leftChildId === null ? null : this.nodes[leftChildId];
+          const rightChild = rightChildId === null ? null : this.nodes[rightChildId];
+
+          this.steps.build.push({
+            title: `Call build(tree[${node.treeIndex}], ${node.left}, ${node.right})`,
+            description: node.left === node.right
+              ? `Because left === right, tree[${node.treeIndex}] is a leaf. Store values[${node.left}] = ${node.value} directly in this position.`
+              : `Compute middle = Math.floor((${node.left} + ${node.right}) / 2) = ${middle}. For i = ${node.treeIndex}, the left child is 2*i+1 = ${leftChild.treeIndex} and the right child is 2*i+2 = ${rightChild.treeIndex}. Recurse into [${node.left}, ${middle}] and [${middle + 1}, ${node.right}].`,
+            activeNodeIds: [node.id],
+            visibleNodeIds: node.left === node.right ? [node.id] : [node.id, leftChildId, rightChildId],
+            edgeState: node.left === node.right ? {} : {
+              [`${node.id}-${leftChildId}`]: "active",
+              [`${node.id}-${rightChildId}`]: "active"
+            },
+            arrayHighlight: [node.left, node.right],
+            accumValue: null,
+            revealedNodeIds: snapshotRevealed(),
+            mode: "build"
+          });
+
+          if (node.leftChildId === null) {
+            revealedNodeIds.add(node.id);
+            this.steps.build.push({
+              title: `Store leaf in tree[${node.treeIndex}]`,
+              description: `This node maps to one array position, so tree[${node.treeIndex}] = values[${node.left}] = ${node.value}.`,
+              activeNodeIds: [node.id],
+              visibleNodeIds: [node.id],
+              edgeState: {},
+              arrayHighlight: [node.left, node.right],
+              accumValue: node.value,
+              revealedNodeIds: snapshotRevealed(),
+              mode: "build"
+            });
+            return;
+          }
+
+          walk(node.leftChildId);
+          walk(node.rightChildId);
+
+          revealedNodeIds.add(node.id);
+          this.steps.build.push({
+            title: `Merge into tree[${node.treeIndex}]`,
+            description: `Both recursive calls returned. Now compute tree[${node.treeIndex}] = tree[${leftChild.treeIndex}] + tree[${rightChild.treeIndex}] = ${leftChild.value} + ${rightChild.value} = ${node.value}.`,
+            activeNodeIds: [node.id],
+            visibleNodeIds: [node.id, node.leftChildId, node.rightChildId],
+            edgeState: {
+              [`${node.id}-${node.leftChildId}`]: "done",
+              [`${node.id}-${node.rightChildId}`]: "done"
+            },
+            arrayHighlight: [node.left, node.right],
+            accumValue: node.value,
+            revealedNodeIds: snapshotRevealed(),
+            mode: "build"
+          });
+        };
+
+        walk(this.rootId);
+      }
+
+      generateQuerySteps(queryLeft, queryRight) {
+        const steps = [];
+        let runningTotal = 0;
+
+        const walk = (nodeId) => {
+          const node = this.nodes[nodeId];
+          const overlapType =
+            queryRight < node.left || node.right < queryLeft
+              ? "none"
+              : queryLeft <= node.left && node.right <= queryRight
+                ? "full"
+                : "partial";
+
+          if (overlapType === "none") {
+            steps.push({
+              title: `Skip [${node.left}, ${node.right}]`,
+              description: `This interval has no overlap with the query [${queryLeft}, ${queryRight}], so it contributes 0.`,
+              activeNodeIds: [node.id],
+              visibleNodeIds: [node.id],
+              edgeState: {},
+              skippedNodeIds: [node.id],
+              contributingNodeIds: [],
+              arrayHighlight: [queryLeft, queryRight],
+              accumValue: runningTotal,
+              mode: "query"
+            });
+            return { sum: 0, contributes: false };
+          }
+
+          if (overlapType === "full") {
+            runningTotal += node.value;
+            steps.push({
+              title: `Use node [${node.left}, ${node.right}]`,
+              description: `This interval is fully inside the query, so add its stored sum ${node.value}. Running total = ${runningTotal}.`,
+              activeNodeIds: [node.id],
+              visibleNodeIds: [node.id],
+              edgeState: {},
+              skippedNodeIds: [],
+              contributingNodeIds: [node.id],
+              arrayHighlight: [queryLeft, queryRight],
+              accumValue: runningTotal,
+              mode: "query"
+            });
+            return { sum: node.value, contributes: true };
+          }
+
+          steps.push({
+            title: `Split query at [${node.left}, ${node.right}]`,
+            description: `This interval partially overlaps the query, so recurse into both children.`,
+            activeNodeIds: [node.id],
+            visibleNodeIds: [node.id, node.leftChildId, node.rightChildId],
+            edgeState: {
+              [`${node.id}-${node.leftChildId}`]: "active",
+              [`${node.id}-${node.rightChildId}`]: "active"
+            },
+            skippedNodeIds: [],
+            contributingNodeIds: [],
+            arrayHighlight: [queryLeft, queryRight],
+            accumValue: runningTotal,
+            mode: "query"
+          });
+
+          const leftResult = walk(node.leftChildId);
+          const rightResult = walk(node.rightChildId);
+          const subtotal = leftResult.sum + rightResult.sum;
+
+          steps.push({
+            title: `Return from [${node.left}, ${node.right}]`,
+            description: `The left side returned ${leftResult.sum} and the right side returned ${rightResult.sum}, so this branch returns ${subtotal}.`,
+            activeNodeIds: [node.id],
+            visibleNodeIds: [node.id, node.leftChildId, node.rightChildId],
+            edgeState: {
+              [`${node.id}-${node.leftChildId}`]: leftResult.contributes ? "done" : "skip",
+              [`${node.id}-${node.rightChildId}`]: rightResult.contributes ? "done" : "skip"
+            },
+            skippedNodeIds: [],
+            contributingNodeIds: [],
+            arrayHighlight: [queryLeft, queryRight],
+            accumValue: runningTotal,
+            mode: "query"
+          });
+
+          return {
+            sum: subtotal,
+            contributes: leftResult.contributes || rightResult.contributes
+          };
+        };
+
+        const result = walk(this.rootId).sum;
+
+        steps.push({
+          title: `Final answer for [${queryLeft}, ${queryRight}]`,
+          description: `The query is complete. The range sum is ${result}.`,
+          activeNodeIds: [this.rootId],
+          visibleNodeIds: [this.rootId],
+          edgeState: {},
+          skippedNodeIds: [],
+          contributingNodeIds: [],
+          arrayHighlight: [queryLeft, queryRight],
+          accumValue: result,
+          mode: "query"
+        });
+
+        this.steps.query = steps;
+        return result;
+      }
+    }
+
+    const svg = document.getElementById("scene");
+    const exampleSelect = document.getElementById("exampleSelect");
+    const arrayInput = document.getElementById("arrayInput");
+    const leftInput = document.getElementById("leftInput");
+    const rightInput = document.getElementById("rightInput");
+    const rebuildButton = document.getElementById("rebuildButton");
+    const queryButton = document.getElementById("queryButton");
+    const prevButton = document.getElementById("prevButton");
+    const nextButton = document.getElementById("nextButton");
+    const playButton = document.getElementById("playButton");
+    const resetButton = document.getElementById("resetButton");
+    const statusTitle = document.getElementById("statusTitle");
+    const statusText = document.getElementById("statusText");
+    const stepList = document.getElementById("stepList");
+    const modeChip = document.getElementById("modeChip");
+    const heapArray = document.getElementById("heapArray");
+
+    let visualizer = null;
+    let activeMode = "build";
+    let activeSteps = [];
+    let stepIndex = 0;
+    let timerId = null;
+    let queryRange = [1, 3];
+    const examples = {
+      "basic-5": {
+        values: [2, 1, 5, 3, 4],
+        query: [1, 3]
+      },
+      "gap-6": {
+        values: [7, 2, 6, 1, 9, 4],
+        query: [2, 5]
+      },
+      "larger-8": {
+        values: [5, 8, 6, 3, 2, 7, 2, 6],
+        query: [2, 6]
+      },
+      "zigzag-9": {
+        values: [4, 9, 1, 7, 3, 8, 2, 6, 5],
+        query: [3, 8]
+      }
+    };
+
+    function applyExample(exampleKey) {
+      const example = examples[exampleKey];
+      if (!example) {
+        return;
+      }
+
+      arrayInput.value = example.values.join(", ");
+      leftInput.value = example.query[0];
+      rightInput.value = example.query[1];
+    }
+
+    function parseValues() {
+      const tokens = arrayInput.value
+        .split(",")
+        .map((token) => token.trim())
+        .filter(Boolean);
+
+      const values = tokens.map((token) => Number(token));
+
+      if (values.length === 0 || values.some((value) => Number.isNaN(value))) {
+        throw new Error("Use a comma-separated list of numbers, for example: 2, 1, 5, 3, 4");
+      }
+
+      return values;
+    }
+
+    function clampQuery(length) {
+      const left = Math.max(0, Math.min(length - 1, Number(leftInput.value)));
+      const right = Math.max(0, Math.min(length - 1, Number(rightInput.value)));
+      queryRange = [Math.min(left, right), Math.max(left, right)];
+      leftInput.value = queryRange[0];
+      rightInput.value = queryRange[1];
+    }
+
+    function rebuildVisualizer() {
+      const values = parseValues();
+      visualizer = new SegmentTreeVisualizer(values);
+      clampQuery(values.length);
+      activeMode = "build";
+      activeSteps = visualizer.steps.build;
+      stepIndex = 0;
+      stopPlayback();
+      render();
+    }
+
+    function runQuery() {
+      clampQuery(visualizer.values.length);
+      visualizer.generateQuerySteps(queryRange[0], queryRange[1]);
+      activeMode = "query";
+      activeSteps = visualizer.steps.query;
+      stepIndex = 0;
+      stopPlayback();
+      render();
+    }
+
+    function stopPlayback() {
+      if (timerId !== null) {
+        window.clearInterval(timerId);
+        timerId = null;
+      }
+      playButton.textContent = "Play";
+    }
+
+    function togglePlayback() {
+      if (timerId !== null) {
+        stopPlayback();
+        return;
+      }
+
+      timerId = window.setInterval(() => {
+        if (stepIndex >= activeSteps.length - 1) {
+          stopPlayback();
+          return;
+        }
+        stepIndex += 1;
+        render();
+      }, 1300);
+
+      playButton.textContent = "Pause";
+    }
+
+    function resetCurrentMode() {
+      stepIndex = 0;
+      stopPlayback();
+      render();
+    }
+
+    function nodeStatus(nodeId, step) {
+      if (!step) {
+        return "idle";
+      }
+      if (step.skippedNodeIds && step.skippedNodeIds.includes(nodeId)) {
+        return "skip";
+      }
+      if (step.contributingNodeIds && step.contributingNodeIds.includes(nodeId)) {
+        return "done";
+      }
+      if (step.activeNodeIds && step.activeNodeIds.includes(nodeId)) {
+        return "active";
+      }
+      if (step.visibleNodeIds && step.visibleNodeIds.includes(nodeId)) {
+        return "visible";
+      }
+      return "idle";
+    }
+
+    function edgeStatus(parentId, childId, step) {
+      if (!step || !step.edgeState) {
+        return "idle";
+      }
+      return step.edgeState[`${parentId}-${childId}`] || "idle";
+    }
+
+    function createSvgElement(tag, attributes) {
+      const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      Object.entries(attributes).forEach(([key, value]) => {
+        element.setAttribute(key, value);
+      });
+      return element;
+    }
+
+    function render() {
+      const step = activeSteps[stepIndex];
+      svg.innerHTML = "";
+
+      const width = Math.max(1400, 220 + visualizer.values.length * 170);
+      svg.setAttribute("viewBox", `0 0 ${width} 820`);
+
+      renderArray(step);
+      renderEdges(step);
+      renderNodes(step);
+      renderHeapArray(step);
+      renderStatus(step);
+      renderStepList(step);
+      updateButtons();
+    }
+
+    function renderArray(step) {
+      const group = createSvgElement("g", {});
+      const baseY = 700;
+      const boxWidth = 110;
+      const boxHeight = 74;
+      const startX = 85;
+      const gap = 28;
+      const [queryLeft, queryRight] = step && step.arrayHighlight ? step.arrayHighlight : [-1, -1];
+
+      visualizer.values.forEach((value, index) => {
+        const x = startX + index * (boxWidth + gap);
+        const inQuery = index >= queryLeft && index <= queryRight;
+
+        const rect = createSvgElement("rect", {
+          x,
+          y: baseY,
+          width: boxWidth,
+          height: boxHeight,
+          rx: 18,
+          fill: inQuery ? "rgba(44, 122, 123, 0.14)" : "rgba(255, 255, 255, 0.72)",
+          stroke: inQuery ? "rgba(44, 122, 123, 0.72)" : "rgba(30, 29, 26, 0.16)",
+          "stroke-width": 2
+        });
+
+        const label = createSvgElement("text", {
+          x: x + boxWidth / 2,
+          y: baseY + 28,
+          "text-anchor": "middle",
+          "font-size": "14",
+          "font-weight": "700",
+          fill: "#665f54"
+        });
+        label.textContent = `index ${index}`;
+
+        const number = createSvgElement("text", {
+          x: x + boxWidth / 2,
+          y: baseY + 55,
+          "text-anchor": "middle",
+          "font-size": "26",
+          "font-weight": "700",
+          fill: "#1e1d1a"
+        });
+        number.textContent = value;
+
+        group.appendChild(rect);
+        group.appendChild(label);
+        group.appendChild(number);
+      });
+
+      const arrayTitle = createSvgElement("text", {
+        x: 85,
+        y: 670,
+        "font-size": "20",
+        "font-weight": "700",
+        fill: "#1e1d1a"
+      });
+      arrayTitle.textContent = "Original array";
+      group.appendChild(arrayTitle);
+      svg.appendChild(group);
+    }
+
+    function renderEdges(step) {
+      const group = createSvgElement("g", {});
+
+      visualizer.nodes.forEach((node) => {
+        [node.leftChildId, node.rightChildId].forEach((childId) => {
+          if (childId === null) {
+            return;
+          }
+
+          const child = visualizer.nodes[childId];
+          const status = edgeStatus(node.id, child.id, step);
+          const stroke =
+            status === "done"
+              ? "#2f855a"
+              : status === "active"
+                ? "#c5542f"
+                : status === "skip"
+                  ? "#b83232"
+                  : "rgba(30, 29, 26, 0.16)";
+
+          const line = createSvgElement("line", {
+            x1: node.x,
+            y1: node.y + 32,
+            x2: child.x,
+            y2: child.y - 32,
+            stroke,
+            "stroke-width": status === "idle" ? 2 : 4,
+            "stroke-linecap": "round"
+          });
+
+          group.appendChild(line);
+        });
+      });
+
+      svg.appendChild(group);
+    }
+
+    function renderNodes(step) {
+      const group = createSvgElement("g", {});
+      const revealedNodeIds = step && step.revealedNodeIds ? new Set(step.revealedNodeIds) : null;
+
+      visualizer.nodes.forEach((node) => {
+        const status = nodeStatus(node.id, step);
+        const showBuildValue = activeMode !== "build" || (revealedNodeIds && revealedNodeIds.has(node.id));
+        const fill =
+          status === "active"
+            ? "#c5542f"
+            : status === "done"
+              ? "#2f855a"
+              : status === "skip"
+                ? "#b83232"
+                : status === "visible"
+                  ? "rgba(30, 29, 26, 0.12)"
+                  : "rgba(255, 255, 255, 0.9)";
+
+        const stroke =
+          status === "idle"
+            ? "rgba(30, 29, 26, 0.16)"
+            : fill;
+
+        const circle = createSvgElement("circle", {
+          cx: node.x,
+          cy: node.y,
+          r: 34,
+          fill,
+          stroke,
+          "stroke-width": 2
+        });
+
+        const value = createSvgElement("text", {
+          x: node.x,
+          y: node.y + 11,
+          "text-anchor": "middle",
+          "font-size": "22",
+          "font-weight": "700",
+          fill: status === "idle" || status === "visible" ? "#1e1d1a" : "#ffffff"
+        });
+        value.textContent = showBuildValue ? node.value : "?";
+
+        const nodeLabel = createSvgElement("text", {
+          x: node.x,
+          y: node.y - 8,
+          "text-anchor": "middle",
+          "font-size": "11",
+          "font-weight": "700",
+          fill: status === "idle" || status === "visible" ? "#665f54" : "rgba(255,255,255,0.82)"
+        });
+        nodeLabel.textContent = `tree[${node.treeIndex}]`;
+
+        const interval = createSvgElement("text", {
+          x: node.x,
+          y: node.y - 48,
+          "text-anchor": "middle",
+          "font-size": "14",
+          "font-weight": "700",
+          fill: "#665f54"
+        });
+        interval.textContent = `[${node.left}, ${node.right}]`;
+
+        group.appendChild(interval);
+        group.appendChild(circle);
+        group.appendChild(nodeLabel);
+        group.appendChild(value);
+      });
+
+      svg.appendChild(group);
+    }
+
+    function renderStatus(step) {
+      const modeLabel = activeMode === "build" ? "Build mode" : `Query mode: [${queryRange[0]}, ${queryRange[1]}]`;
+      modeChip.textContent = modeLabel;
+      modeChip.className = activeMode === "build" ? "mode-chip" : "mode-chip query";
+
+      if (!step) {
+        statusTitle.textContent = "No steps available";
+        statusText.textContent = "Build a valid tree first.";
+        return;
+      }
+
+      statusTitle.textContent = `${step.title} (${stepIndex + 1}/${activeSteps.length})`;
+
+      let suffix = "";
+      if (step.accumValue !== null && step.accumValue !== undefined) {
+        suffix = activeMode === "build"
+          ? ` Current node value: ${step.accumValue}.`
+          : ` Running sum: ${step.accumValue}.`;
+      }
+
+      statusText.textContent = `${step.description}${suffix}`;
+    }
+
+    function renderHeapArray(step) {
+      heapArray.innerHTML = "";
+      const revealedNodeIds = step && step.revealedNodeIds ? new Set(step.revealedNodeIds) : null;
+      const activeNodeIds = step && step.activeNodeIds ? new Set(step.activeNodeIds) : new Set();
+      const maxTreeIndex = Math.max(...visualizer.nodes.map((node) => node.treeIndex));
+      const nodeByTreeIndex = new Map(visualizer.nodes.map((node) => [node.treeIndex, node]));
+
+      for (let treeIndex = 0; treeIndex <= maxTreeIndex; treeIndex += 1) {
+        const cell = document.createElement("div");
+        const node = nodeByTreeIndex.get(treeIndex);
+
+        if (!node) {
+          cell.className = "heap-cell empty";
+          cell.innerHTML = `<span class="heap-index">tree[${treeIndex}]</span><span class="heap-value">-</span>`;
+          heapArray.appendChild(cell);
+          continue;
+        }
+
+        const isRevealed = activeMode !== "build" || (revealedNodeIds && revealedNodeIds.has(node.id));
+        const isActive = activeNodeIds.has(node.id);
+        cell.className = `heap-cell ${isRevealed ? "done" : "empty"}${isActive ? " active" : ""}`;
+        cell.innerHTML = `
+          <span class="heap-index">tree[${treeIndex}]</span>
+          <span class="heap-value">${isRevealed ? node.value : "?"}</span>
+        `;
+        heapArray.appendChild(cell);
+      }
+    }
+
+    function renderStepList() {
+      stepList.innerHTML = "";
+      activeSteps.forEach((step, index) => {
+        const item = document.createElement("div");
+        item.className = index === stepIndex ? "step-item active" : "step-item";
+
+        const title = document.createElement("strong");
+        title.textContent = `${index + 1}. ${step.title}`;
+
+        const text = document.createElement("span");
+        text.textContent = step.description;
+
+        item.appendChild(title);
+        item.appendChild(text);
+        item.addEventListener("click", () => {
+          stepIndex = index;
+          stopPlayback();
+          render();
+        });
+
+        stepList.appendChild(item);
+      });
+    }
+
+    function updateButtons() {
+      prevButton.disabled = stepIndex === 0;
+      nextButton.disabled = stepIndex >= activeSteps.length - 1;
+      resetButton.disabled = activeSteps.length === 0;
+      playButton.disabled = activeSteps.length === 0;
+      queryButton.disabled = !visualizer || visualizer.values.length === 0;
+    }
+
+    rebuildButton.addEventListener("click", () => {
+      try {
+        rebuildVisualizer();
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+
+    exampleSelect.addEventListener("change", () => {
+      applyExample(exampleSelect.value);
+      try {
+        rebuildVisualizer();
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+
+    queryButton.addEventListener("click", () => {
+      if (!visualizer) {
+        return;
+      }
+      runQuery();
+    });
+
+    prevButton.addEventListener("click", () => {
+      if (stepIndex > 0) {
+        stepIndex -= 1;
+        stopPlayback();
+        render();
+      }
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (stepIndex < activeSteps.length - 1) {
+        stepIndex += 1;
+        stopPlayback();
+        render();
+      }
+    });
+
+    playButton.addEventListener("click", () => {
+      if (activeSteps.length > 0) {
+        togglePlayback();
+      }
+    });
+
+    resetButton.addEventListener("click", () => {
+      resetCurrentMode();
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" && stepIndex < activeSteps.length - 1) {
+        stepIndex += 1;
+        stopPlayback();
+        render();
+      }
+      if (event.key === "ArrowLeft" && stepIndex > 0) {
+        stepIndex -= 1;
+        stopPlayback();
+        render();
+      }
+      if (event.code === "Space") {
+        event.preventDefault();
+        if (activeSteps.length > 0) {
+          togglePlayback();
+        }
+      }
+    });
+
+    applyExample(exampleSelect.value);
+    rebuildVisualizer();
+  </script>
+</body>
+</html>
