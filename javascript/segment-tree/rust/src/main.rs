@@ -189,3 +189,52 @@ fn main() {
     // Print the query result after the update.
     println!("Segment tree result for [1,3] after update: {}", second_query_result);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::SegmentTree;
+
+    #[test]
+    fn builds_expected_tree_values_for_sample_input() {
+        let values = vec![2, 1, 5, 3, 4];
+        let segment_tree = SegmentTree::new(values);
+
+        assert_eq!(&segment_tree.tree[1..10], &[15, 8, 7, 3, 5, 3, 4, 2, 1]);
+    }
+
+    #[test]
+    fn query_returns_expected_sum_for_sample_range() {
+        let values = vec![2, 1, 5, 3, 4];
+        let segment_tree = SegmentTree::new(values);
+
+        assert_eq!(segment_tree.query(1, 3), 9);
+    }
+
+    #[test]
+    fn update_changes_values_and_future_queries() {
+        let values = vec![2, 1, 5, 3, 4];
+        let mut segment_tree = SegmentTree::new(values);
+
+        segment_tree.update(2, 10);
+
+        assert_eq!(segment_tree.values, vec![2, 1, 10, 3, 4]);
+        assert_eq!(&segment_tree.tree[1..10], &[20, 13, 7, 3, 10, 3, 4, 2, 1]);
+        assert_eq!(segment_tree.query(1, 3), 14);
+    }
+
+    #[test]
+    fn query_full_range_returns_total_sum() {
+        let values = vec![7, 2, 6, 1, 9, 4];
+        let segment_tree = SegmentTree::new(values);
+
+        assert_eq!(segment_tree.query(0, 5), 29);
+    }
+
+    #[test]
+    fn query_single_element_returns_leaf_value() {
+        let values = vec![7, 2, 6, 1, 9, 4];
+        let segment_tree = SegmentTree::new(values);
+
+        assert_eq!(segment_tree.query(4, 4), 9);
+    }
+}
