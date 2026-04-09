@@ -1,0 +1,11 @@
+# Rust build output
+/rust/target/
+
+# Node.js dependencies and logs
+/javascript/node_modules/
+/javascript/npm-debug.log*
+/javascript/.npm/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
