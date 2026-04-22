@@ -2,6 +2,7 @@ package dev.cdearaujo;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.function.Predicate;
 
 public class StreamsOneDemo {
@@ -18,10 +19,20 @@ public class StreamsOneDemo {
     }
 
     private static void showListExample() {
-        List<String> languages = List.of("Java", "Python", "Go", "Kotlin");
+        List<String> languages = new ArrayList<>(List.of("Java", "Python", "Go"));
 
         System.out.println();
         System.out.println("List:");
+        languages.add("Kotlin");
+        System.out.println("After add: " + languages);
+
+        String secondLanguage = languages.get(1);
+        System.out.println("Consult index 1: " + secondLanguage);
+
+        languages.remove("Python");
+        System.out.println("After remove: " + languages);
+
+        System.out.println("Iterating values:");
         languages.forEach(language -> System.out.println("Language: " + language));
     }
 
@@ -30,6 +41,24 @@ public class StreamsOneDemo {
 
         System.out.println();
         System.out.println("Arrays:");
+        String consultedCity = cities[1];
+        System.out.println("Consult index 1: " + consultedCity);
+
+        String[] citiesAfterAdd = Arrays.copyOf(cities, cities.length + 1);
+        citiesAfterAdd[citiesAfterAdd.length - 1] = "Natal";
+        System.out.println("After add: " + Arrays.toString(citiesAfterAdd));
+
+        String[] citiesAfterRemove = new String[citiesAfterAdd.length - 1];
+        int targetIndex = 1;
+        for (int sourceIndex = 0, destinationIndex = 0; sourceIndex < citiesAfterAdd.length; sourceIndex++) {
+            if (sourceIndex == targetIndex) {
+                continue;
+            }
+            citiesAfterRemove[destinationIndex++] = citiesAfterAdd[sourceIndex];
+        }
+        System.out.println("After remove index 1: " + Arrays.toString(citiesAfterRemove));
+
+        System.out.println("Iterating values:");
         Arrays.stream(cities)
                 .forEach(city -> System.out.println("City: " + city));
     }

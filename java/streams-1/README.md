@@ -2,8 +2,8 @@
 
 Minimal Java 25 POC showing:
 
-- `List`: creating a list and iterating over its values
-- `Arrays`: turning an array into a stream with `Arrays.stream(...)`
+- `List`: adding, removing, consulting, and iterating values
+- `Arrays`: consulting values and simulating add/remove operations
 - `map`: transforming each element in a stream
 - `filter`: keeping only elements that match a condition
 - `Predicate`: reusing a boolean rule inside `filter`
@@ -14,8 +14,8 @@ This project contains a single class, `StreamsOneDemo`, with small examples that
 
 The demo prints simple examples for:
 
-- reading values from a `List`
-- streaming values from an array
+- adding, consulting, and removing values from a `List`
+- consulting values in an array and creating new arrays to simulate add/remove
 - converting names to uppercase with `map`
 - filtering numbers with `filter`
 - creating a reusable `Predicate<String>` and applying it in a stream
