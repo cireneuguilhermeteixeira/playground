@@ -34,6 +34,7 @@ public class FunctionalInterfacesDemo {
 
         System.out.println();
         System.out.println("Predicate:");
+        System.out.println("Common scenario: validations and filters such as checking age, status, or permissions.");
         System.out.println("16 is adult? " + isAdult.test(16));
         System.out.println("21 is adult? " + isAdult.test(21));
     }
@@ -43,6 +44,7 @@ public class FunctionalInterfacesDemo {
 
         System.out.println();
         System.out.println("Function:");
+        System.out.println("Common scenario: data transformation such as formatting text, mapping DTOs, or normalizing values.");
         System.out.println("java -> " + toUpperCase.apply("java"));
     }
 
@@ -51,6 +53,7 @@ public class FunctionalInterfacesDemo {
 
         System.out.println();
         System.out.println("Consumer:");
+        System.out.println("Common scenario: side effects such as logging, printing, saving, or sending notifications.");
         printMessage.accept("Functional interfaces are practical.");
     }
 
@@ -59,6 +62,7 @@ public class FunctionalInterfacesDemo {
 
         System.out.println();
         System.out.println("Supplier:");
+        System.out.println("Common scenario: lazy value creation such as default config, tokens, timestamps, or fallback objects.");
         System.out.println("Generated value: " + defaultEnvironment.get());
     }
 
@@ -67,6 +71,7 @@ public class FunctionalInterfacesDemo {
 
         System.out.println();
         System.out.println("BiFunction:");
+        System.out.println("Common scenario: combining two inputs such as price + discount, first name + last name, or key + value.");
         System.out.println("10 + 15 = " + sum.apply(10, 15));
     }
 
@@ -76,6 +81,7 @@ public class FunctionalInterfacesDemo {
 
         System.out.println();
         System.out.println("Method reference:");
+        System.out.println("Common scenario: reusing existing methods in streams and callbacks without writing a full lambda.");
         names.stream()
                 .map(normalizeName)
                 .forEach(name -> System.out.println("Normalized name: " + name));
@@ -86,6 +92,7 @@ public class FunctionalInterfacesDemo {
 
         System.out.println();
         System.out.println("Custom functional interface:");
+        System.out.println("Common scenario: domain-specific behavior such as pricing, formatting, scoring, or approval rules.");
         System.out.println(excitedFormatter.format("Simple custom formatter"));
     }
 

@@ -33,6 +33,26 @@ The demo prints small examples for:
 - validating a user registration with a list of rules
 - applying different pricing strategies to the same order
 
+## Common scenarios for each functional interface
+
+- `Predicate<T>`: validations, authorization checks, status checks, and stream filtering
+- `Function<T, R>`: data transformation, DTO mapping, formatting, and normalization
+- `Consumer<T>`: logging, printing, persisting data, publishing events, and notifications
+- `Supplier<T>`: lazy initialization, default values, token generation, timestamps, and fallback object creation
+- `BiFunction<T, U, R>`: combining two values such as name parts, numeric calculations, or key/value assembly
+- `Method Reference`: stream pipelines and callbacks where an existing method already matches the required behavior
+- `Custom @FunctionalInterface`: domain-specific strategies such as pricing, approval rules, scoring, formatting, or routing
+
+## Practical examples in this project
+
+- `Predicate<Integer>`: checks whether a person is an adult
+- `Function<String, String>`: converts text to uppercase
+- `Consumer<String>`: prints a message as a side effect
+- `Supplier<String>`: provides a default environment value
+- `BiFunction<Integer, Integer, Integer>`: sums two numbers
+- `String::toUpperCase`: shows a method reference in a stream
+- `TextFormatter`: shows a custom behavior contract
+
 ## More realistic scenarios covered
 
 Besides the basic examples, the POC now includes slightly more practical cases:
