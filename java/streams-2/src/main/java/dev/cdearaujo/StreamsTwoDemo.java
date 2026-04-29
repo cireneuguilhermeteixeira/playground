@@ -9,7 +9,7 @@ import java.util.function.UnaryOperator;
 public class StreamsTwoDemo {
 
     public static void main(String[] args) {
-        System.out.println("POC - Java Streams 2");
+        System.out.println("POC - Java Streams");
         System.out.println("====================");
 
         showSupplierExample();
