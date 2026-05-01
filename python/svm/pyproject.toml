@@ -5,6 +5,7 @@ description = "Simple SVM example application using uv"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "matplotlib>=3.9",
     "scikit-learn>=1.5",
 ]
 
