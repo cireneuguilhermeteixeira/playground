@@ -11,6 +11,8 @@ dependencies = [
 
 [project.scripts]
 svm-app = "svm_app.main:main"
+svm-iris = "svm_app.iris_demo:main"
+svm-rbf = "svm_app.rbf_demo:main"
 
 [build-system]
 requires = ["hatchling"]

@@ -6,7 +6,8 @@ Simple SVM example in Python using `uv`, with both text and visual output.
 
 ```bash
 uv sync
-uv run svm-app
+uv run svm-iris
+uv run svm-rbf
 ```
 
 ## What it does
@@ -16,10 +17,23 @@ uv run svm-app
 - Splits the data into training and test sets
 - Reduces the data to 2 dimensions with PCA for visualization
 - Trains `SVC` models with different settings
+- Adds a nonlinear example where an RBF kernel is needed
+- Illustrates a lifted 3D view for the nonlinear case
 - Saves plots into `outputs/`
+
+You can still run both together with:
+
+```bash
+uv run svm-app
+```
 
 ## Generated files
 
-- `outputs/dataset_overview.png`: original dataset distribution
-- `outputs/train_test_projection.png`: 2D projection for train and test samples
-- `outputs/svm_boundary_adjustments.png`: decision boundary being adjusted
+Iris example:
+- `outputs/iris/dataset_overview.png`: original dataset distribution
+- `outputs/iris/train_test_projection.png`: 2D projection for train and test samples
+- `outputs/iris/svm_boundary_adjustments.png`: decision boundary being adjusted
+
+RBF example:
+- `outputs/rbf/rbf_kernel_comparison.png`: linear vs RBF on a nonlinear dataset
+- `outputs/rbf/rbf_lifted_view.png`: 3D lifted view used to explain the nonlinear separation
