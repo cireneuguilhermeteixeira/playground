@@ -14,18 +14,11 @@ public class ExecutorServiceDemo {
         System.out.println("POC - Java Concurrency");
         System.out.println("======================");
 
-        explainConcept();
         runRunnableTasks();
         runCallableTasks();
         runInvokeAllExample();
     }
 
-    private static void explainConcept() {
-        System.out.println();
-        System.out.println("ExecutorService:");
-        System.out.println("ExecutorService manages a pool of threads and executes tasks asynchronously.");
-        System.out.println("Common scenario: background work such as report generation, API calls, file processing, or email sending.");
-    }
 
     private static void runRunnableTasks() throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(2);
