@@ -30,10 +30,14 @@ uv run svm-app
 ## Generated files
 
 Iris example:
+<img width="659" height="393" alt="image" src="https://github.com/user-attachments/assets/b7de6cd4-01e4-433d-8a1a-a9f9d501a6fd" />
+
 - `outputs/iris/dataset_overview.png`: original dataset distribution
 - `outputs/iris/train_test_projection.png`: 2D projection for train and test samples
 - `outputs/iris/svm_boundary_adjustments.png`: decision boundary being adjusted
 
 RBF example:
+<img width="754" height="206" alt="image" src="https://github.com/user-attachments/assets/ff5ac9a3-0002-43f2-bed1-8fe20696f409" />
+
 - `outputs/rbf/rbf_kernel_comparison.png`: linear vs RBF on a nonlinear dataset
 - `outputs/rbf/rbf_lifted_view.png`: 3D lifted view used to explain the nonlinear separation
