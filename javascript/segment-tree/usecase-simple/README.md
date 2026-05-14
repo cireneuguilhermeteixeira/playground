@@ -34,6 +34,61 @@ A few sample interpretations:
 - `Feb-2025 = -400`: more cash went out than came in
 - `May-2026 = 1200`: the portfolio finished the timeline strongly positive
 
+## Visual Example
+
+Before looking at the full timeline, it helps to see a very small example with only 4 months:
+
+```text
+Jan-2024 = 1200
+Feb-2024 = -800
+Mar-2024 = 950
+Apr-2024 = 400
+```
+
+The segment tree stores the sum for each interval:
+
+```text
+                    [Jan-2024..Apr-2024]
+                            1750
+                         /         \
+            [Jan-2024..Feb-2024]   [Mar-2024..Apr-2024]
+                    400                     1350
+                   /   \                   /    \
+          [Jan] 1200  [Feb] -800   [Mar] 950  [Apr] 400
+```
+
+This is easier to read from bottom to top:
+
+- each leaf is one month
+- each parent stores the sum of its two children
+- the root stores the total for the whole interval
+
+Example query:
+
+```text
+Query Jan-2024..Mar-2024
+```
+
+Manual calculation:
+
+```text
+1200 + (-800) + 950 = 1350
+```
+
+How the tree answers it:
+
+- take the full value of `[Jan-2024..Feb-2024]`, which is `400`
+- take only `[Mar-2024]`, which is `950`
+- ignore `[Apr-2024]`
+
+Final result:
+
+```text
+400 + 950 = 1350
+```
+
+That is the main idea of the data structure: instead of summing month by month every time, it reuses sums that were already precomputed for larger intervals.
+
 ## What The Example Demonstrates
 
 1. build the `segment tree`
