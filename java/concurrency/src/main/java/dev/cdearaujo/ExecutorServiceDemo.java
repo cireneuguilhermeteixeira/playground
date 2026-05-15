@@ -26,9 +26,13 @@ public class ExecutorServiceDemo {
         System.out.println();
         System.out.println("Runnable tasks:");
 
-        executorService.submit(() -> printTask("load-user", 300));
-        executorService.submit(() -> printTask("load-orders", 200));
-        executorService.submit(() -> printTask("load-payments", 100));
+        Runnable loadUserTask = () -> printTask("load-user", 300);
+        Runnable loadOrdersTask = () -> printTask("load-orders", 200);
+        Runnable loadPaymentsTask = () -> printTask("load-payments", 100);
+
+        executorService.submit(loadUserTask);
+        executorService.submit(loadOrdersTask);
+        executorService.submit(loadPaymentsTask);
 
         shutdownAndAwait(executorService);
     }
@@ -39,8 +43,11 @@ public class ExecutorServiceDemo {
         System.out.println();
         System.out.println("Callable tasks with Future:");
 
-        Future<String> productFuture = executorService.submit(() -> fetchValue("product", 250));
-        Future<String> pricingFuture = executorService.submit(() -> fetchValue("pricing", 150));
+        Callable<String> productTask = () -> fetchValue("product", 250);
+        Callable<String> pricingTask = () -> fetchValue("pricing", 150);
+
+        Future<String> productFuture = executorService.submit(productTask);
+        Future<String> pricingFuture = executorService.submit(pricingTask);
 
         System.out.println("Future result 1: " + productFuture.get());
         System.out.println("Future result 2: " + pricingFuture.get());
@@ -54,10 +61,14 @@ public class ExecutorServiceDemo {
         System.out.println();
         System.out.println("invokeAll:");
 
+        Callable<String> inventoryTask = () -> fetchValue("inventory", 200);
+        Callable<String> shippingTask = () -> fetchValue("shipping", 300);
+        Callable<String> customerTask = () -> fetchValue("customer", 100);
+
         List<Callable<String>> tasks = List.of(
-                () -> fetchValue("inventory", 200),
-                () -> fetchValue("shipping", 300),
-                () -> fetchValue("customer", 100)
+                inventoryTask,
+                shippingTask,
+                customerTask
         );
 
         List<Future<String>> futures = executorService.invokeAll(tasks);
