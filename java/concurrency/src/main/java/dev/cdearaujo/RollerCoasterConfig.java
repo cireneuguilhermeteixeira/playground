@@ -1,4 +1,10 @@
 package dev.cdearaujo;
 
-public record RollerCoasterConfig(int carCapacity) {
+public record RollerCoasterConfig(
+        int carCapacity,
+        int passengerCount,
+        long boardingDelayMillis,
+        long rideDurationMillis,
+        long disembarkDelayMillis
+) {
 }
