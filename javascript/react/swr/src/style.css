@@ -1,0 +1,247 @@
+:root {
+  font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  color: #f7f4ea;
+  background:
+    radial-gradient(circle at top, rgba(255, 196, 108, 0.18), transparent 32%),
+    linear-gradient(180deg, #10212d 0%, #081016 100%);
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.page {
+  width: min(1100px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0 80px;
+}
+
+.hero,
+.panel {
+  backdrop-filter: blur(16px);
+  background: rgba(10, 20, 27, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 24px;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.28);
+}
+
+.hero {
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: #ffcb7d;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0;
+  max-width: 12ch;
+  font-size: clamp(2.4rem, 5vw, 4.5rem);
+  line-height: 0.95;
+}
+
+.hero__copy {
+  max-width: 62ch;
+  color: rgba(247, 244, 234, 0.8);
+}
+
+.hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.hero__meta span,
+.badge,
+.ghost-button,
+button[type='submit'] {
+  border-radius: 999px;
+}
+
+.hero__meta span {
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.panel {
+  padding: 28px;
+  margin-bottom: 20px;
+}
+
+.panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.panel__header h2,
+.ticket-card h3 {
+  margin: 0;
+}
+
+.panel__header p,
+.ticket-card__meta dt,
+.ticket-card__id,
+.state {
+  color: rgba(247, 244, 234, 0.72);
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.form label,
+.filter {
+  display: grid;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 14px 16px;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+}
+
+button[type='submit'] {
+  align-self: end;
+  padding: 14px 18px;
+  border: 0;
+  color: #081016;
+  background: linear-gradient(135deg, #ffcb7d 0%, #ffa96b 100%);
+}
+
+.ticket-list {
+  display: grid;
+  gap: 14px;
+}
+
+.ticket-card {
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+}
+
+.ticket-card__top,
+.ticket-card__meta,
+.ticket-card__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ticket-card__meta {
+  margin: 18px 0;
+}
+
+.ticket-card__meta div {
+  display: grid;
+  gap: 4px;
+}
+
+.ticket-card__meta dt,
+.ticket-card__meta dd {
+  margin: 0;
+}
+
+.ticket-card__id {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+}
+
+.badge {
+  height: fit-content;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  border: 1px solid transparent;
+}
+
+.badge--backlog {
+  background: rgba(134, 163, 255, 0.16);
+  color: #b6c7ff;
+}
+
+.badge--in-progress {
+  background: rgba(255, 203, 125, 0.16);
+  color: #ffcf83;
+}
+
+.badge--done {
+  background: rgba(83, 212, 170, 0.16);
+  color: #99eccd;
+}
+
+.ticket-card__actions {
+  flex-wrap: wrap;
+}
+
+.ghost-button {
+  padding: 10px 14px;
+  color: inherit;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.ghost-button.is-active {
+  border-color: rgba(255, 203, 125, 0.6);
+  background: rgba(255, 203, 125, 0.12);
+}
+
+.state.error {
+  color: #ff8e8e;
+}
+
+@media (max-width: 840px) {
+  .form {
+    grid-template-columns: 1fr;
+  }
+
+  .panel__header,
+  .ticket-card__top,
+  .ticket-card__meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
