@@ -1,35 +1,35 @@
 # SWR POC
 
-POC em React para demonstrar `SWR`, a biblioteca da Vercel para fetch, cache e revalidação.
+React POC to demonstrate `SWR`, Vercel's library for fetching, caching, and revalidation.
 
-## O que a demo cobre
+## What the demo covers
 
-- `useSWR` para leitura com cache automático
-- `refreshInterval` para revalidação periódica
+- `useSWR` for reads with automatic cache
+- `refreshInterval` for periodic revalidation
 - `revalidateOnFocus` via `SWRConfig`
-- `useSWRMutation` para criação
-- `mutate` com atualização otimista para troca de status
+- `useSWRMutation` for creation
+- `mutate` with optimistic updates for status changes
 
-## Rodar localmente
+## Run locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Estrutura
+## Structure
 
-- `src/mockApi.ts`: mock assíncrono local que simula uma API
-- `src/App.tsx`: demo principal com listagem, criação e mutation otimista
-- `src/types.ts`: tipos do domínio
+- `src/mockApi.ts`: local async mock that simulates an API
+- `src/App.tsx`: main demo with listing, creation, and optimistic mutation
+- `src/types.ts`: domain types
 
-## Ideia da POC
+## POC idea
 
-Em vez de usar `useEffect` + `useState` + controle manual de loading/cache, o SWR centraliza:
+Instead of using `useEffect` + `useState` + manual loading/cache control, SWR centralizes:
 
-- fetch inicial
-- deduplicação
-- revalidação em background
-- atualização de cache após mutation
+- initial fetch
+- deduplication
+- background revalidation
+- cache update after mutation
 
-Isso deixa o componente mais declarativo e próximo do fluxo recomendado para dados remotos no React.
+This makes the component more declarative and closer to the recommended flow for remote data in React.
