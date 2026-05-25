@@ -73,6 +73,25 @@ h1 {
   margin-top: 8px;
 }
 
+.examples {
+  display: grid;
+  gap: 24px;
+}
+
+.result {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.profile p {
+  margin: 0;
+}
+
+.profile p + p {
+  margin-top: 10px;
+}
+
 @media (max-width: 640px) {
   .card {
     padding: 24px;
