@@ -5,63 +5,30 @@ const PROFILE_KEY = 'profile'
 const PROFILE_ERROR_KEY = 'profile-with-error'
 
 function App() {
-  const { data, error, isLoading } = useSWR(PROFILE_KEY, getProfile)
-  const {
-    data: failedData,
-    error: failedError,
-    isLoading: failedLoading,
-  } = useSWR(PROFILE_ERROR_KEY, getProfileWithError)
-
   return (
     <main className="page">
       <section className="card">
-        <p className="label">First practical SWR example</p>
-        <h1>Loading data in the simplest way</h1>
+        <p className="label">Shared cache example</p>
+        <h1>Two components, one cached request</h1>
         <p className="description">
-          This example uses a single `key`, a single `fetcher`, and `useSWR` to load data and
-          handle the basic states automatically. It also shows the common `response.ok` error
-          check used with HTTP requests.
+          Both components below call `useSWR` with the same `key`. SWR fetches once, stores the
+          result in cache, and the other component reads the same data.
         </p>
 
         <div className="content">
-          <h2>What SWR is doing here</h2>
+          <h2>What this example shows</h2>
           <ul>
-            <li>The `key` identifies this data in the cache.</li>
-            <li>The `fetcher` is the async function that returns the data.</li>
-            <li>`useSWR` gives us `data`, `error`, and `isLoading`.</li>
-            <li>If `response.ok` is false, the `fetcher` throws and SWR fills `error`.</li>
+            <li>The same `key` is used in both components.</li>
+            <li>The first fetch populates the cache.</li>
+            <li>The second component reads that cached value immediately.</li>
+            <li>The `requestId` makes it obvious when a new fetch happened.</li>
           </ul>
         </div>
 
         <div className="examples">
-          <div className="result">
-            <h2>Success example</h2>
-
-            {isLoading ? <p>Loading profile...</p> : null}
-            {error ? <p>Failed to load profile.</p> : null}
-
-            {data ? (
-              <div className="profile">
-                <p>
-                  <strong>Name:</strong> {data.name}
-                </p>
-                <p>
-                  <strong>Role:</strong> {data.role}
-                </p>
-                <p>
-                  <strong>City:</strong> {data.city}
-                </p>
-              </div>
-            ) : null}
-          </div>
-
-          <div className="result">
-            <h2>Error example</h2>
-
-            {failedLoading ? <p>Loading profile...</p> : null}
-            {failedError ? <p>{failedError.message}</p> : null}
-            {failedData ? <p>This should not render.</p> : null}
-          </div>
+          <ErrorExample />
+          <ProfileCard />
+          <ProfileSummary />
         </div>
       </section>
     </main>
@@ -69,3 +36,72 @@ function App() {
 }
 
 export default App
+
+function ErrorExample() {
+  const { data, error, isLoading } = useSWR(PROFILE_ERROR_KEY, getProfileWithError)
+
+  return (
+    <article className="result">
+      <h2>Error example</h2>
+
+      {isLoading ? <p>Loading profile...</p> : null}
+      {error ? <p>{error.message}</p> : null}
+      {data ? <p>This should not render.</p> : null}
+    </article>
+  )
+}
+
+function ProfileCard() {
+  const { data, isLoading, error } = useSWR(PROFILE_KEY, getProfile)
+
+  return (
+    <article className="result">
+      <h2>Main component</h2>
+
+      {isLoading ? <p>Loading profile...</p> : null}
+      {error ? <p>Failed to load profile.</p> : null}
+
+      {data ? (
+        <div className="profile">
+          <p>
+            <strong>Request:</strong> #{data.requestId}
+          </p>
+          <p>
+            <strong>Name:</strong> {data.name}
+          </p>
+          <p>
+            <strong>Role:</strong> {data.role}
+          </p>
+          <p>
+            <strong>City:</strong> {data.city}
+          </p>
+        </div>
+      ) : null}
+    </article>
+  )
+}
+
+function ProfileSummary() {
+  const { data, isLoading, error } = useSWR(PROFILE_KEY, getProfile)
+
+  return (
+    <article className="result">
+      <h2>Shared cache preview</h2>
+
+      {isLoading ? <p>Loading profile...</p> : null}
+      {error ? <p>Failed to load profile.</p> : null}
+
+      {data ? (
+        <div className="profile">
+          <p>
+            This component did not make a second request. It reused cache entry #{data.requestId}.
+          </p>
+          <p>
+            <strong>{data.name}</strong> works as a <strong>{data.role}</strong> in{' '}
+            <strong>{data.city}</strong>.
+          </p>
+        </div>
+      ) : null}
+    </article>
+  )
+}

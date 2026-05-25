@@ -1,4 +1,5 @@
 export type Profile = {
+  requestId: number
   name: string
   role: string
   city: string
@@ -9,6 +10,8 @@ type MockResponse<T> = {
   status: number
   json: () => Promise<T>
 }
+
+let requestCount = 0
 
 export async function getProfile(): Promise<Profile> {
   const response = await mockFetchProfileSuccess()
@@ -32,11 +35,13 @@ export async function getProfileWithError(): Promise<Profile> {
 
 async function mockFetchProfileSuccess(): Promise<MockResponse<Profile>> {
   await new Promise((resolve) => setTimeout(resolve, 800))
+  requestCount += 1
 
   return {
     ok: true,
     status: 200,
     json: async () => ({
+      requestId: requestCount,
       name: 'Diego',
       role: 'Frontend Developer',
       city: 'Fortaleza',
