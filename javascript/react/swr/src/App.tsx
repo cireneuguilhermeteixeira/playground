@@ -19,7 +19,8 @@ function App() {
         <h1>Loading data in the simplest way</h1>
         <p className="description">
           This example uses a single `key`, a single `fetcher`, and `useSWR` to load data and
-          handle the basic states automatically. It also shows how SWR receives an error.
+          handle the basic states automatically. It also shows the common `response.ok` error
+          check used with HTTP requests.
         </p>
 
         <div className="content">
@@ -28,7 +29,7 @@ function App() {
             <li>The `key` identifies this data in the cache.</li>
             <li>The `fetcher` is the async function that returns the data.</li>
             <li>`useSWR` gives us `data`, `error`, and `isLoading`.</li>
-            <li>If the `fetcher` throws or rejects, SWR fills `error` automatically.</li>
+            <li>If `response.ok` is false, the `fetcher` throws and SWR fills `error`.</li>
           </ul>
         </div>
 
