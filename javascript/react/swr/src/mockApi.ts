@@ -6,6 +6,12 @@ export type Profile = {
   updatedAt: string
 }
 
+export type CompareRecord = {
+  label: string
+  version: number
+  updatedAt: string
+}
+
 type MockResponse<T> = {
   ok: boolean
   status: number
@@ -33,6 +39,16 @@ export async function getProfileWithError(): Promise<Profile> {
   }
 
   return response.json()
+}
+
+export async function getCompareRecord(): Promise<CompareRecord> {
+  await new Promise((resolve) => setTimeout(resolve, 800))
+
+  return {
+    label: 'Stable label',
+    version: 1,
+    updatedAt: new Date().toISOString(),
+  }
 }
 
 async function mockFetchProfileSuccess(): Promise<MockResponse<Profile>> {

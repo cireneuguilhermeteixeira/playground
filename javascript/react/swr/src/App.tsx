@@ -1,47 +1,18 @@
+import { mutate } from 'swr'
+import { useState } from 'react'
 import useSWR from 'swr'
-import { getProfile, getProfileWithError } from './mockApi'
+import { getCompareRecord, getProfile, getProfileWithError } from './mockApi'
 
 const PROFILE_KEY = 'profile'
 const PROFILE_ERROR_KEY = 'profile-with-error'
 const PROFILE_FALLBACK_KEY = 'profile-fallback'
-const PROFILE_COMPARE_KEY = 'profile-compare'
+const COMPARE_KEY = 'compare-record'
 const FALLBACK_PROFILE = {
   requestId: 0,
   name: 'Loading...',
   role: 'Loading...',
   city: 'Loading...',
   updatedAt: 'Loading...',
-}
-
-function compareProfiles(
-  previous:
-    | {
-        requestId: number
-        name: string
-        role: string
-        city: string
-        updatedAt: string
-      }
-    | undefined,
-  next:
-    | {
-        requestId: number
-        name: string
-        role: string
-        city: string
-        updatedAt: string
-      }
-    | undefined,
-) {
-  if (!previous || !next) {
-    return false
-  }
-
-  return (
-    previous.name === next.name &&
-    previous.role === next.role &&
-    previous.city === next.city
-  )
 }
 
 function App() {
@@ -234,34 +205,45 @@ function FallbackExample() {
 }
 
 function CompareExample() {
-  const { data, isLoading, isValidating } = useSWR(PROFILE_COMPARE_KEY, getProfile, {
-    compare: compareProfiles,
+  const [attempts, setAttempts] = useState(0)
+  const { data, isLoading, isValidating, error } = useSWR(COMPARE_KEY, getCompareRecord, {
+    compare: (previous, next) =>
+      previous?.label === next?.label && previous?.version === next?.version,
   })
 
   return (
     <article className="result">
       <h2>Compare example</h2>
       <p className="hint">
-        The response includes `updatedAt`, but the custom compare ignores it. That means SWR only
-        rerenders when the meaningful fields change.
+        The response includes `updatedAt`, but the custom compare only checks the stable fields.
+        Click refresh to trigger a new request and see when SWR skips the visual update.
       </p>
+
+      <button
+        type="button"
+        className="refresh-button"
+        onClick={() => {
+          setAttempts((value) => value + 1)
+          void mutate(COMPARE_KEY)
+        }}
+      >
+        Refresh compare data
+      </button>
 
       {isLoading ? <p>Loading profile...</p> : null}
       {isValidating && !isLoading ? <p>Checking for updates...</p> : null}
+      {error ? <p>Failed to load compare data.</p> : null}
 
       {data ? (
         <div className="profile">
           <p>
-            <strong>Request:</strong> #{data.requestId}
+            Attempts: <strong>{attempts}</strong>
           </p>
           <p>
-            <strong>Name:</strong> {data.name}
+            <strong>Label:</strong> {data.label}
           </p>
           <p>
-            <strong>Role:</strong> {data.role}
-          </p>
-          <p>
-            <strong>City:</strong> {data.city}
+            <strong>Version:</strong> {data.version}
           </p>
           <p>
             <strong>Updated at:</strong> {data.updatedAt}
