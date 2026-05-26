@@ -93,6 +93,36 @@ h1 {
   color: #1f2937;
 }
 
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hint {
+  margin: 8px 0 0;
+  color: #4b5563;
+}
+
+.dedupe-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.dedupe-reader {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+
+.dedupe-reader h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+}
+
 .profile p {
   margin: 0;
 }
@@ -108,5 +138,9 @@ h1 {
 
   h1 {
     font-size: 1.75rem;
+  }
+
+  .dedupe-grid {
+    grid-template-columns: 1fr;
   }
 }

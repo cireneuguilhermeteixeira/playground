@@ -14,7 +14,8 @@ createRoot(container).render(
   <StrictMode>
     <SWRConfig
       value={{
-        revalidateOnFocus: true,
+        dedupingInterval: 2000,
+        revalidateOnFocus: false,
         shouldRetryOnError: false,
       }}
     >

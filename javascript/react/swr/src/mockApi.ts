@@ -3,6 +3,7 @@ export type Profile = {
   name: string
   role: string
   city: string
+  updatedAt: string
 }
 
 type MockResponse<T> = {
@@ -12,6 +13,7 @@ type MockResponse<T> = {
 }
 
 let requestCount = 0
+let lastUpdatedAt = '2026-05-27T00:00:00.000Z'
 
 export async function getProfile(): Promise<Profile> {
   const response = await mockFetchProfileSuccess()
@@ -36,6 +38,7 @@ export async function getProfileWithError(): Promise<Profile> {
 async function mockFetchProfileSuccess(): Promise<MockResponse<Profile>> {
   await new Promise((resolve) => setTimeout(resolve, 800))
   requestCount += 1
+  lastUpdatedAt = new Date().toISOString()
 
   return {
     ok: true,
@@ -45,6 +48,7 @@ async function mockFetchProfileSuccess(): Promise<MockResponse<Profile>> {
       name: 'Diego',
       role: 'Frontend Developer',
       city: 'Fortaleza',
+      updatedAt: lastUpdatedAt,
     }),
   }
 }
