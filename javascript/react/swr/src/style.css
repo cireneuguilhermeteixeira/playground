@@ -84,6 +84,15 @@ h1 {
   border-top: 1px solid #e5e7eb;
 }
 
+.refresh-button {
+  margin: 12px 0 16px;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  background: #f9fafb;
+  color: #1f2937;
+}
+
 .profile p {
   margin: 0;
 }

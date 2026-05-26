@@ -1,3 +1,4 @@
+import { mutate } from 'swr'
 import useSWR from 'swr'
 import { getProfile, getProfileWithError } from './mockApi'
 
@@ -12,7 +13,8 @@ function App() {
         <h1>Two components, one cached request</h1>
         <p className="description">
           Both components below call `useSWR` with the same `key`. SWR fetches once, stores the
-          result in cache, and the other component reads the same data.
+          result in cache, and the other component reads the same data. Click refresh to see the
+          difference between `isLoading` and `isValidating`.
         </p>
 
         <div className="content">
@@ -22,6 +24,7 @@ function App() {
             <li>The first fetch populates the cache.</li>
             <li>The second component reads that cached value immediately.</li>
             <li>The `requestId` makes it obvious when a new fetch happened.</li>
+            <li>`isLoading` is for the first load; `isValidating` is for refetches.</li>
           </ul>
         </div>
 
@@ -52,13 +55,21 @@ function ErrorExample() {
 }
 
 function ProfileCard() {
-  const { data, isLoading, error } = useSWR(PROFILE_KEY, getProfile)
+  const { data, isLoading, isValidating, error } = useSWR(PROFILE_KEY, getProfile)
 
   return (
     <article className="result">
       <h2>Main component</h2>
+      <button
+        type="button"
+        className="refresh-button"
+        onClick={() =>  mutate(PROFILE_KEY)}
+      >
+        Refresh profile
+      </button>
 
       {isLoading ? <p>Loading profile...</p> : null}
+      {isValidating && !isLoading ? <p>Validating cached data...</p> : null}
       {error ? <p>Failed to load profile.</p> : null}
 
       {data ? (
@@ -82,13 +93,14 @@ function ProfileCard() {
 }
 
 function ProfileSummary() {
-  const { data, isLoading, error } = useSWR(PROFILE_KEY, getProfile)
+  const { data, isLoading, isValidating, error } = useSWR(PROFILE_KEY, getProfile)
 
   return (
     <article className="result">
       <h2>Shared cache preview</h2>
 
       {isLoading ? <p>Loading profile...</p> : null}
+      {isValidating && !isLoading ? <p>Updating from cache...</p> : null}
       {error ? <p>Failed to load profile.</p> : null}
 
       {data ? (
