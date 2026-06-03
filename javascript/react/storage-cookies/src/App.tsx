@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { CookieExamples } from "./CookieExamples";
 import {
   buildRecord,
   clearPocStorage,
@@ -22,75 +23,75 @@ type CookieRow = {
 const authMethods = [
   {
     type: "Session cookie",
-    where: "Cookie HttpOnly + Secure + SameSite, gerenciado pelo servidor.",
-    use: "Apps web tradicionais, BFF, SSR, apps que precisam reduzir exposicao a XSS.",
-    avoid: "APIs consumidas por muitos clientes nao-browser sem gateway claro.",
+    where: "HttpOnly + Secure + SameSite cookie managed by the server.",
+    use: "Traditional web apps, BFF, SSR, and apps that need to reduce XSS token exposure.",
+    avoid: "APIs consumed by many non-browser clients without a clear gateway.",
   },
   {
     type: "Bearer access token",
     where: "Header Authorization: Bearer <token>.",
-    use: "SPAs chamando APIs, mobile, CLI, integracoes servidor-servidor.",
-    avoid: "Guardar token longo em localStorage. Prefira access token curto em memoria.",
+    use: "SPAs calling APIs, mobile apps, CLIs, and server-to-server integrations.",
+    avoid: "Storing long-lived tokens in localStorage. Prefer short-lived access tokens in memory.",
   },
   {
     type: "JWT",
-    where: "Formato de token assinado com claims; nao e um lugar de armazenamento.",
-    use: "Quando a API precisa validar claims sem consultar sessao a cada request.",
-    avoid: "Claims sensiveis, token longo sem revogacao, confiar em JWT sem validar assinatura.",
+    where: "A signed token format with claims; it is not a storage location.",
+    use: "When an API needs to validate claims without loading a server session on every request.",
+    avoid: "Sensitive claims, long-lived tokens without revocation, or trusting JWTs without signature validation.",
   },
   {
     type: "Refresh token",
-    where: "Cookie HttpOnly ou storage seguro do dispositivo.",
-    use: "Renovar access tokens curtos sem pedir login toda hora.",
-    avoid: "Enviar para toda API. Restrinja ao endpoint de refresh.",
+    where: "HttpOnly cookie or secure device storage.",
+    use: "Renewing short-lived access tokens without asking the user to log in repeatedly.",
+    avoid: "Sending it to every API. Restrict it to the refresh endpoint.",
   },
   {
     type: "API key",
-    where: "Header proprio, secret manager ou variavel de ambiente no backend.",
-    use: "Integracao servidor-servidor e identificacao de aplicacoes.",
-    avoid: "Frontend publico. API key no browser nao e segredo.",
+    where: "Custom header, secret manager, or backend environment variable.",
+    use: "Server-to-server integration and application identification.",
+    avoid: "Public frontends. An API key in the browser is not a secret.",
   },
   {
     type: "Basic auth",
-    where: "Header Authorization com usuario:senha em Base64 sobre HTTPS.",
-    use: "Ferramentas internas simples, testes, endpoints legados.",
-    avoid: "Apps modernos de usuario final sem controles adicionais.",
+    where: "Authorization header with Base64 user:password over HTTPS.",
+    use: "Simple internal tools, tests, and legacy endpoints.",
+    avoid: "Modern end-user apps without additional controls.",
   },
   {
     type: "OAuth 2.0 / OIDC",
-    where: "Authorization Code + PKCE no browser; tokens emitidos por Identity Provider.",
-    use: "Login social, SSO corporativo, autorizacao delegada e apps SPA/mobile.",
-    avoid: "Implicit flow legado. Use Authorization Code com PKCE.",
+    where: "Authorization Code + PKCE in the browser; tokens are issued by an Identity Provider.",
+    use: "Social login, corporate SSO, delegated authorization, and SPA/mobile apps.",
+    avoid: "The legacy implicit flow. Use Authorization Code with PKCE.",
   },
   {
     type: "mTLS",
-    where: "Certificado de cliente na conexao TLS.",
-    use: "Comunicacao servidor-servidor de alta confianca.",
-    avoid: "SPAs e usuarios finais comuns.",
+    where: "Client certificate on the TLS connection.",
+    use: "High-trust server-to-server communication.",
+    avoid: "SPAs and regular end-user flows.",
   },
 ];
 
 const storageMatrix = [
   {
     name: "localStorage",
-    duration: "Persiste ate remocao manual.",
-    scope: "Mesmo origin, compartilhado entre abas.",
-    good: "Preferencias nao sensiveis, cache leve, flags locais.",
-    risk: "Acessivel por JavaScript; XSS consegue ler.",
+    duration: "Persists until manual removal.",
+    scope: "Same origin, shared across tabs.",
+    good: "Non-sensitive preferences, lightweight cache, local flags.",
+    risk: "Readable by JavaScript; XSS can read it.",
   },
   {
     name: "sessionStorage",
-    duration: "Dura enquanto a aba/janela existir.",
-    scope: "Mesmo origin, isolado por aba.",
-    good: "Estado temporario de fluxo, wizard, filtros da aba.",
-    risk: "Tambem acessivel por JavaScript; nao resolve XSS.",
+    duration: "Lasts while the tab/window exists.",
+    scope: "Same origin, isolated per tab.",
+    good: "Temporary flow state, wizards, tab-specific filters.",
+    risk: "Also readable by JavaScript; it does not solve XSS.",
   },
   {
     name: "cookie",
-    duration: "Sessao do browser ou Max-Age/Expires.",
-    scope: "Enviado automaticamente em requests que combinam Domain/Path/SameSite.",
-    good: "Sessao web, refresh token HttpOnly, preferencias pequenas.",
-    risk: "CSRF se SameSite/CSRF token forem mal configurados; limite pequeno.",
+    duration: "Browser session or Max-Age/Expires.",
+    scope: "Automatically sent on requests that match Domain/Path/SameSite.",
+    good: "Web sessions, HttpOnly refresh tokens, small preferences.",
+    risk: "CSRF if SameSite/CSRF tokens are misconfigured; small size limit.",
   },
 ];
 
@@ -108,6 +109,7 @@ function readAll() {
 }
 
 function App() {
+  const [route, setRoute] = useState(() => window.location.hash || "#/");
   const [snapshot, setSnapshot] = useState<{
     local: DemoRecord | null;
     session: DemoRecord | null;
@@ -126,14 +128,23 @@ function App() {
     refresh();
   }, []);
 
+  useEffect(() => {
+    function handleHashChange() {
+      setRoute(window.location.hash || "#/");
+    }
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
   function createLocalStorageDemo() {
     writeStorage(
       "localStorage",
       keys.local,
       buildRecord("localStorage", {
         theme: "dark",
-        language: "pt-BR",
-        note: "permanece depois de fechar e abrir o navegador",
+        language: "en-US",
+        note: "persists after closing and reopening the browser",
       }),
     );
     refresh();
@@ -145,8 +156,8 @@ function App() {
       keys.session,
       buildRecord("sessionStorage", {
         checkoutStep: 2,
-        tabScopedDraft: "rascunho exclusivo desta aba",
-        note: "some quando esta aba for encerrada",
+        tabScopedDraft: "draft scoped to this tab only",
+        note: "disappears when this tab is closed",
       }),
     );
     refresh();
@@ -155,7 +166,7 @@ function App() {
   function createCookieDemo() {
     setCookie("poc_theme", "compact", 60 * 60);
     setCookie("poc_session_hint", "browser-session");
-    setCookie("poc_refresh_demo", "simulado-no-js", 60 * 5);
+    setCookie("poc_refresh_demo", "simulated-in-js", 60 * 5);
     refresh();
   }
 
@@ -166,7 +177,7 @@ function App() {
       role: "admin",
       iat: now,
       exp: now + 15 * 60,
-      note: "JWT demonstra estrutura, nao seguranca. Assinatura real deve ser validada no backend/API.",
+      note: "JWT demonstrates structure, not security. A real signature must be validated by the backend/API.",
     });
     window.localStorage.setItem(keys.jwt, token);
     setDecodedJwt(decodeJwt(token));
@@ -175,7 +186,7 @@ function App() {
 
   function decodeStoredJwt() {
     if (!snapshot.jwt) {
-      setDecodedJwt({ error: "Nenhum JWT salvo." });
+      setDecodedJwt({ error: "No JWT stored." });
       return;
     }
 
@@ -187,7 +198,7 @@ function App() {
   }
 
   function clearCookies() {
-    cookieNames.forEach(deleteCookie);
+    cookieNames.forEach((name) => deleteCookie(name));
     refresh();
   }
 
@@ -198,27 +209,39 @@ function App() {
     refresh();
   }
 
+  if (route === "#/cookies") {
+    return (
+      <main>
+        <CookieExamples />
+      </main>
+    );
+  }
+
   return (
     <main>
       <header>
-        <h1>POC: localStorage, sessionStorage, cookies e autenticacao</h1>
+        <h1>POC: localStorage, sessionStorage, cookies, and authentication</h1>
         <p>
-          Teste cada mecanismo no navegador, recarregue a pagina, abra outra aba e compare o que
-          permanece, o que some e o que e enviado automaticamente.
+          Test each mechanism in the browser, reload the page, open another tab, and compare what
+          persists, what disappears, and what is sent automatically.
         </p>
+        <nav className="nav">
+          <a href="#/">Storage/auth overview</a>
+          <a href="#/cookies">Cookie examples</a>
+        </nav>
       </header>
 
       <section>
-        <h2>1. Comparacao rapida</h2>
+        <h2>1. Quick comparison</h2>
         <div className="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Tipo</th>
-                <th>Duracao</th>
-                <th>Escopo</th>
-                <th>Use para</th>
-                <th>Risco principal</th>
+                <th>Type</th>
+                <th>Duration</th>
+                <th>Scope</th>
+                <th>Use for</th>
+                <th>Main risk</th>
               </tr>
             </thead>
             <tbody>
@@ -237,80 +260,80 @@ function App() {
       </section>
 
       <section>
-        <h2>2. Experimentos executaveis</h2>
+        <h2>2. Runnable experiments</h2>
         <div className="actions">
-          <button onClick={createLocalStorageDemo}>Gravar localStorage</button>
-          <button onClick={createSessionStorageDemo}>Gravar sessionStorage</button>
-          <button onClick={createCookieDemo}>Criar cookies</button>
-          <button onClick={createJwtDemo}>Gerar JWT demo</button>
-          <button onClick={decodeStoredJwt}>Decodificar JWT</button>
-          <button onClick={refresh}>Atualizar leitura</button>
-          <button className="danger" onClick={clearAll}>Limpar POC</button>
+          <button onClick={createLocalStorageDemo}>Write localStorage</button>
+          <button onClick={createSessionStorageDemo}>Write sessionStorage</button>
+          <button onClick={createCookieDemo}>Create cookies</button>
+          <button onClick={createJwtDemo}>Generate demo JWT</button>
+          <button onClick={decodeStoredJwt}>Decode JWT</button>
+          <button onClick={refresh}>Refresh readout</button>
+          <button className="danger" onClick={clearAll}>Clear POC</button>
         </div>
         <div className="grid">
           <article>
             <h3>localStorage</h3>
-            <p>Recarregue a pagina ou abra outra aba: o valor continua disponivel.</p>
+            <p>Reload the page or open another tab: the value remains available.</p>
             <pre>{format(snapshot.local)}</pre>
             <button onClick={() => {
               removeStorage("localStorage", keys.local);
               refresh();
-            }}>Remover localStorage</button>
+            }}>Remove localStorage</button>
           </article>
           <article>
             <h3>sessionStorage</h3>
-            <p>Recarregue a mesma aba: permanece. Abra outra aba: nao aparece.</p>
+            <p>Reload the same tab: it remains. Open another tab: it does not appear.</p>
             <pre>{format(snapshot.session)}</pre>
             <button onClick={() => {
               removeStorage("sessionStorage", keys.session);
               refresh();
-            }}>Remover sessionStorage</button>
+            }}>Remove sessionStorage</button>
           </article>
           <article>
-            <h3>cookies visiveis por JS</h3>
+            <h3>cookies visible to JS</h3>
             <p>
-              Estes cookies sao demonstrativos. Cookies HttpOnly reais nao aparecem aqui e devem ser
-              criados pelo servidor.
+              These cookies are demonstrative. Real HttpOnly cookies do not appear here and must be
+              created by the server.
             </p>
             <pre>{format(snapshot.cookies)}</pre>
-            <button onClick={clearCookies}>Remover cookies da POC</button>
+            <button onClick={clearCookies}>Remove POC cookies</button>
           </article>
           <article>
             <h3>JWT demo</h3>
-            <p>JWT e um formato. Armazenar no browser e uma decisao separada.</p>
+            <p>JWT is a format. Storing it in the browser is a separate decision.</p>
             <pre>{snapshot.jwt ?? "null"}</pre>
             <pre>{format(decodedJwt)}</pre>
             <button onClick={() => {
               window.localStorage.removeItem(keys.jwt);
               setDecodedJwt(null);
               refresh();
-            }}>Remover JWT</button>
+            }}>Remove JWT</button>
           </article>
         </div>
       </section>
 
       <section>
-        <h2>3. Onde guardar tokens</h2>
+        <h2>3. Where to store tokens</h2>
         <ul className="rules">
-          <li><strong>Access token curto:</strong> preferencialmente em memoria. Se a pagina recarregar, renove usando refresh token.</li>
-          <li><strong>Refresh token web:</strong> cookie HttpOnly, Secure, SameSite=Lax/Strict; envie apenas para o endpoint de refresh.</li>
-          <li><strong>JWT:</strong> trate como credencial se ele autoriza acesso. Nao coloque dados sensiveis no payload.</li>
-          <li><strong>localStorage:</strong> aceitavel para preferencias e cache nao sensivel; ruim para tokens de longa duracao.</li>
-          <li><strong>sessionStorage:</strong> reduz persistencia, mas continua exposto a XSS.</li>
-          <li><strong>cookie de sessao:</strong> bom para apps web quando o backend controla a sessao e aplica CSRF/SameSite.</li>
+          <li><strong>Short-lived access token:</strong> preferably in memory. If the page reloads, renew it with a refresh token.</li>
+          <li><strong>Web refresh token:</strong> HttpOnly, Secure, SameSite=Lax/Strict cookie; send it only to the refresh endpoint.</li>
+          <li><strong>JWT:</strong> treat it as a credential if it grants access. Do not put sensitive data in the payload.</li>
+          <li><strong>localStorage:</strong> acceptable for preferences and non-sensitive cache; poor fit for long-lived tokens.</li>
+          <li><strong>sessionStorage:</strong> reduces persistence, but remains exposed to XSS.</li>
+          <li><strong>Session cookie:</strong> good for web apps when the backend controls the session and applies CSRF/SameSite protections.</li>
         </ul>
       </section>
 
       <section>
-        <h2>4. Tipos de autenticacao e quando usar</h2>
+        <h2>4. Authentication types and when to use them</h2>
         <div className="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Tipo</th>
-                <th>Onde fica / como viaja</th>
-                <th>Quando usar</th>
-                <th>Evite quando</th>
+                <th>Type</th>
+                <th>Where it lives / how it travels</th>
+                <th>When to use</th>
+                <th>Avoid when</th>
               </tr>
             </thead>
             <tbody>
@@ -328,32 +351,32 @@ function App() {
       </section>
 
       <section>
-        <h2>5. Fluxos recomendados</h2>
+        <h2>5. Recommended flows</h2>
         <div className="flow">
-          <h3>SPA + API propria</h3>
+          <h3>SPA + own API</h3>
           <ol>
-            <li>Login via Authorization Code + PKCE ou endpoint proprio.</li>
-            <li>Backend define refresh token em cookie HttpOnly Secure SameSite.</li>
-            <li>Frontend mantem access token curto em memoria.</li>
-            <li>API recebe Authorization Bearer e valida assinatura, exp, aud, iss e escopos.</li>
-            <li>Ao expirar, frontend chama /refresh; cookie vai automatico; novo access token volta.</li>
+            <li>Log in via Authorization Code + PKCE or your own endpoint.</li>
+            <li>The backend sets the refresh token in an HttpOnly Secure SameSite cookie.</li>
+            <li>The frontend keeps a short-lived access token in memory.</li>
+            <li>The API receives Authorization Bearer and validates signature, exp, aud, iss, and scopes.</li>
+            <li>When it expires, the frontend calls /refresh; the cookie is sent automatically; a new access token returns.</li>
           </ol>
         </div>
         <div className="flow">
           <h3>SSR/BFF</h3>
           <ol>
-            <li>Usuario autentica no servidor.</li>
-            <li>Servidor cria sessao e envia cookie HttpOnly.</li>
-            <li>Browser envia cookie automaticamente a cada request do mesmo site.</li>
-            <li>Servidor busca a sessao, aplica CSRF quando necessario e chama APIs internas.</li>
+            <li>The user authenticates on the server.</li>
+            <li>The server creates a session and sends an HttpOnly cookie.</li>
+            <li>The browser sends the cookie automatically on every same-site request.</li>
+            <li>The server loads the session, applies CSRF protection when needed, and calls internal APIs.</li>
           </ol>
         </div>
         <div className="flow">
-          <h3>Servidor-servidor</h3>
+          <h3>Server-to-server</h3>
           <ol>
-            <li>Use OAuth client credentials, mTLS ou API key guardada em secret manager.</li>
-            <li>Nunca exponha esse segredo no bundle React.</li>
-            <li>Rotacione credenciais e registre auditoria por cliente.</li>
+            <li>Use OAuth client credentials, mTLS, or an API key stored in a secret manager.</li>
+            <li>Never expose that secret in the React bundle.</li>
+            <li>Rotate credentials and keep audit logs per client.</li>
           </ol>
         </div>
       </section>

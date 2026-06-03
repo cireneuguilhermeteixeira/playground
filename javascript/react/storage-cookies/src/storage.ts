@@ -15,6 +15,18 @@ export const keys = {
   jwt: `${demoKeyPrefix}:jwt`,
 };
 
+export type CookieSameSite = "Lax" | "Strict" | "None";
+
+export type CookieOptions = {
+  path?: string;
+  domain?: string;
+  maxAgeSeconds?: number;
+  expires?: Date;
+  sameSite?: CookieSameSite;
+  secure?: boolean;
+  priority?: "Low" | "Medium" | "High";
+};
+
 export function buildRecord(owner: string, payload: Record<string, unknown>): DemoRecord {
   return {
     owner,
@@ -34,7 +46,7 @@ export function readStorage(kind: StorageKind, key: string): DemoRecord | null {
     return JSON.parse(raw) as DemoRecord;
   } catch {
     return {
-      owner: "valor invalido",
+      owner: "invalid value",
       createdAt: new Date().toISOString(),
       payload: { raw },
     };
@@ -56,13 +68,34 @@ export function clearPocStorage() {
   });
 }
 
-export function setCookie(name: string, value: string, maxAgeSeconds?: number) {
-  const maxAge = typeof maxAgeSeconds === "number" ? `; Max-Age=${maxAgeSeconds}` : "";
-  document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; Path=/; SameSite=Lax${maxAge}`;
+export function setCookie(
+  name: string,
+  value: string,
+  maxAgeSecondsOrOptions?: number | CookieOptions,
+) {
+  const options =
+    typeof maxAgeSecondsOrOptions === "number"
+      ? { maxAgeSeconds: maxAgeSecondsOrOptions }
+      : maxAgeSecondsOrOptions ?? {};
+
+  const attributes = [
+    `Path=${options.path ?? "/"}`,
+    options.domain ? `Domain=${options.domain}` : "",
+    typeof options.maxAgeSeconds === "number" ? `Max-Age=${options.maxAgeSeconds}` : "",
+    options.expires ? `Expires=${options.expires.toUTCString()}` : "",
+    `SameSite=${options.sameSite ?? "Lax"}`,
+    options.secure ? "Secure" : "",
+    options.priority ? `Priority=${options.priority}` : "",
+  ].filter(Boolean);
+
+  document.cookie = [
+    `${encodeURIComponent(name)}=${encodeURIComponent(value)}`,
+    ...attributes,
+  ].join("; ");
 }
 
-export function deleteCookie(name: string) {
-  document.cookie = `${encodeURIComponent(name)}=; Path=/; Max-Age=0; SameSite=Lax`;
+export function deleteCookie(name: string, path = "/") {
+  document.cookie = `${encodeURIComponent(name)}=; Path=${path}; Max-Age=0; SameSite=Lax`;
 }
 
 export function getReadableCookies() {
@@ -101,7 +134,7 @@ export function decodeJwt(token: string) {
   const [header, payload, signature] = token.split(".");
 
   if (!header || !payload || !signature) {
-    throw new Error("JWT precisa ter header, payload e signature.");
+    throw new Error("JWT must have a header, payload, and signature.");
   }
 
   return {
