@@ -69,6 +69,37 @@ button.danger {
   color: #991b1b;
 }
 
+input {
+  border: 1px solid #9ca3af;
+  border-radius: 6px;
+  font: inherit;
+  min-height: 36px;
+  padding: 7px 9px;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.form-row label {
+  display: grid;
+  gap: 5px;
+}
+
+.checkbox {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  min-height: 36px;
+}
+
+.checkbox input {
+  min-height: auto;
+}
+
 .nav {
   display: flex;
   flex-wrap: wrap;

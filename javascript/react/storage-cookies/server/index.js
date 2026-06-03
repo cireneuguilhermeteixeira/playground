@@ -211,11 +211,11 @@ function getUserById(userId) {
   return users.find((user) => user.id === userId);
 }
 
-app.get("/health", (_req, res) => {
+app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
 });
 
-app.post("/auth/login", authLimiter, requireTrustedOrigin, async (req, res) => {
+app.post("/api/auth/login", authLimiter, requireTrustedOrigin, async (req, res) => {
   const { email, password } = req.body;
   const user = users.find((candidate) => candidate.email === email);
 
@@ -241,7 +241,7 @@ app.post("/auth/login", authLimiter, requireTrustedOrigin, async (req, res) => {
 });
 
 app.post(
-  "/auth/refresh",
+  "/api/auth/refresh",
   authLimiter,
   requireTrustedOrigin,
   requireCsrf,
@@ -291,7 +291,7 @@ app.post(
   },
 );
 
-app.post("/auth/logout", requireTrustedOrigin, requireCsrf, (req, res) => {
+app.post("/api/auth/logout", requireTrustedOrigin, requireCsrf, (req, res) => {
   const { sessionId } = req.refreshToken;
   const session = sessions.get(sessionId);
 
@@ -303,7 +303,7 @@ app.post("/auth/logout", requireTrustedOrigin, requireCsrf, (req, res) => {
   res.status(204).send();
 });
 
-app.get("/me", requireAccessToken, (req, res) => {
+app.get("/api/me", requireAccessToken, (req, res) => {
   const user = getUserById(req.accessTokenPayload.sub);
 
   if (!user) {
@@ -322,7 +322,7 @@ app.get("/me", requireAccessToken, (req, res) => {
   });
 });
 
-app.get("/debug/sessions", (_req, res) => {
+app.get("/api/debug/sessions", (_req, res) => {
   res.json({
     sessions: [...sessions.entries()].map(([sessionId, session]) => ({
       sessionId,

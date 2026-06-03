@@ -225,6 +225,7 @@ export function CookieExamples() {
         </p>
         <nav className="nav">
           <a href="#/">Storage/auth overview</a>
+          <a href="#/auth">Real auth flow</a>
           <a href="#/cookies">Cookie examples</a>
         </nav>
       </header>

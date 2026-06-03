@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { AuthDemo } from "./AuthDemo";
 import { CookieExamples } from "./CookieExamples";
 import {
   buildRecord,
@@ -217,6 +218,14 @@ function App() {
     );
   }
 
+  if (route === "#/auth") {
+    return (
+      <main>
+        <AuthDemo />
+      </main>
+    );
+  }
+
   return (
     <main>
       <header>
@@ -227,6 +236,7 @@ function App() {
         </p>
         <nav className="nav">
           <a href="#/">Storage/auth overview</a>
+          <a href="#/auth">Real auth flow</a>
           <a href="#/cookies">Cookie examples</a>
         </nav>
       </header>
