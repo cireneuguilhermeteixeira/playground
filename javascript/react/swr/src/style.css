@@ -93,6 +93,34 @@ h1 {
   color: #1f2937;
 }
 
+.refresh-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.form {
+  display: grid;
+  gap: 12px;
+}
+
+.form--stacked {
+  margin: 12px 0 0;
+}
+
+.form label {
+  display: grid;
+  gap: 6px;
+}
+
+.form input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #fff;
+  color: #1f2937;
+}
+
 .button-row {
   display: flex;
   flex-wrap: wrap;
@@ -121,6 +149,28 @@ h1 {
 .dedupe-reader h3 {
   margin: 0 0 12px;
   font-size: 1rem;
+}
+
+.comment-list {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.comment-card {
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+
+.comment-card p {
+  margin: 0;
+}
+
+.comment-card__meta {
+  margin-bottom: 8px !important;
+  color: #4b5563;
 }
 
 .profile p {

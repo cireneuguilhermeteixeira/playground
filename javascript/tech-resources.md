@@ -18,7 +18,7 @@
 * Web Components
 * [Module Federation](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/module-federation)
 * [Performance and Profiling](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/performance-profiling)
-* SWR
+* [SWR](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/swr)
 * Local Storage
 * Session Storage
 * Cookies

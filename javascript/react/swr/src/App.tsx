@@ -1,12 +1,21 @@
 import { mutate } from 'swr'
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import useSWR from 'swr'
-import { getCompareRecord, getProfile, getProfileWithError } from './mockApi'
+import useSWRInfinite from 'swr/infinite'
+import useSWRMutation from 'swr/mutation'
+import {
+  createComment,
+  getComments,
+  getCompareRecord,
+  getProfile,
+  getProfileWithError,
+} from './mockApi'
 
 const PROFILE_KEY = 'profile'
 const PROFILE_ERROR_KEY = 'profile-with-error'
 const PROFILE_FALLBACK_KEY = 'profile-fallback'
 const COMPARE_KEY = 'compare-record'
+const COMMENTS_PAGE_SIZE = 2
 const FALLBACK_PROFILE = {
   requestId: 0,
   name: 'Loading...',
@@ -49,6 +58,8 @@ function App() {
           <DedupingExample />
           <FallbackExample />
           <CompareExample />
+          <MutationExample />
+          <InfiniteExample />
         </div>
       </section>
     </main>
@@ -250,6 +261,146 @@ function CompareExample() {
           </p>
         </div>
       ) : null}
+    </article>
+  )
+}
+
+function MutationExample() {
+  const [author, setAuthor] = useState('Diego')
+  const [text, setText] = useState('')
+  const { data: recentComments } = useSWRInfinite(
+    (pageIndex, previousPageData) => {
+      if (previousPageData && !previousPageData.hasMore) {
+        return null
+      }
+
+      return `comments-page-${pageIndex + 1}`
+    },
+    async (key: string) => {
+      const page = Number(key.replace('comments-page-', ''))
+      return getComments(page, COMMENTS_PAGE_SIZE)
+    },
+    {
+      revalidateFirstPage: false,
+    },
+  )
+
+  const { trigger, isMutating, error } = useSWRMutation(
+    'create-comment',
+    async (_, { arg }: { arg: { author: string; text: string } }) => {
+      const created = await createComment(arg)
+      await mutate((key) => typeof key === 'string' && key.startsWith('comments-page-'))
+      return created
+    },
+  )
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    const trimmedText = text.trim()
+    const trimmedAuthor = author.trim()
+
+    if (!trimmedText || !trimmedAuthor) {
+      return
+    }
+
+    await trigger({ author: trimmedAuthor, text: trimmedText })
+    setText('')
+  }
+
+  const latestComments = recentComments?.[0]?.items ?? []
+
+  return (
+    <article className="result">
+      <h2>useSWRMutation example</h2>
+      <p className="hint">
+        This form creates a new comment, then revalidates the paginated list. `useSWRMutation` is
+        for writes; `useSWR` stays focused on reads.
+      </p>
+
+      <form className="form form--stacked" onSubmit={handleSubmit}>
+        <label>
+          Author
+          <input value={author} onChange={(event) => setAuthor(event.target.value)} />
+        </label>
+
+        <label>
+          Comment
+          <input
+            value={text}
+            onChange={(event) => setText(event.target.value)}
+            placeholder="Write something short"
+          />
+        </label>
+
+        <button type="submit" className="refresh-button" disabled={isMutating}>
+          {isMutating ? 'Saving...' : 'Create comment'}
+        </button>
+      </form>
+
+      {error ? <p>Failed to create comment.</p> : null}
+
+      <div className="profile">
+        <p>
+          Recent comment: {latestComments[0] ? <strong>{latestComments[0].text}</strong> : 'none'}
+        </p>
+      </div>
+    </article>
+  )
+}
+
+function InfiniteExample() {
+  const { data, size, setSize, isLoading, isValidating } = useSWRInfinite(
+    (pageIndex, previousPageData) => {
+      if (previousPageData && !previousPageData.hasMore) {
+        return null
+      }
+
+      return `comments-page-${pageIndex + 1}`
+    },
+    async (key: string) => {
+      const page = Number(key.replace('comments-page-', ''))
+      return getComments(page, COMMENTS_PAGE_SIZE)
+    },
+  )
+
+  const pages = data ?? []
+  const hasMore = pages.length === 0 ? true : pages[pages.length - 1]?.hasMore ?? false
+
+  return (
+    <article className="result">
+      <h2>useSWRInfinite example</h2>
+      <p className="hint">
+        Each click loads one more page. The hook keeps the previous pages in the array, so the list
+        grows instead of replacing itself.
+      </p>
+
+      {isLoading ? <p>Loading comments...</p> : null}
+      {isValidating && !isLoading ? <p>Fetching more comments...</p> : null}
+
+      <div className="comment-list">
+        {pages.flatMap((page) =>
+          page.items.map((comment) => (
+            <article key={comment.id} className="comment-card">
+              <p className="comment-card__meta">
+                <strong>{comment.author}</strong> · {new Date(comment.createdAt).toLocaleTimeString()}
+              </p>
+              <p>{comment.text}</p>
+            </article>
+          )),
+        )}
+      </div>
+
+      <button
+        type="button"
+        className="refresh-button"
+        disabled={!hasMore}
+        onClick={() => {
+          void setSize(size + 1)
+        }}
+      >
+        {hasMore ? 'Load more' : 'No more comments'}
+      </button>
     </article>
   )
 }
