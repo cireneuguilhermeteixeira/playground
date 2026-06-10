@@ -113,6 +113,142 @@ setActiveColumnId(null);
 setDraggedTaskId(null);
 ```
 
+## Drag event reference
+
+React uses camelCase handler names, but they map directly to native browser drag events.
+
+For example:
+
+- `onDragStart` maps to the native `dragstart` event
+- `onDragOver` maps to the native `dragover` event
+- `onDrop` maps to the native `drop` event
+
+### `onDragStart`
+
+`onDragStart` runs once when the user starts dragging a draggable element.
+
+Use it to prepare the drag operation.
+
+Common responsibilities:
+
+- save the dragged item id in `event.dataTransfer`
+- set `event.dataTransfer.effectAllowed`
+- update UI state, such as marking the dragged card as active
+
+In this POC, `onDragStart` stores a JSON payload with the task id and source column id.
+
+### `onDrag`
+
+`onDrag` runs repeatedly while the element is being dragged.
+
+It is useful when you need continuous feedback during the drag, such as tracking approximate pointer movement or updating a custom UI.
+
+This POC does not use `onDrag` because the browser already handles the drag preview and the app only needs to react when the card enters, leaves, or drops on a column.
+
+### `onDragEnter`
+
+`onDragEnter` runs when the dragged item enters an element or one of its child elements.
+
+Use it for target feedback, such as highlighting a column that may accept the drop.
+
+In this POC, `onDragEnter` stores the current column id as the active column.
+
+Important detail: this event can fire more often than expected when moving across child elements inside the same drop zone.
+
+### `onDragLeave`
+
+`onDragLeave` runs when the dragged item leaves an element or one of its child elements.
+
+Use it to remove target feedback that was added by `onDragEnter`.
+
+In this POC, `onDragLeave` clears the active column.
+
+Important detail: like `onDragEnter`, this event can be noisy with nested elements. A more advanced implementation may track enter and leave depth or check whether the pointer truly left the drop zone.
+
+### `onDragOver`
+
+`onDragOver` runs repeatedly while the dragged item is over a possible drop target.
+
+This is one of the most important drag-and-drop events because a drop target must usually call:
+
+```ts
+event.preventDefault();
+```
+
+Without that call, the browser may not allow the element to receive the later `drop` event.
+
+Use `onDragOver` to:
+
+- allow dropping on an element
+- set `event.dataTransfer.dropEffect`
+- update target feedback while the pointer remains over the target
+
+In this POC, `onDragOver` allows dropping and tells the browser the operation is a move.
+
+### `onDrop`
+
+`onDrop` runs when the user releases the dragged item over a valid drop target.
+
+Use it to complete the operation.
+
+Common responsibilities:
+
+- call `event.preventDefault()`
+- read data from `event.dataTransfer`
+- validate the payload
+- update application state
+- clear temporary drag UI state
+
+In this POC, `onDrop` reads the task id from `DataTransfer` and changes that task's `columnId`.
+
+### `onDragEnd`
+
+`onDragEnd` runs once when the drag operation finishes.
+
+It runs after a successful drop and also after a cancelled drag.
+
+Use it for cleanup that must always happen, such as:
+
+- clearing the dragged item id
+- removing active drop target styles
+- resetting temporary UI state
+
+In this POC, `onDragEnd` clears `activeColumnId` and `draggedTaskId`.
+
+### Other related events
+
+The native Drag and Drop API also has a few related pieces worth knowing.
+
+### `onDragExit`
+
+`dragexit` exists in the HTML Drag and Drop API, but it is not commonly used in React apps and browser behavior has historically been less consistent than `dragenter` and `dragleave`.
+
+For most UI work, prefer `onDragEnter` and `onDragLeave`.
+
+### `onMouseDown`, `onPointerDown`, and touch events
+
+These are not drag-and-drop events.
+
+They are pointer input events that can be used to build custom drag behavior from scratch.
+
+Libraries often use pointer events instead of the native Drag and Drop API because pointer events provide more control and work better for touch-first interfaces.
+
+This POC does not use them because the goal is to demonstrate the native browser drag-and-drop flow.
+
+### `DataTransfer.setDragImage()`
+
+`setDragImage()` is not an event, but it is part of the drag API.
+
+It lets you replace the default drag preview image shown by the browser.
+
+Example:
+
+```ts
+event.dataTransfer.setDragImage(customElement, 12, 12);
+```
+
+This POC keeps the default browser drag preview to avoid extra moving parts.
+
 ## How the state works
 
 Tasks are stored as a flat array:
