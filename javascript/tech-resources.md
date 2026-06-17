@@ -19,11 +19,11 @@
 * [Module Federation](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/module-federation)
 * [Performance and Profiling](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/performance-profiling)
 * [SWR](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/swr)
-* Local Storage
-* Session Storage
-* Cookies
+* [Local Storage](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/storage-cookies)
+* [Session Storage](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/storage-cookies)
+* [Cookies](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/storage-cookies)
 * [IndexedDB](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/indexedDB)
-* Drag and Drop API
+* [Drag and Drop API](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/drag-and-drop)
 * Intersection Observer API
 * Mutation Observer API
 * Canvas API
