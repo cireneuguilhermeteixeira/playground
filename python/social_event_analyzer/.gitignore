@@ -1,0 +1,3 @@
+conversation/
+.env
+__pycache__/
