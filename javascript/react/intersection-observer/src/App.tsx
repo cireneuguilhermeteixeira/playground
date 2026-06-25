@@ -1,31 +1,53 @@
 import { useEffect, useRef, useState } from "react";
 
-const sections = [
+type ObserverSection = {
+  id: string;
+  title: string;
+  text: string;
+};
+
+type FeedItem = {
+  id: number;
+  label: string;
+};
+
+const observerSections: ObserverSection[] = [
   {
-    id: "intro",
-    title: "Scroll down",
-    text: "This block is intentionally simple. As each section enters the viewport, the observer updates local React state.",
+    id: "intersection-intro",
+    title: "Intersection Observer",
+    text: "Scroll through the page and watch the visibility panel update when sections cross the viewport threshold.",
   },
   {
-    id: "threshold",
-    title: "Observe visibility",
-    text: "The component watches multiple targets and marks them as visible when at least half of the section intersects the viewport.",
+    id: "intersection-threshold",
+    title: "Viewport threshold tracking",
+    text: "This section becomes active when roughly half of it is inside the viewport, which is controlled by the observer threshold.",
   },
   {
-    id: "state",
-    title: "React state update",
-    text: "The Intersection Observer callback adds the section id to a list, which the UI uses to highlight observed cards.",
+    id: "mutation-intro",
+    title: "Mutation Observer",
+    text: "The DOM feed below is observed for child list changes. Adding or removing cards creates mutation records in real time.",
   },
   {
-    id: "done",
-    title: "Minimal POC",
-    text: "This is a starter example intended to stay small and easy to extend later with lazy loading, analytics, or scroll-driven effects.",
+    id: "combined-patterns",
+    title: "Combine both APIs",
+    text: "Intersection Observer answers where content is visible, while Mutation Observer answers when the DOM structure changes.",
   },
+];
+
+const initialFeedItems: FeedItem[] = [
+  { id: 1, label: "Initial node" },
+  { id: 2, label: "Observed list item" },
 ];
 
 export default function App() {
   const [visibleIds, setVisibleIds] = useState<string[]>([]);
+  const [feedItems, setFeedItems] = useState<FeedItem[]>(initialFeedItems);
+  const [mutationLog, setMutationLog] = useState<string[]>([
+    "MutationObserver ready: waiting for DOM changes.",
+  ]);
   const sectionElementsRef = useRef<Record<string, HTMLElement | null>>({});
+  const feedRef = useRef<HTMLDivElement | null>(null);
+  const nextFeedIdRef = useRef(initialFeedItems.length + 1);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -47,7 +69,7 @@ export default function App() {
             }
           }
 
-          return sections
+          return observerSections
             .map((section) => section.id)
             .filter((sectionId) => nextIds.has(sectionId));
         });
@@ -57,7 +79,7 @@ export default function App() {
       },
     );
 
-    for (const section of sections) {
+    for (const section of observerSections) {
       const element = sectionElementsRef.current[section.id];
 
       if (element) {
@@ -70,35 +92,119 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const feedElement = feedRef.current;
+
+    if (!feedElement) {
+      return;
+    }
+
+    const observer = new MutationObserver((mutationRecords) => {
+      const nextLogs = mutationRecords.flatMap((record) => {
+        if (record.type !== "childList") {
+          return [];
+        }
+
+        const addedNodes = Array.from(record.addedNodes).filter(
+          (node): node is HTMLElement => node instanceof HTMLElement,
+        );
+        const removedNodes = Array.from(record.removedNodes).filter(
+          (node): node is HTMLElement => node instanceof HTMLElement,
+        );
+
+        const logs: string[] = [];
+
+        if (addedNodes.length > 0) {
+          logs.push(`Added ${addedNodes.length} node(s) to the observed feed.`);
+        }
+
+        if (removedNodes.length > 0) {
+          logs.push(`Removed ${removedNodes.length} node(s) from the observed feed.`);
+        }
+
+        return logs;
+      });
+
+      if (nextLogs.length === 0) {
+        return;
+      }
+
+      setMutationLog((currentLogs) => [...nextLogs, ...currentLogs].slice(0, 8));
+    });
+
+    observer.observe(feedElement, {
+      childList: true,
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  function handleAddFeedItem() {
+    const nextId = nextFeedIdRef.current;
+
+    nextFeedIdRef.current += 1;
+
+    setFeedItems((currentItems) => [
+      ...currentItems,
+      { id: nextId, label: `Dynamic node ${nextId}` },
+    ]);
+  }
+
+  function handleRemoveFeedItem() {
+    setFeedItems((currentItems) => currentItems.slice(0, -1));
+  }
+
   return (
     <main className="page-shell">
       <section className="hero">
-        <p className="eyebrow">Browser-native API</p>
-        <h1>Intersection Observer POC</h1>
+        <p className="eyebrow">Browser-native APIs</p>
+        <h1>Intersection and Mutation Observer POC</h1>
         <p>
-          A minimal React example showing how to react when sections cross the viewport.
+          A small React example showing both visibility tracking with
+          <code>IntersectionObserver</code> and DOM change tracking with
+          <code>MutationObserver</code>.
         </p>
       </section>
 
-      <aside className="status-panel" aria-label="Visible sections">
-        <h2>Visible sections</h2>
-        <ul>
-          {sections.map((section) => {
-            const isVisible = visibleIds.includes(section.id);
+      <section className="dashboard" aria-label="Observer status panels">
+        <aside className="status-panel" aria-label="Visible sections">
+          <h2>Visible sections</h2>
+          <ul>
+            {observerSections.map((section) => {
+              const isVisible = visibleIds.includes(section.id);
 
-            return (
-              <li className={isVisible ? "status-item status-item-active" : "status-item"} key={section.id}>
-                <span>{section.title}</span>
-                <strong>{isVisible ? "Visible" : "Waiting"}</strong>
+              return (
+                <li
+                  className={isVisible ? "status-item status-item-active" : "status-item"}
+                  key={section.id}
+                >
+                  <span>{section.title}</span>
+                  <strong>{isVisible ? "Visible" : "Waiting"}</strong>
+                </li>
+              );
+            })}
+          </ul>
+        </aside>
+
+        <aside className="status-panel" aria-label="Mutation records">
+          <h2>Mutation records</h2>
+          <ul>
+            {mutationLog.map((entry, index) => (
+              <li className="status-item status-item-muted" key={`${entry}-${index}`}>
+                <span>{entry}</span>
+                <strong>Log</strong>
               </li>
-            );
-          })}
-        </ul>
-      </aside>
+            ))}
+          </ul>
+        </aside>
+      </section>
 
       <section className="content">
-        {sections.map((section) => {
+        {observerSections.map((section) => {
           const isVisible = visibleIds.includes(section.id);
+          const isMutationSection = section.id === "mutation-intro";
 
           return (
             <article
@@ -112,6 +218,31 @@ export default function App() {
               <p className="card-step">{section.id}</p>
               <h2>{section.title}</h2>
               <p>{section.text}</p>
+
+              {isMutationSection && (
+                <div className="mutation-demo">
+                  <div className="mutation-actions">
+                    <button onClick={handleAddFeedItem} type="button">
+                      Add node
+                    </button>
+                    <button
+                      disabled={feedItems.length === 0}
+                      onClick={handleRemoveFeedItem}
+                      type="button"
+                    >
+                      Remove node
+                    </button>
+                  </div>
+
+                  <div className="mutation-feed" ref={feedRef}>
+                    {feedItems.map((item) => (
+                      <div className="mutation-node" key={item.id}>
+                        {item.label}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </article>
           );
         })}

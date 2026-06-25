@@ -1,8 +1,9 @@
-# Intersection Observer POC
+# Intersection And Mutation Observer POC
 
-This project is a small React + TypeScript proof of concept for the browser `IntersectionObserver` API.
+This project is a small React + TypeScript proof of concept for two browser observer APIs:
 
-It starts with a simple use case: tracking which content sections are currently visible in the viewport.
+- `IntersectionObserver`
+- `MutationObserver`
 
 ## Running the project
 
@@ -17,6 +18,8 @@ npm run dev
 - Observes each section with a single `IntersectionObserver`
 - Updates React state when a section becomes visible
 - Highlights both the section card and a small status panel
+- Observes a small DOM feed with `MutationObserver`
+- Logs when feed nodes are added or removed
 
 ## Native API used
 
@@ -56,6 +59,34 @@ The effect cleanup disconnects the observer when the component unmounts:
 observer.disconnect();
 ```
 
+## Mutation Observer API used
+
+### `MutationObserver`
+
+`MutationObserver` watches DOM changes after the initial render.
+
+In this project, the observer watches a feed container:
+
+```ts
+observer.observe(feedElement, {
+  childList: true,
+});
+```
+
+That means the callback runs when direct child nodes are added or removed.
+
+### `MutationRecord`
+
+The callback receives `MutationRecord` entries.
+
+This project reads:
+
+- `record.type`
+- `record.addedNodes`
+- `record.removedNodes`
+
+Those records are converted into a small UI log so it is easy to see when the DOM changed.
+
 ## Next steps
 
 This starter can be extended later for:
@@ -64,3 +95,5 @@ This starter can be extended later for:
 - scroll-triggered animations
 - analytics for viewed sections
 - active table-of-contents tracking
+- reacting to attribute changes
+- reacting to text content updates

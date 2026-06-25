@@ -24,8 +24,8 @@
 * [Cookies](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/storage-cookies)
 * [IndexedDB](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/indexedDB)
 * [Drag and Drop API](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/drag-and-drop)
-* Intersection Observer API
-* Mutation Observer API
+* [Intersection Observer API](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/intersection-observer)
+* [Mutation Observer API](https://github.com/cireneuguilhermeteixeira/playground/tree/main/javascript/react/intersection-observer)
 * Canvas API
 * Context Security Policy (CSP)
 
