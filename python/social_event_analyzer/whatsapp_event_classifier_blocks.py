@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-whatsapp_event_classifier.py
+whatsapp_event_classifier_blocks.py
 
-Lê um .txt exportado do WhatsApp, agrupa mensagens em blocos de 2 a 6 horas,
-usa uma LLM para classificar convites/eventos e gera um CSV revisável.
+Reads a WhatsApp-exported `.txt`, groups messages into 2 to 6 hour blocks,
+uses an LLM to classify invites/events, and generates a reviewable CSV.
 
-Uso:
+Usage:
   pip install openai python-dotenv
-  export OPENAI_API_KEY="sua-chave"
+  export OPENAI_API_KEY="your-key"
 
-  python whatsapp_event_classifier.py conversa.txt --out eventos.csv
-  python whatsapp_event_classifier.py conversa.txt --out eventos.csv --block-hours 2
-  python whatsapp_event_classifier.py conversa.txt --out eventos.csv --block-hours 6
+  python whatsapp_event_classifier_blocks.py conversation.txt --out events.csv
+  python whatsapp_event_classifier_blocks.py conversation.txt --out events.csv --block-hours 2
+  python whatsapp_event_classifier_blocks.py conversation.txt --out events.csv --block-hours 6
 
-Regras adotadas:
-- Qualquer convite no grupo é tratado como convite geral.
-- O script não tenta decidir se uma pessoa específica foi ou não.
-- A LLM só classifica convites/eventos dentro de blocos temporais.
-- O script faz a contagem/deduplicação e gera CSV para revisão manual.
+Rules:
+- Any invite in the group is treated as a general invite.
+- The script does not try to decide whether a specific person attended.
+- The LLM only classifies invites/events within time blocks.
+- The script handles counting/deduplication and generates a CSV for manual review.
 """
 
 import argparse
@@ -36,16 +36,16 @@ try:
     from openai import OpenAI
 except ImportError:
     raise SystemExit(
-        "Dependência ausente: instale o pacote 'openai' antes de rodar o script.\n"
-        "Comando: pip install openai python-dotenv"
+        "Missing dependency: install the 'openai' package before running the script.\n"
+        "Command: pip install openai python-dotenv"
     )
 
 try:
     from dotenv import load_dotenv
 except ImportError:
     raise SystemExit(
-        "Dependência ausente: instale o pacote 'python-dotenv' antes de rodar o script.\n"
-        "Comando: pip install openai python-dotenv"
+        "Missing dependency: install the 'python-dotenv' package before running the script.\n"
+        "Command: pip install openai python-dotenv"
     )
 
 
@@ -66,31 +66,31 @@ INVITE_KEYWORDS = [
 ]
 
 SYSTEM_PROMPT = """
-Você é um classificador de mensagens de WhatsApp.
+You are a WhatsApp message classifier.
 
-Tarefa:
-Analisar um bloco temporal de conversa e extrair TODOS os convites, propostas ou combinações
-para evento social, saída, encontro, churrasco, bar, aniversário, cinema, praia, almoço, jantar,
-festa, rolê ou atividade em grupo.
+Task:
+Analyze a conversation time block and extract ALL invites, proposals, or plans
+for a social event, outing, meetup, barbecue, bar, birthday, movie, beach, lunch,
+dinner, party, hangout, or group activity.
 
-Regras:
-1. Considere convite mesmo sem citar nomes específicos.
-2. Se alguém citar apenas uma pessoa, ainda assim classifique a mensagem como convite.
-3. Não tente inferir convidados individuais.
-4. Não decida se uma pessoa foi ou não. Isso será revisão manual.
-5. Se houver mais de um convite no bloco, retorne todos na lista "invites".
-6. Se não houver convite real, retorne "invites": [].
-7. Retorne somente JSON válido no schema pedido.
-8. Se houver dúvida razoável, inclua o convite com confidence menor.
-9. Use evidence_message_ids com os ids das mensagens mais importantes.
-10. Não invente mensagens nem ids.
+Rules:
+1. Treat it as an invite even if no specific names are mentioned.
+2. If someone mentions only one person, still classify the message as an invite.
+3. Do not infer individual invitees.
+4. Do not decide whether a person attended. That will be handled in manual review.
+5. If there is more than one invite in the block, return all of them in the "invites" list.
+6. If there is no real invite, return "invites": [].
+7. Return only valid JSON using the requested schema.
+8. If there is reasonable doubt, include the invite with lower confidence.
+9. Use evidence_message_ids with the IDs of the most important messages.
+10. Do not invent messages or IDs.
 
-Campos de cada convite:
-- invite_type: string. Ex: "bar", "churrasco", "cinema", "aniversario", "praia", "jantar", "almoco", "generico", "outro"
-- event_date_text: string ou null. Data/hora do evento mencionada no texto, se houver. Ex: "sábado", "hoje", "amanhã", "dia 12", null.
-- summary: string curta explicando o convite.
-- evidence_message_ids: lista de ids das mensagens mais relevantes.
-- confidence: número de 0 a 1.
+Fields for each invite:
+- invite_type: string. Example: "bar", "barbecue", "movie", "birthday", "beach", "dinner", "lunch", "generic", "other"
+- event_date_text: string or null. Event date/time mentioned in the text, if any. Example: "Saturday", "today", "tomorrow", "the 12th", null.
+- summary: short string explaining the invite.
+- evidence_message_ids: list of the most relevant message IDs.
+- confidence: number from 0 to 1.
 """
 
 JSON_SCHEMA = {
@@ -149,14 +149,14 @@ class Block:
 
 def parse_whatsapp_txt(path: str) -> List[Message]:
     """
-    Parser tolerante para exports em português.
-    Aceita formatos comuns:
-      21/06/2026 10:32 - João: mensagem
-      21/06/2026, 10:32 - João: mensagem
-      [21/01/26, 19:39:18] João: mensagem
-      [21/06/2026, 10:32:10] João: mensagem
+    Tolerant parser for WhatsApp exports in Portuguese.
+    Accepts common formats:
+      21/06/2026 10:32 - João: message
+      21/06/2026, 10:32 - João: message
+      [21/01/26, 19:39:18] João: message
+      [21/06/2026, 10:32:10] João: message
 
-    Mensagens multilinha são anexadas à mensagem anterior.
+    Multiline messages are appended to the previous message.
     """
     patterns = [
         re.compile(r"^(\d{1,2}/\d{1,2}/\d{2,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?)\s+-\s+([^:]+):\s?(.*)$"),
@@ -210,7 +210,7 @@ def parse_date_or_fail(date_s: str) -> datetime:
             return datetime.strptime(date_s, fmt)
         except ValueError:
             pass
-    raise ValueError(f"Data inválida: {date_s}. Use DD/MM/AA ou DD/MM/AAAA.")
+    raise ValueError(f"Invalid date: {date_s}. Use DD/MM/YY or DD/MM/YYYY.")
 
 
 def filter_messages_since(messages: List[Message], min_date: datetime) -> List[Message]:
@@ -245,7 +245,7 @@ def floor_datetime_to_block(dt: datetime, block_hours: int) -> datetime:
 
 def group_messages_by_time_block(messages: List[Message], block_hours: int) -> List[Block]:
     """
-    Agrupa mensagens por blocos fixos do dia:
+    Groups messages into fixed blocks during the day:
     block_hours=2 => 00-02, 02-04, 04-06...
     block_hours=4 => 00-04, 04-08, 08-12...
     block_hours=6 => 00-06, 06-12, 12-18...
@@ -269,8 +269,8 @@ def group_messages_by_time_block(messages: List[Message], block_hours: int) -> L
 
 def filter_candidate_blocks(blocks: List[Block]) -> List[Block]:
     """
-    Pré-filtro barato:
-    só envia para a LLM blocos que tenham pelo menos uma palavra-chave de convite.
+    Cheap pre-filter:
+    only sends blocks to the LLM if they contain at least one invite keyword.
     """
     return [
         block for block in blocks
@@ -280,7 +280,7 @@ def filter_candidate_blocks(blocks: List[Block]) -> List[Block]:
 
 def format_block(block: Block) -> str:
     lines = [
-        f"BLOCO {block.id}: {block.start.strftime('%d/%m/%Y %H:%M')} até {block.end.strftime('%d/%m/%Y %H:%M')}"
+        f"BLOCK {block.id}: {block.start.strftime('%d/%m/%Y %H:%M')} to {block.end.strftime('%d/%m/%Y %H:%M')}"
     ]
 
     for m in block.messages:
@@ -291,8 +291,8 @@ def format_block(block: Block) -> str:
 
 def build_llm_context(block: Block, radius: int = LLM_CONTEXT_RADIUS) -> str:
     """
-    Reduz tokens enviados para a LLM:
-    mantém mensagens com cara de convite e um pequeno contexto ao redor.
+    Reduces tokens sent to the LLM:
+    keeps invite-like messages and a small amount of surrounding context.
     """
     candidate_indexes = [
         idx for idx, msg in enumerate(block.messages)
@@ -310,9 +310,9 @@ def build_llm_context(block: Block, radius: int = LLM_CONTEXT_RADIUS) -> str:
 
     lines = [
         (
-            f"BLOCO {block.id}: {block.start.strftime('%d/%m/%Y %H:%M')} "
-            f"até {block.end.strftime('%d/%m/%Y %H:%M')} "
-            f"(recorte com {len(selected_indexes)}/{len(block.messages)} mensagens)"
+            f"BLOCK {block.id}: {block.start.strftime('%d/%m/%Y %H:%M')} "
+            f"to {block.end.strftime('%d/%m/%Y %H:%M')} "
+            f"(excerpt with {len(selected_indexes)}/{len(block.messages)} messages)"
         )
     ]
 
@@ -358,7 +358,7 @@ def parse_response_json(response: Any) -> Dict[str, Any]:
             if text_value.strip():
                 return json.loads(extract_json_candidate(text_value))
 
-    raise ValueError("Resposta da API veio sem JSON utilizável.")
+    raise ValueError("The API response did not contain usable JSON.")
 
 
 def summarize_response_debug(response: Any, max_chars: int = 1200) -> str:
@@ -437,7 +437,7 @@ def classify_block(client: OpenAI, model: str, block: Block) -> Dict[str, Any]:
                 {
                     "role": "user",
                     "content": (
-                        "Classifique TODOS os convites existentes no bloco abaixo.\n\n"
+                        "Classify ALL invites present in the block below.\n\n"
                         f"{context}"
                     )
                 }
@@ -453,7 +453,7 @@ def classify_block(client: OpenAI, model: str, block: Block) -> Dict[str, Any]:
             max_output_tokens=LLM_MAX_OUTPUT_TOKENS,
         )
     except Exception as exc:
-        print(f"Erro da API no bloco {block.id}:", flush=True)
+        print(f"API error in block {block.id}:", flush=True)
         print(summarize_exception_debug(exc), flush=True)
         raise
 
@@ -461,12 +461,12 @@ def classify_block(client: OpenAI, model: str, block: Block) -> Dict[str, Any]:
         return parse_response_json(response)
     except Exception as exc:
         write_debug_artifacts(block, context, response)
-        print(f"Falha ao interpretar resposta do bloco {block.id}: {exc}", flush=True)
-        print("Trecho da resposta bruta da API:", flush=True)
+        print(f"Failed to parse response for block {block.id}: {exc}", flush=True)
+        print("Excerpt from raw API response:", flush=True)
         print(summarize_response_debug(response), flush=True)
         print(
-            f"Arquivos de debug salvos em {DEBUG_DIRNAME}/block_{block.id:04d}.context.txt "
-            f"e {DEBUG_DIRNAME}/block_{block.id:04d}.response.txt",
+            f"Debug files saved to {DEBUG_DIRNAME}/block_{block.id:04d}.context.txt "
+            f"and {DEBUG_DIRNAME}/block_{block.id:04d}.response.txt",
             flush=True,
         )
         raise
@@ -474,8 +474,8 @@ def classify_block(client: OpenAI, model: str, block: Block) -> Dict[str, Any]:
 
 def make_context_excerpt(block: Block, evidence_ids: List[int], radius: int = 6) -> str:
     """
-    Em vez de salvar o bloco inteiro no CSV, salva um recorte ao redor das evidências.
-    Isso deixa o CSV mais leve.
+    Instead of saving the full block in the CSV, saves an excerpt around the evidence.
+    This keeps the CSV lighter.
     """
     if not evidence_ids:
         return format_block(block)
@@ -493,7 +493,7 @@ def make_context_excerpt(block: Block, evidence_ids: List[int], radius: int = 6)
 
     excerpt = block.messages[start_idx:end_idx]
     lines = [
-        f"RECORTE DO BLOCO {block.id}: {block.start.strftime('%d/%m/%Y %H:%M')} até {block.end.strftime('%d/%m/%Y %H:%M')}"
+        f"BLOCK EXCERPT {block.id}: {block.start.strftime('%d/%m/%Y %H:%M')} to {block.end.strftime('%d/%m/%Y %H:%M')}"
     ]
 
     for m in excerpt:
@@ -509,7 +509,7 @@ def build_rows_from_invites(block: Block, result: Dict[str, Any]) -> List[Dict[s
         evidence_ids = invite.get("evidence_message_ids") or []
         evidence_messages = [m for m in block.messages if m.id in set(evidence_ids)]
 
-        # fallback: se a LLM não apontar ids válidos, pega mensagens candidatas do bloco
+        # Fallback: if the LLM does not point to valid IDs, use candidate messages from the block.
         if not evidence_messages:
             evidence_messages = [m for m in block.messages if looks_like_invite(m.text)]
 
@@ -520,20 +520,20 @@ def build_rows_from_invites(block: Block, result: Dict[str, Any]) -> List[Dict[s
 
         rows.append({
             "block_id": block.id,
-            "block_inicio": block.start.strftime("%d/%m/%Y %H:%M"),
-            "block_fim": block.end.strftime("%d/%m/%Y %H:%M"),
-            "message_ids_evidencia": ",".join(str(m.id) for m in evidence_messages),
-            "data_primeira_evidencia": evidence_messages[0].date_raw if evidence_messages else "",
-            "autores_evidencia": ", ".join(sorted(set(m.author for m in evidence_messages))),
-            "tipo_convite": invite.get("invite_type"),
-            "data_evento_mencionada": invite.get("event_date_text"),
-            "confianca": invite.get("confidence"),
-            "resumo_llm": invite.get("summary"),
-            "mensagens_evidencia": evidence_text,
-            "contexto": make_context_excerpt(block, evidence_ids),
-            "revisao_manual_eh_convite": "",
-            "revisao_manual_pessoa_foi": "",
-            "revisao_manual_observacao": ""
+            "block_start": block.start.strftime("%d/%m/%Y %H:%M"),
+            "block_end": block.end.strftime("%d/%m/%Y %H:%M"),
+            "evidence_message_ids": ",".join(str(m.id) for m in evidence_messages),
+            "first_evidence_date": evidence_messages[0].date_raw if evidence_messages else "",
+            "evidence_authors": ", ".join(sorted(set(m.author for m in evidence_messages))),
+            "invite_type": invite.get("invite_type"),
+            "mentioned_event_date": invite.get("event_date_text"),
+            "confidence": invite.get("confidence"),
+            "llm_summary": invite.get("summary"),
+            "evidence_messages": evidence_text,
+            "context_excerpt": make_context_excerpt(block, evidence_ids),
+            "manual_review_is_invite": "",
+            "manual_review_person_attended": "",
+            "manual_review_notes": ""
         })
 
     return rows
@@ -543,12 +543,12 @@ def build_output_path(input_path: str, out_arg: Optional[str], multiple_inputs: 
     input_file = Path(input_path)
 
     if not out_arg:
-        return input_file.with_name(f"{input_file.stem}_eventos.csv")
+        return input_file.with_name(f"{input_file.stem}_events.csv")
 
     out_path = Path(out_arg)
     if multiple_inputs:
         out_path.mkdir(parents=True, exist_ok=True)
-        return out_path / f"{input_file.stem}_eventos.csv"
+        return out_path / f"{input_file.stem}_events.csv"
 
     return out_path
 
@@ -561,24 +561,24 @@ def process_input_file(client: OpenAI, input_path: str, args: argparse.Namespace
 
     candidate_blocks = blocks if args.no_prefilter else filter_candidate_blocks(blocks)
 
-    print(f"\nArquivo: {input_path}")
-    print(f"Mensagens lidas: {len(original_messages)}")
-    print(f"Mensagens consideradas desde {min_date.strftime('%d/%m/%Y')}: {len(messages)}")
-    print(f"Blocos totais de {args.block_hours}h: {len(blocks)}")
-    print(f"Blocos enviados para LLM: {len(candidate_blocks)}")
+    print(f"\nFile: {input_path}")
+    print(f"Messages read: {len(original_messages)}")
+    print(f"Messages considered since {min_date.strftime('%d/%m/%Y')}: {len(messages)}")
+    print(f"Total {args.block_hours}h blocks: {len(blocks)}")
+    print(f"Blocks sent to the LLM: {len(candidate_blocks)}")
 
     rows = []
 
     for idx, block in enumerate(candidate_blocks, start=1):
         print(
-            f"Classificando bloco {idx}/{len(candidate_blocks)} "
+            f"Classifying block {idx}/{len(candidate_blocks)} "
             f"({block.start.strftime('%d/%m/%Y %H:%M')} - {block.end.strftime('%H:%M')})..."
         )
 
         try:
             result = classify_block(client, args.model, block)
         except Exception as e:
-            print(f"Erro no bloco {block.id}: {e}")
+            print(f"Error in block {block.id}: {e}")
             continue
 
         rows.extend(build_rows_from_invites(block, result))
@@ -587,32 +587,32 @@ def process_input_file(client: OpenAI, input_path: str, args: argparse.Namespace
     dedup = {}
     for row in rows:
         key = (
-            row["message_ids_evidencia"],
-            row["tipo_convite"],
-            row["data_evento_mencionada"],
-            row["resumo_llm"]
+            row["evidence_message_ids"],
+            row["invite_type"],
+            row["mentioned_event_date"],
+            row["llm_summary"]
         )
         dedup[key] = row
 
     rows = list(dedup.values())
-    rows.sort(key=lambda r: (r["block_inicio"], r["message_ids_evidencia"]))
+    rows.sort(key=lambda r: (r["block_start"], r["evidence_message_ids"]))
 
     fieldnames = [
         "block_id",
-        "block_inicio",
-        "block_fim",
-        "message_ids_evidencia",
-        "data_primeira_evidencia",
-        "autores_evidencia",
-        "tipo_convite",
-        "data_evento_mencionada",
-        "confianca",
-        "resumo_llm",
-        "mensagens_evidencia",
-        "contexto",
-        "revisao_manual_eh_convite",
-        "revisao_manual_pessoa_foi",
-        "revisao_manual_observacao"
+        "block_start",
+        "block_end",
+        "evidence_message_ids",
+        "first_evidence_date",
+        "evidence_authors",
+        "invite_type",
+        "mentioned_event_date",
+        "confidence",
+        "llm_summary",
+        "evidence_messages",
+        "context_excerpt",
+        "manual_review_is_invite",
+        "manual_review_person_attended",
+        "manual_review_notes"
     ]
 
     with open(output_path, "w", newline="", encoding="utf-8-sig") as f:
@@ -620,25 +620,25 @@ def process_input_file(client: OpenAI, input_path: str, args: argparse.Namespace
         writer.writeheader()
         writer.writerows(rows)
 
-    print(f"Convites encontrados para revisão: {len(rows)}")
-    print(f"Arquivo gerado: {output_path}")
+    print(f"Invites found for review: {len(rows)}")
+    print(f"Generated file: {output_path}")
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("input", nargs="+", help="Um ou mais arquivos .txt exportados do WhatsApp")
-    parser.add_argument("--out", help="CSV de saída para arquivo único, ou diretório de saída quando houver múltiplos arquivos")
-    parser.add_argument("--model", default=DEFAULT_MODEL, help="Modelo usado na classificação")
-    parser.add_argument("--min-date", default=DEFAULT_MIN_DATE, help="Ignora mensagens anteriores a esta data. Padrão: 25/06/2024")
-    parser.add_argument("--block-hours", type=int, default=4, choices=[2, 3, 4, 5, 6], help="Tamanho do bloco temporal em horas. Padrão: 4")
-    parser.add_argument("--sleep", type=float, default=0.2, help="Pausa entre chamadas")
-    parser.add_argument("--no-prefilter", action="store_true", help="Envia todos os blocos para a LLM, mesmo sem palavras-chave")
+    parser.add_argument("input", nargs="+", help="One or more WhatsApp-exported .txt files")
+    parser.add_argument("--out", help="Output CSV for a single file, or output directory when processing multiple files")
+    parser.add_argument("--model", default=DEFAULT_MODEL, help="Model used for classification")
+    parser.add_argument("--min-date", default=DEFAULT_MIN_DATE, help="Ignore messages before this date. Default: 25/06/2024")
+    parser.add_argument("--block-hours", type=int, default=4, choices=[2, 3, 4, 5, 6], help="Time block size in hours. Default: 4")
+    parser.add_argument("--sleep", type=float, default=0.2, help="Pause between API calls")
+    parser.add_argument("--no-prefilter", action="store_true", help="Send all blocks to the LLM, even without keywords")
     args = parser.parse_args()
 
     load_dotenv()
 
     if not os.getenv("OPENAI_API_KEY"):
-        raise RuntimeError("Defina OPENAI_API_KEY no ambiente.")
+        raise RuntimeError("Set OPENAI_API_KEY in the environment.")
 
     client = OpenAI()
     min_date = parse_date_or_fail(args.min_date)

@@ -5,7 +5,12 @@ import argparse
 import csv
 import unicodedata
 from pathlib import Path
-from typing import List
+from typing import Dict, List
+
+
+LEGACY_TO_ENGLISH_COLUMNS = {
+    "autores_evidencia": "evidence_authors",
+}
 
 
 def normalize_text(value: str) -> str:
@@ -25,13 +30,27 @@ def default_output_path(input_path: Path, person_name: str) -> Path:
     return input_path.with_name(f"{input_path.stem}_{safe_name}.csv")
 
 
+def get_row_value(row: Dict[str, str], column_name: str) -> str:
+    if column_name in row:
+        return row.get(column_name, "")
+
+    legacy_name = next(
+        (legacy for legacy, english in LEGACY_TO_ENGLISH_COLUMNS.items() if english == column_name),
+        None,
+    )
+    if legacy_name:
+        return row.get(legacy_name, "")
+
+    return ""
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Filtra um CSV de eventos e gera um novo CSV contendo apenas as linhas de uma pessoa."
+        description="Filters an event CSV and generates a new CSV containing only the rows for one person."
     )
-    parser.add_argument("input", help="CSV de entrada, ex.: conversation/bsof_eventos.csv")
-    parser.add_argument("--name", required=True, help="Nome da pessoa a procurar em 'autores_evidencia'")
-    parser.add_argument("--out", help="CSV de saída. Se omitido, gera automaticamente ao lado do arquivo original.")
+    parser.add_argument("input", help="Input CSV, e.g. conversation/bsof_events.csv")
+    parser.add_argument("--name", required=True, help="Person name to search for in 'evidence_authors'")
+    parser.add_argument("--out", help="Output CSV. If omitted, it is generated automatically next to the original file.")
     args = parser.parse_args()
 
     input_path = Path(args.input)
@@ -45,10 +64,10 @@ def main() -> None:
         fieldnames = reader.fieldnames
 
         if not fieldnames:
-            raise RuntimeError("CSV sem cabecalho.")
+            raise RuntimeError("CSV has no header.")
 
         for row in reader:
-            authors = parse_authors(row.get("autores_evidencia", ""))
+            authors = parse_authors(get_row_value(row, "evidence_authors"))
             if any(normalize_text(author) == target_name for author in authors):
                 matched_rows.append(row)
 
@@ -57,9 +76,9 @@ def main() -> None:
         writer.writeheader()
         writer.writerows(matched_rows)
 
-    print(f"Pessoa filtrada: {args.name}")
-    print(f"Linhas encontradas: {len(matched_rows)}")
-    print(f"Arquivo gerado: {output_path}")
+    print(f"Filtered person: {args.name}")
+    print(f"Rows found: {len(matched_rows)}")
+    print(f"Generated file: {output_path}")
 
 
 if __name__ == "__main__":
