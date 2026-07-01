@@ -1,0 +1,24 @@
+{
+  "name": "poc-encrypted-postgres",
+  "version": "1.0.0",
+  "description": "Simple Express and PostgreSQL user CRUD proof of concept.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "db:init": "psql \"$DATABASE_URL\" -f sql/schema.sql"
+  },
+  "keywords": [
+    "express",
+    "postgres",
+    "crud",
+    "poc"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  }
+}
