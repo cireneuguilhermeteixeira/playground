@@ -1,7 +1,7 @@
 {
   "name": "poc-encrypted-postgres",
   "version": "1.0.0",
-  "description": "Simple Express and PostgreSQL user CRUD proof of concept.",
+  "description": "Express and PostgreSQL POC for storing PII encrypted at the application layer.",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -11,6 +11,7 @@
   "keywords": [
     "express",
     "postgres",
+    "encryption",
     "crud",
     "poc"
   ],

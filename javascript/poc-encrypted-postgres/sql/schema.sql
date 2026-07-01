@@ -1,8 +1,9 @@
 CREATE TABLE IF NOT EXISTS users (
   id BIGSERIAL PRIMARY KEY,
-  name VARCHAR(120) NOT NULL,
-  cpf VARCHAR(14) NOT NULL UNIQUE,
-  address TEXT NOT NULL,
+  name_encrypted TEXT NOT NULL,
+  cpf_encrypted TEXT NOT NULL,
+  cpf_hash CHAR(64) NOT NULL UNIQUE,
+  address_encrypted TEXT NOT NULL,
   nickname VARCHAR(80) NOT NULL UNIQUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
