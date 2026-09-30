@@ -32,9 +32,10 @@ const steps = [
     intro: 'Primeiro dividimos a parede em quatro partes para deixar um vão quadrado de 1,2 × 1,2 m. Depois encaixamos uma janela com moldura de madeira, vidro, divisórias e peitoril.',
     points: ['<strong>Abertura:</strong> duas laterais, uma parte abaixo e outra acima do vão.', '<strong>Caixilho:</strong> quatro peças de madeira contornam o quadrado.', '<strong>Detalhes:</strong> vidro, travessas, puxador e peitoril.'],
     note: 'Use os botões para comparar as duas etapas. O código está em <code>examples/05-janela.js</code>; mude <code>windowSize</code> e as peças da abertura para experimentar outras medidas.',
-    caption: 'A janela está na parede da direita. Arraste para observar por dentro e por fora.', next: 'Próximo: explorar o laboratório →',
+    caption: 'A janela está na parede da direita. Arraste para observar por dentro e por fora.', next: 'Próximo: entrar no quarto →',
   },
-  { url: '/lab.html', label: '06 Laboratório' },
+  { url: '/quarto.html', label: '06 Quarto 3D' },
+  { url: '/lab.html', label: '07 Laboratório' },
 ];
 
 const app = document.querySelector('#app');

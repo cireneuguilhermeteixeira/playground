@@ -12,6 +12,7 @@ export default defineConfig({
         lighting: page('./examples/03-luz-camera.html'),
         floorplan: page('./examples/04-planta.html'),
         window: page('./examples/05-janela.html'),
+        room: page('./quarto.html'),
         lab: page('./lab.html'),
       },
     },

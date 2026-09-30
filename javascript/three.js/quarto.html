@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#282d32" />
+    <title>Quarto 3D · Traço → Espaço</title>
+    <link rel="stylesheet" href="/src/room.css" />
+  </head>
+  <body>
+    <main class="room-app">
+      <div id="room-canvas" aria-label="Quarto 3D explorável em primeira pessoa"></div>
+      <header class="room-header">
+        <a href="/examples/05-janela.html" class="room-back">← Voltar aos passos</a>
+        <div class="room-brand">TRAÇO <span>→</span> ESPAÇO <small>ESTUDO / 06</small></div>
+        <button id="help-button" class="room-help" type="button" aria-label="Mostrar controles">?</button>
+      </header>
+      <div class="crosshair" aria-hidden="true"></div>
+      <div id="intro" class="intro-screen">
+        <p>AMBIENTE INTERATIVO / 06</p>
+        <h1>Entre no quarto.</h1>
+        <span>Explore o espaço em primeira pessoa.</span>
+        <button id="enter-button" type="button">Entrar no quarto <b>↗</b></button>
+        <small>W A S D para andar · mouse para olhar · Esc para liberar o cursor</small>
+      </div>
+      <div id="help-panel" class="help-panel" hidden>
+        <button id="close-help" type="button" aria-label="Fechar ajuda">×</button>
+        <h2>Como explorar</h2>
+        <p><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Andar pelo quarto</p>
+        <p><kbd>Mouse</kbd> Olhar ao redor</p>
+        <p><kbd>Shift</kbd> Andar mais rápido</p>
+        <p><kbd>Esc</kbd> Liberar o cursor</p>
+        <p>Em telas de toque, arraste para olhar e use os botões de direção.</p>
+      </div>
+      <div class="room-caption"><span>FIG. 06 / QUARTO CONTEMPORÂNEO</span><strong>Um espaço para explorar.</strong></div>
+      <div class="time-panel"><label for="time-slider">LUZ DO DIA <output id="time-value">14:00</output></label><input id="time-slider" type="range" min="6" max="20" step="0.25" value="14" /><span>06:00 <i></i> 12:00 <i></i> 20:00</span></div>
+      <div class="touch-controls" aria-label="Controles de movimento">
+        <button data-move="forward" type="button" aria-label="Andar para frente">↑</button>
+        <button data-move="left" type="button" aria-label="Andar para esquerda">←</button>
+        <button data-move="backward" type="button" aria-label="Andar para trás">↓</button>
+        <button data-move="right" type="button" aria-label="Andar para direita">→</button>
+      </div>
+    </main>
+    <script type="module" src="/src/room.js"></script>
+  </body>
+</html>
