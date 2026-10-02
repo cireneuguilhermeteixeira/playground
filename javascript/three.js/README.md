@@ -18,9 +18,16 @@ Abra a URL mostrada pelo Vite no navegador. Para gerar a versão estática, use 
 3. **Luz e câmera** (`/examples/03-luz-camera.html`): material iluminado, duas luzes e controle orbital em [`examples/03-luz-camera.js`](examples/03-luz-camera.js).
 4. **Planta 3D** (`/examples/04-planta.html`): segmentos 2D viram paredes 3D em [`examples/04-planta.js`](examples/04-planta.js).
 5. **Janela de madeira** (`/examples/05-janela.html`): abertura quadrada na parede e caixilho com vidro, travessas e peitoril em [`examples/05-janela.js`](examples/05-janela.js).
-6. **Laboratório** (`/lab.html`): a POC interativa anterior, com altura variável, grade e vistas em [`src/main.js`](src/main.js).
+6. **Quarto em primeira pessoa** (`/quarto.html`): ambiente mobiliado com movimento WASD, câmera controlada pelo mouse, colisões e luz do dia em [`src/room.js`](src/room.js).
+7. **Laboratório** (`/lab.html`): a POC interativa anterior, com altura variável, grade e vistas em [`src/main.js`](src/main.js).
 
 Cada passo funciona sozinho: abra seu arquivo JavaScript, altere um valor e veja o resultado no navegador. O código se repete de propósito para facilitar a comparação entre as etapas. As aberturas nas plantas são intervalos entre segmentos. Ainda não há leitura de imagem, PDF ou arquivo CAD.
+
+## Explorar o quarto
+
+Abra `/quarto.html` e clique em **Entrar no quarto**. Use **W/A/S/D** para andar, mova o **mouse** para olhar, segure **Shift** para acelerar e pressione **Esc** para liberar o cursor. Em telas de toque, arraste sobre a cena para olhar e use as setas na tela para andar. O controle **Luz do dia** muda a iluminação entre manhã e noite.
+
+O quarto é construído com geometrias e materiais do Three.js, inclusive um piso com textura gerada no código. As colisões usam caixas simples para impedir a passagem pelas paredes e pelos móveis grandes.
 
 ## Caminho para a conversão real
 
